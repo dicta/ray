@@ -4,9 +4,15 @@ direction {
    radiance       3.0
 }
 
-ambient {
+ambientOccluder {
    radiance       1.0
    color          [ 1.0 1.0 1.0 ]
    minColor       [ 0.0 0.0 0.0 ]
-   numSamples     64
+   numSamples     256
+}
+
+environment {
+   radiance          2.0
+   color             [ 0.8 0.8 0.9 ]
+   numSamples        256
 }
