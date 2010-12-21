@@ -12,6 +12,7 @@
 #include "Direction.h"
 #include "AmbientOccluder.h"
 #include "AreaLight.h"
+#include "Environment.h"
 #include "Parser/Parser.h"
 #include <fstream>
 
@@ -66,6 +67,9 @@ void LightManager::loadLights(string fname) {
       }
       else if(type == "areaLight") {
          light = new AreaLight();
+      }
+      else if(type == "environment") {
+         light = new Environment();
       }
       else {
          continue;
