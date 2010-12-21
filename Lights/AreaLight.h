@@ -22,7 +22,7 @@ public:
    AreaLight();
    virtual ~AreaLight();
    
-   virtual Vector3D getLightDirection(const Point3D& hitPoint);
+   virtual Vector3D getLightDirection(const ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
    

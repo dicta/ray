@@ -22,10 +22,10 @@ AreaLight::~AreaLight() {
    delete material;
 }
 
-Vector3D AreaLight::getLightDirection(const Point3D& hitPoint) {
+Vector3D AreaLight::getLightDirection(const ShadeRecord& sr) {
    samplePoint = object->sample();
    lightNormal = object->getNormal(samplePoint);
-   wi = samplePoint - hitPoint;
+   wi = samplePoint - sr.localHitPoint;
    wi.normalize();
    
    return wi;

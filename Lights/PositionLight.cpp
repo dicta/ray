@@ -19,13 +19,13 @@ PositionLight::PositionLight() : Light(), ls(1.0), color(1, 1, 1), location() {
 PositionLight::PositionLight(const Point3D& loc) : Light(), ls(1.0), color(1, 1, 1), location(loc) {
 }
 
-Vector3D PositionLight::getLightDirection(const Point3D& hitPoint) {
+Vector3D PositionLight::getLightDirection(const ShadeRecord& sr) {
 //   Point3D newLoc;
 //   newLoc.x = location.x + 3.0 * (2.0 * rand_float() - 1.0);
 //   newLoc.y = location.y + 3.0 * (2.0 * rand_float() - 1.0);
 //   newLoc.z = location.z + 3.0 * (2.0 * rand_float() - 1.0);
 //   return (newLoc - hitPoint).normalize();
-   return (location - hitPoint).normalize();
+   return (location - sr.localHitPoint).normalize();
 }
 
 bool PositionLight::inShadow(const Ray& ray, const ShadeRecord& sr) {

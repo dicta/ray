@@ -26,7 +26,7 @@ Color MultiObjects::traceRay(const Ray& ray) {
          color = BLACK * LightManager::instance().getAmbientLight(sr);
          
          for(LightIter lit = LightManager::instance().begin(); lit != LightManager::instance().end(); lit++) {
-            Vector3D lightDir = (*lit)->getLightDirection(sr.localHitPoint);
+            Vector3D lightDir = (*lit)->getLightDirection(sr);
             float ndoti = sr.normal.dot(lightDir);
             if(ndoti > 0.0) {
                color += BLACK * (*lit)->L(sr) * ndoti;

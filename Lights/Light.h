@@ -2,7 +2,6 @@
 #define _LIGHT_H_
 
 #include "Math/Vector3D.h"
-#include "Math/Point3D.h"
 #include "Utility/Color.h"
 #include "Math/Ray.h"
 #include "Utility/ShadeRecord.h"
@@ -15,7 +14,7 @@ public:
    Light() {}
    virtual ~Light() {}
    
-   virtual Vector3D getLightDirection(const Point3D& hitPoint) = 0;
+   virtual Vector3D getLightDirection(const ShadeRecord& sr) = 0;
    virtual void setHash(Hash* hash) = 0;
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr) { return false; }
    

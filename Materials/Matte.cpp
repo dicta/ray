@@ -55,7 +55,7 @@ Color Matte::shade(const ShadeRecord& sr, const Ray& ray) {
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
    
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr.localHitPoint);
+      Vector3D wi = (*it)->getLightDirection(sr);
       float ndotwi = sr.normal.dot(wi);
       
       if(ndotwi > 0.0) {
@@ -76,7 +76,7 @@ Color Matte::areaLightShade(const ShadeRecord& sr, const Ray& ray) {
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
    
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr.localHitPoint);
+      Vector3D wi = (*it)->getLightDirection(sr);
       float ndotwi = sr.normal.dot(wi);
       
       if(ndotwi > 0.0) {
