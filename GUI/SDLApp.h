@@ -2,9 +2,11 @@
 #define _SDLAPP_H_
 
 #include <SDL/SDL.h>
+#include <string>
+
+using namespace std;
 
 class Camera;
-class Hash;
 
 class SDLApp {
    
@@ -15,7 +17,7 @@ public:
    
 private:
    void loadConfiguration();
-   void setupCamera(Hash* h);
+   void setupCamera(string fname);
 
    bool stopApp;
    SDL_Surface* surface;

@@ -26,7 +26,6 @@ GeometryManager& GeometryManager::instance() {
 }
 
 GeometryManager::GeometryManager() {
-   loadScene();
 }
 
 GeometryManager::~GeometryManager() {
@@ -36,8 +35,8 @@ GeometryManager::~GeometryManager() {
    objects.clear();
 }
 
-void GeometryManager::loadScene() {
-   std::ifstream fp("config/scene.txt");
+void GeometryManager::loadObjects(string fname) {
+   std::ifstream fp(fname.c_str());
    Tokenizer tok(&fp);
    Parser parser(&tok);
 

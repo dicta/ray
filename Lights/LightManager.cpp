@@ -9,6 +9,7 @@
 
 #include "LightManager.h"
 #include "PositionLight.h"
+#include "Direction.h"
 #include "AmbientOccluder.h"
 #include "AreaLight.h"
 #include "Parser/Parser.h"
@@ -24,7 +25,6 @@ LightManager& LightManager::instance() {
 }
 
 LightManager::LightManager() : ambient(NULL) {
-   loadLights();
 }
 
 LightManager::~LightManager() {
@@ -32,20 +32,20 @@ LightManager::~LightManager() {
       delete lights[i];
    }
    lights.clear();
-   
+
    delete ambient;
 }
 
-void LightManager::loadLights() {
-   std::ifstream fp("config/lights.txt");
+void LightManager::loadLights(string fname) {
+   std::ifstream fp(fname.c_str());
    Tokenizer tok(&fp);
    Parser parser(&tok);
-   
+
    while(tok.nextToken() != Tokenizer::TokenEnd) {
       if(tok.getTokenType() != Tokenizer::TokenName) {
          return ;
       }
-      
+
       Light* light = NULL;
       string type = tok.getStringValue();
       Hash* hash = parser.readValue()->getHash();
@@ -61,19 +61,22 @@ void LightManager::loadLights() {
       else if(type == "position") {
          light = new PositionLight();
       }
+      else if(type == "direction") {
+         light = new Direction();
+      }
       else if(type == "areaLight") {
          light = new AreaLight();
       }
       else {
          continue;
       }
-      
+
       if(light != NULL) {
          light->setHash(hash);
          lights.push_back(light);
       }
    }
-   
+
    fp.close();
 }
 

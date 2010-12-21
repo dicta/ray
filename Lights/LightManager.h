@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "Utility/Color.h"
 #include "Utility/ShadeRecord.h"
 
@@ -28,13 +29,13 @@ public:
    static LightManager& instance();
    ~LightManager();
    
+   void loadLights(string fname);
    LightIter begin() const { return lights.begin(); }
    LightIter end() const { return lights.end(); }
    Color getAmbientLight(const ShadeRecord& sr) const;
 
 private:
    LightManager();
-   void loadLights();
    
    static auto_ptr<LightManager> s_instance;
    vector<Light*> lights;

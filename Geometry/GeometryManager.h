@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 
 using namespace std;
 
@@ -26,6 +27,8 @@ public:
    static GeometryManager& instance();
    ~GeometryManager();
    
+   void loadObjects(string fname);
+
    GeometryIter begin() const { return objects.begin(); }
    GeometryIter end() const { return objects.end(); }
    
@@ -33,7 +36,6 @@ public:
    
 private:
    GeometryManager();
-   void loadScene();
    
    static auto_ptr<GeometryManager> s_instance;
    vector<GeometryObject*> objects;

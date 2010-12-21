@@ -1,0 +1,13 @@
+camera {
+   type                 "pinhole"
+   pixelSize            1.0
+   numSamples           1
+   lensSamples          50
+   lensRadius           10.0
+   viewPlaneDistance    850.0
+   focusPlaneDistance   530.0
+   eye                  [ 400.0 300.0 200.0 ]
+   lookat               [ 0.0 0.0 0.0 ]
+   up                   [ 0.0 1.0 0.0 ]
+   tracer               "area"
+}
