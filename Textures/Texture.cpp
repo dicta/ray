@@ -10,6 +10,7 @@
 #include "Texture.h"
 #include "Parser/Hash.h"
 #include "PlaneChecker.h"
+#include "NoiseTexture.h"
 
 Texture* Texture::createTexture(Hash* hash) {
    string type = hash->getString("type");
@@ -17,6 +18,12 @@ Texture* Texture::createTexture(Hash* hash) {
    
    if(type == "planeChecker") {
       texture = new PlaneChecker();
+   }
+   else if(type == "noise") {
+      texture = new NoiseTexture();
+   }
+   else {
+      assert(false);
    }
    texture->setHash(hash);
 

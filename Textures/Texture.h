@@ -18,6 +18,8 @@ class Hash;
 class Texture {
 
 public:
+   virtual ~Texture() {}
+
    virtual Color getColor(const ShadeRecord& sr) const = 0;
    virtual void setHash(Hash* hash) = 0;
    
