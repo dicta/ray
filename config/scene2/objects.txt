@@ -9,6 +9,18 @@ sphere {
       kd          0.65
       ks          0.2
       exp         20.0
+      
+      texture {
+         type              "noise"
+         interpolation     "cubic"
+         noiseType         "fbm"
+         color             [ 0.7 1.0 0.5 ]
+         numOctaves        6
+         lacunarity        1.0
+         gain              0.5
+         min               -0.1
+         max               1.1
+      }
    }
 }
 
@@ -26,7 +38,6 @@ plane {
          type           "planeChecker"
          size           30.0
          color1         [ 1.0 1.0 1.0 ]
-#         color2         [ 0.0 0.0 0.0 ]
          color2         [ 1.0 1.0 1.0 ]
          borderColor    [0.2 0.2 0.2 ]
          borderWidth    2.0
