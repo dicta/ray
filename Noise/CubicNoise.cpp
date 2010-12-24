@@ -2,7 +2,7 @@
 #include "Math/Maths.h"
 #include <math.h>
 
-CubicNoise::CubicNoise() {
+CubicNoise::CubicNoise(int seed) : LatticeNoise(seed){
 }
 
 CubicNoise::~CubicNoise() {

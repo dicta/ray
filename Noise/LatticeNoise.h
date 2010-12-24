@@ -11,7 +11,7 @@ class Hash;
 class LatticeNoise {
 
 public:
-   LatticeNoise();
+   LatticeNoise(int seed = 253);
    virtual ~LatticeNoise();
    
    void setHash(Hash* h);

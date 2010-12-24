@@ -6,7 +6,7 @@
 class CubicNoise : public LatticeNoise {
 
 public:
-   CubicNoise();
+   CubicNoise(int seed = 253);
    virtual ~CubicNoise();
    
 protected:

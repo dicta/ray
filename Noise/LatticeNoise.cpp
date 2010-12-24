@@ -26,7 +26,7 @@ LatticeNoise::permutations[256] =
 					        137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52
 				    	};
 
-LatticeNoise::LatticeNoise() {
+LatticeNoise::LatticeNoise(int seed) {
    initValueTable(253);
 }
 
