@@ -36,7 +36,7 @@ Color::Color(Array* a) {
    alpha = 1.0;
 }
 
-void Color::set(float r, float b, float g) {
+void Color::set(float r, float g, float b) {
    red = r;
    green = g;
    blue = b;
