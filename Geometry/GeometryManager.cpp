@@ -13,6 +13,8 @@
 #include "Sphere.h"
 #include "Plane.h"
 #include "Rectangle.h"
+#include "Cylinder.h"
+#include "Disk.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
 
@@ -63,6 +65,12 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
    }
    else if(type == "rectangle") {
       obj = new Rectangle();
+   }
+   else if(type == "cylinder") {
+      obj = new Cylinder();
+   }
+   else if(type == "disk") {
+      obj = new Disk();
    }
    else {
       return NULL;
