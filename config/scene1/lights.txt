@@ -17,8 +17,8 @@ areaLight {
 
    rectangle {
       origin         [ -499.0 -27.0 0.0 ]
-      a              [ 0.0 0.0 -100.0 ]
-      b              [ 0.0 700.0 0.0 ]
+      a              [ 0.0 0.0 -150.0 ]
+      b              [ 0.0 400.0 0.0 ]
    
       material {
          type        "matte"

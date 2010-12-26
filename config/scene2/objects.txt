@@ -13,13 +13,13 @@ sphere {
       texture {
          type              "noise"
          interpolation     "cubic"
-         noiseType         "fbm"
-         color             [ 0.7 1.0 0.5 ]
-         numOctaves        6
-         lacunarity        1.0
+         noiseType         "turbulence"
+         color             [ 0.8 0.8 0.1 ]
+         numOctaves        1
+         lacunarity        8.0
          gain              0.5
-         min               -0.1
-         max               1.1
+         min               0.0
+         max               1.0
       }
    }
 }

@@ -5,6 +5,7 @@ direction {
 }
 
 ambientOccluder {
+#ambient {
    radiance       1.0
    color          [ 1.0 1.0 1.0 ]
    minColor       [ 0.0 0.0 0.0 ]
@@ -13,6 +14,6 @@ ambientOccluder {
 
 environment {
    radiance          2.0
-   color             [ 0.8 0.8 0.9 ]
+   color             [ 0.9 0.8 0.7 ]
    numSamples        256
 }
