@@ -18,7 +18,7 @@ class Hash;
 class ThinLens : public Camera {
    
 public:
-   ThinLens(float _d = 1, float _f = 1);
+   ThinLens(int w, int h);
    virtual ~ThinLens();
    
    virtual void setHash(Hash* hash);
@@ -26,8 +26,6 @@ public:
    
 private:
    float lensRadius;
-   // Distance between the eye and view plane
-   float d;
    // Distance from eye to focal plane
    float f;
    

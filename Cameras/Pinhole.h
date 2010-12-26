@@ -15,16 +15,10 @@
 class Pinhole : public Camera {
    
 public:
-   Pinhole(const float _d = 1.0);
+   Pinhole(int w, int h);
    virtual ~Pinhole() {}
-   
-   virtual void setHash(Hash* h);
-   
+
    virtual void renderScene();
-   
-private:
-   // Distance between the eye and view plane
-   float d;
 };
 
 #endif

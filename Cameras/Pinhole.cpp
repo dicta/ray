@@ -17,12 +17,7 @@
 #include "Math/Point2D.h"
 #include "Parser/Hash.h"
 
-Pinhole::Pinhole(const float _d) : Camera(), d(_d) {
-}
-
-void Pinhole::setHash(Hash* hash) {
-   Camera::setHash(hash);
-   d = hash->getValue("viewPlaneDistance")->getDouble();
+Pinhole::Pinhole(int w, int h) : Camera(w, h) {
 }
 
 void Pinhole::renderScene() {
@@ -40,9 +35,9 @@ void Pinhole::renderScene() {
 
          for(int j = 0; j < sampler->getNumSamples(); j++) {
             Point2D* sp = sampler->sampleUnitSquare();
-            x = pixelSize * (c - 0.5 * width + sp->x);
-            y = pixelSize * (r - 0.5 * height + sp->y);
-            ray.direction = u * x + v * y - w * d;
+            x = c - 0.5 * width + sp->x;
+            y = r - 0.5 * height + sp->y;
+            ray.direction = u * x + v * y - w * viewPlaneDistance;
             ray.direction.normalize();
             
             pixelColor += tracer->traceRay(ray);

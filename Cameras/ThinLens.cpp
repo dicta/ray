@@ -14,7 +14,7 @@
 #include "Tracer/Tracer.h"
 #include "Parser/Hash.h"
 
-ThinLens::ThinLens(float _d, float _f) : d(_d), f(_f) {
+ThinLens::ThinLens(int w, int h) : Camera(w, h) {
    lensRadius = 1.0;
 }
 
@@ -24,7 +24,6 @@ ThinLens::~ThinLens() {
 
 void ThinLens::setHash(Hash* hash) {
    Camera::setHash(hash);
-   d = hash->getDouble("viewPlaneDistance");
    f = hash->getDouble("focusPlaneDistance");
    lensRadius = hash->getDouble("lensRadius");
 
@@ -45,16 +44,16 @@ void ThinLens::renderScene() {
          
          for(int n = 0; n < sampler->getNumSamples(); n++) {
             Point2D* sp = sampler->sampleUnitSquare();
-            double x = pixelSize * (c - width / 2.0 + sp->x);
-            double y = pixelSize * (r - height / 2.0 + sp->y);
+            double x = c - width / 2.0 + sp->x;
+            double y = r - height / 2.0 + sp->y;
             
             Point2D* dp = lensSampler->sampleUnitDisk();
             lp = *dp * lensRadius;
             
             ray.origin = eye + u * lp.x + v * lp.y;
             
-            double dirX = x * f / d;
-            double dirY = y * f / d;
+            double dirX = x * f / viewPlaneDistance;
+            double dirY = y * f / viewPlaneDistance;
             ray.direction = u * (dirX - lp.x) + v * (dirY - lp.y) - w * f;
             ray.direction.normalize();
             

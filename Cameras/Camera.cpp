@@ -14,9 +14,10 @@
 #include "Tracer/RayCast.h"
 #include "Tracer/AreaLighting.h"
 #include "Parser/Hash.h"
+#include "Math/Maths.h"
+#include <math.h>
 
-Camera::Camera() : eye(), lookat(), up() {
-   pixelSize = 1.0;
+Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h) {
 }
 
 Camera::~Camera() {
@@ -28,7 +29,9 @@ void Camera::setHash(Hash* h) {
    eye.set(h->getValue("eye")->getArray());
    lookat.set(h->getValue("lookat")->getArray());
    up.set(h->getValue("up")->getArray());
-   pixelSize = h->getDouble("pixelSize");
+
+   float angle = h->getDouble("angle");
+   viewPlaneDistance = height * 0.5 / tan(angle * DEG_TO_RAD);
    
    int numSamples = h->getInteger("numSamples");
    if(numSamples == 1) {
@@ -44,6 +47,11 @@ void Camera::setHash(Hash* h) {
    }
    else if(t == "rayCast") {
       tracer = new RayCast();
+   }
+   
+   if(h->contains("bgTexture")) {
+      Texture* tex = Texture::createTexture(h->getValue("bgTexture")->getHash());
+      tracer->setBackgroundTexture(tex);
    }
 }
 

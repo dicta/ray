@@ -22,7 +22,7 @@ class Hash;
 class Camera {
 
 public:
-   Camera();
+   Camera(int w, int h);
    virtual ~Camera();
    
    virtual void setHash(Hash* hash);
@@ -35,9 +35,6 @@ public:
    void setUp(Array* a) { up.set(a); }
    
    void setSurface(SDL_Surface* s) { surface = s; }
-   void setWidth(const int w) { width = w; }
-   void setHeight(const int h) { height = h; }
-   void setPixelSize(const float s) { pixelSize = s; }
    
 protected:
    void setPixel(int x, int y, const Color& color);
@@ -52,7 +49,7 @@ protected:
    
    int width;
    int height;
-   float pixelSize;
+   float viewPlaneDistance;
 };
 
 #endif
