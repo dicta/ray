@@ -20,6 +20,10 @@ Color RayCast::traceRay(const Ray& ray) {
       return sr.material->shade(sr, ray);
    }
    else {
-      return BLACK;
+      if(texture != NULL) {
+         sr.localHitPoint.set(ray.direction.x, ray.direction.y, ray.direction.z);
+         return texture->getColor(sr);
+      }
+      return bgColor;
    }
 }

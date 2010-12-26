@@ -13,12 +13,27 @@
 #include "Utility/Color.h"
 #include "Utility/ShadeRecord.h"
 #include "Math/Ray.h"
+#include "Textures/Texture.h"
 
 class Tracer {
    
 public:
+   Tracer() : bgColor(), texture(NULL) {}
+   virtual ~Tracer() {
+      if(texture != NULL) {
+         delete texture;
+      }
+   }
+
    virtual Color traceRay(const Ray& ray) = 0;
    ShadeRecord hitObjects(const Ray& ray);
+   
+   void setBackgroundColor(const Color& c) { bgColor = c; }
+   void setBackgroundTexture(Texture* t) { texture = t; }
+   
+protected:
+   Color bgColor;
+   Texture* texture;
 };
 
 #endif
