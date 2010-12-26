@@ -57,8 +57,8 @@ void Camera::setHash(Hash* h) {
 
 void Camera::computeUVW() {
    if(eye.x == lookat.x && eye.z == lookat.z && eye.y > lookat.y) {
-      u.set(0, 0, 1);
-      v.set(1, 0, 0);
+      u.set(1, 0, 0);
+      v.set(0, 0, 1);
       w.set(0, 1, 0);
    }
    else {
