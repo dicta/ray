@@ -17,7 +17,7 @@ public:
    
 private:
    void loadConfiguration();
-   void setupCamera(string fname);
+   void setupCamera(string fname, int width, int height);
 
    bool stopApp;
    SDL_Surface* surface;

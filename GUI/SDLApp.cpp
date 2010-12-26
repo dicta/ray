@@ -44,9 +44,7 @@ void SDLApp::loadConfiguration() {
 		exit(2);
 	}
    
-   setupCamera(h->getString("camera"));
-   camera->setWidth(width);
-   camera->setHeight(height);
+   setupCamera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->computeUVW();
    
@@ -54,7 +52,7 @@ void SDLApp::loadConfiguration() {
    GeometryManager::instance().loadObjects(h->getString("objects"));
 }
 
-void SDLApp::setupCamera(string fname) {
+void SDLApp::setupCamera(string fname, int width, int height) {
    std::ifstream fin(fname.c_str(), std::ios::in);
    Tokenizer tok(&fin);
    Parser parser(&tok);
@@ -69,10 +67,10 @@ void SDLApp::setupCamera(string fname) {
          Hash* h = parser.readValue()->getHash();
          string type = h->getValue("type")->getString();
          if(type == "pinhole") {
-            camera = new Pinhole();
+            camera = new Pinhole(width, height);
          }
          else if(type == "thinLens") {
-            camera = new ThinLens();
+            camera = new ThinLens(width, height);
          }
          camera->setHash(h);
       }
