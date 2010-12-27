@@ -29,4 +29,6 @@ inline float lerp(const float f, const float a, const float b) {
    return a + f * (b - a);
 }
 
+int SolveQuartic(double c[5], double s[4]);
+
 #endif

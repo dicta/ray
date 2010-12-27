@@ -15,6 +15,7 @@
 #include "Rectangle.h"
 #include "Cylinder.h"
 #include "Disk.h"
+#include "Torus.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
 
@@ -56,7 +57,7 @@ void GeometryManager::loadObjects(string fname) {
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
    GeometryObject* obj;
-
+printf("type = %s\n", type.c_str());
    if(type == "sphere") {
       obj = new Sphere();
    }
@@ -71,6 +72,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
    }
    else if(type == "disk") {
       obj = new Disk();
+   }
+   else if(type == "torus") {
+      obj = new Torus();
    }
    else {
       return NULL;

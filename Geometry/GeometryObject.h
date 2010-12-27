@@ -33,7 +33,6 @@ public:
    
    virtual void setHash(Hash* hash) = 0;
    
-protected:
    static const double epsilon;
 
 private:
