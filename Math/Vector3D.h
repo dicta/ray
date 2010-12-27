@@ -19,6 +19,8 @@ public:
 
    void set(double xx, double yy, double zz);
    void set(Array* a);
+   
+   Vector3D operator-() const;
 
    Point3D operator+(const Point3D& p);
    Vector3D operator+(const Vector3D& p) const;
@@ -39,5 +41,9 @@ public:
 
    GLdouble x, y, z;
 };
+
+inline Vector3D Vector3D::operator-() const {
+   return Vector3D(-x, -y, -z);
+}
 
 #endif
