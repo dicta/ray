@@ -40,7 +40,7 @@ Vector3D& Vector3D::operator+= (const Vector3D& p) {
    return *this;
 }
 
-Vector3D Vector3D::operator- (const Vector3D& p) {
+Vector3D Vector3D::operator- (const Vector3D& p) const {
    Vector3D result;
    result.set(x - p.x, y - p.y, z - p.z);
    return result;

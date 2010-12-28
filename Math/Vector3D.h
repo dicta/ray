@@ -1,12 +1,6 @@
 #ifndef _VECTOR3D_H
 #define _VECTOR3D_H
 
-#ifdef WIN32
-#include <GL/gl.h>
-#else
-#include <GLUT/glut.h>
-#endif
-
 #include "Parser/Value.h"
 
 class Point3D;
@@ -25,7 +19,7 @@ public:
    Point3D operator+(const Point3D& p);
    Vector3D operator+(const Vector3D& p) const;
    Vector3D& operator+=(const Vector3D& p);
-   Vector3D operator-(const Vector3D& p);
+   Vector3D operator-(const Vector3D& p) const;
    Vector3D operator*(const double d) const;
    Vector3D operator/(const double d) const;
    Vector3D& operator*=(const double d);
@@ -39,7 +33,7 @@ public:
    Vector3D& selfCross(const Vector3D& v);
    double length();
 
-   GLdouble x, y, z;
+   double x, y, z;
 };
 
 inline Vector3D Vector3D::operator-() const {
