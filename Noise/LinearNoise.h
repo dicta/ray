@@ -11,6 +11,7 @@ public:
 
 protected:
    virtual float valueNoise(const Point3D& p) const;
+   virtual Vector3D vectorNoise(const Point3D& p) const;
 };
 
 #endif

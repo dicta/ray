@@ -1,6 +1,7 @@
 #include "LatticeNoise.h"
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
+#include "Samplers/MultiJittered.h"
 
 /*
  * The following table is by Darwyn Peachey in Ebert et al. (2003), page 70.
@@ -38,6 +39,22 @@ void LatticeNoise::initValueTable(int seed) {
    for(int i = 0; i < 256; i++) {
       // clamp range to [-1.0, 1.0]
       values[i] = 1.0 - 2.0 * rand_float();
+   }
+}
+
+void LatticeNoise::initVectorTable(int seed) {
+   srand(seed);
+   MultiJittered sampler(256, 1);
+   
+   for(int i = 0; i < 256; i++) {
+      Point2D* point = sampler.sampleOneSet();
+      float z = 1.0 - 2.0 * point->x;
+      float r = sqrt(1.0 - z * z);
+      float phi = 2.0 * M_PI * point->y;
+      float x = r * cos(phi);
+      float y = r * sin(phi);
+      vectors[i].set(x, y, z);
+      vectors[i].normalize();
    }
 }
 
@@ -102,5 +119,19 @@ float LatticeNoise::fbm(const Point3D& p) const {
 
    // Map to [0, 1]
    sum = (sum - fsMin) / (fsMax - fsMin);
+   return sum;
+}
+
+Vector3D LatticeNoise::vectorFbm(const Point3D& p) const {
+   float amplitude = 1.0;
+   float frequency = 1.0;
+   Vector3D sum;
+   
+   for(int j = 0; j < numOctaves; j++) {
+      sum += vectorNoise(p * frequency) * amplitude;
+      amplitude *= gain;
+      frequency *= lacunarity;
+   }
+   
    return sum;
 }
