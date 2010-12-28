@@ -1,7 +1,7 @@
 config {
-   width       640
-   height      480
+   width       800
+   height      600
    camera      "config/scene2/camera.txt"
    lights      "config/scene2/lights.txt"
-   objects     "config/scene2/objects.txt"
+   objects     "config/scene2/cylinder.txt"
 }

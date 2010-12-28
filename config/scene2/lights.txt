@@ -1,12 +1,12 @@
-direction {
-   direction      [ 1.0 1.0 0.0 ]
+position {
+   location       [ 85.0 0.0 10.0 ]
    color          [ 1.0 1.0 1.0 ]
-   radiance       3.0
+   radiance       2.0
 }
 
 ambientOccluder {
 #ambient {
-   radiance       1.0
+   radiance       2.0
    color          [ 1.0 1.0 1.0 ]
    minColor       [ 0.0 0.0 0.0 ]
    numSamples     256
