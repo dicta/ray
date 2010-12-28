@@ -12,6 +12,7 @@
 #include "PlaneChecker.h"
 #include "NoiseTexture.h"
 #include "SkyTexture.h"
+#include "WoodTexture.h"
 
 Texture* Texture::createTexture(Hash* hash) {
    string type = hash->getString("type");
@@ -25,6 +26,9 @@ Texture* Texture::createTexture(Hash* hash) {
    }
    else if(type == "sky") {
       texture = new SkyTexture();
+   }
+   else if(type == "wood") {
+      texture = new WoodTexture();
    }
    else {
       assert(false);
