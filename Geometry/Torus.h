@@ -16,10 +16,14 @@ public:
    
 private:
    void computeNormal(Vector3D& n, const Point3D& p) const;
+   bool partCheck(const Ray& ray, double t) const;
 
    double a;
    double b;
    BBox bbox;
+   bool thetaRange, phiRange;
+   double minTheta, maxTheta;
+   double minPhi, maxPhi;
 };
 
 #endif
