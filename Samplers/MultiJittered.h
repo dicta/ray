@@ -15,7 +15,7 @@
 class MultiJittered : public Sampler {
    
 public:
-   MultiJittered(const int ns = 1);
+   MultiJittered(const int ns = 1, const int sets = 83);
    ~MultiJittered();
    
    virtual void generateSamples();

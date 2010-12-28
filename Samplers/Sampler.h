@@ -24,6 +24,7 @@ public:
    
    Point2D* sampleUnitSquare();
    Point2D* sampleUnitDisk();
+   Point2D* sampleOneSet();
    Point3D* sampleHemisphere();
    
 protected:

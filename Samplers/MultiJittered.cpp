@@ -11,7 +11,7 @@
 #include <math.h>
 #include "Math/Maths.h"
 
-MultiJittered::MultiJittered(const int ns) : Sampler(ns) {
+MultiJittered::MultiJittered(const int ns, const int sets) : Sampler(ns, sets) {
    generateSamples();
 }
 

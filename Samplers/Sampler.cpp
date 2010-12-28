@@ -76,6 +76,10 @@ Point2D* Sampler::sampleUnitDisk() {
 	return (diskSamples[jump + shuffledIdx[jump + count++ % numSamples]]);
 }
 
+Point2D* Sampler::sampleOneSet() {
+   return samples[count++ % numSamples];
+}
+
 Point3D* Sampler::sampleHemisphere() {
    if (count % numSamples == 0) {
 		jump = (rand() % numSets) * numSamples;
