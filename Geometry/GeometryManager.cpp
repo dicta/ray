@@ -17,6 +17,7 @@
 #include "Disk.h"
 #include "Torus.h"
 #include "Box.h"
+#include "Annulus.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
 
@@ -79,6 +80,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
    }
    else if(type == "box") {
       obj = new Box();
+   }
+   else if(type == "annulus") {
+      obj = new Annulus();
    }
    else {
       return NULL;
