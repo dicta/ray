@@ -68,6 +68,7 @@ int SolveQuadric(double c[3], double s[2])
    s[ 1 ] = - sqrt_D - p;
    return 2;
     }
+   return 0;
 }
 
 

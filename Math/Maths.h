@@ -2,6 +2,7 @@
 #define _MATHS_H_
 
 #include <math.h>
+#include <cstdlib>
 
 const float invRAND_MAX = 1.0 / (float) RAND_MAX;
 const double INV_PI = 1.0 / M_PI;
@@ -37,34 +38,16 @@ inline T lerp(const float f, const T a, const T b) {
  * @param b Upper bound
  * @param x Value to interpolate
  */
-double smoothStep(double a, double b, double x) {
-   if(x < a) {
-      return 0.0;
-   }
-   if(x >= b) {
-      return 1.0;
-   }
-   
-   // y is the amount x is between a and b as a percentage. [0, 1]
-   double y = (x - a) / (b - a);
-   return y * y * (3.0 - 2.0 * y);
-}
+double smoothStep(double a, double b, double x);
 
 /** Modulus for doubles. */
-double mod(double a, double b) {
-   int n = (int)(a / b);
-   a -= n * b;
-   if(a < 0.0) {
-      a += b;
-   }
-   return a;
-}
+double mod(double a, double b);
 
-double smoothPulse(double e0, double e1, double e2, double e3, double x) {
+inline double smoothPulse(double e0, double e1, double e2, double e3, double x) {
    return smoothStep(e0, e1, x) - smoothStep(e2, e3, x);
 }
 
-double smoothPulseTrain(double e0, double e1, double e2, double e3, double period, double x) {
+inline double smoothPulseTrain(double e0, double e1, double e2, double e3, double period, double x) {
    return smoothPulse(e0, e1, e2, e3, mod(x, period));
 }
 
