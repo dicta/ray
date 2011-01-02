@@ -81,7 +81,7 @@ void SDLApp::run() {
    SDL_Event event;
    
    Uint32 start = SDL_GetTicks();
-   camera->renderScene();
+   camera->render();
    Uint32 stop = SDL_GetTicks();
    
    printf("Render time = %f seconds\n", (stop - start) / 1000.0);
