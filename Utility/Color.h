@@ -40,6 +40,22 @@ public:
    float red, green, blue, alpha;
 };
 
+inline Color Color::operator*(const float a) const {
+   return Color(red * a, green * a, blue * a, alpha);
+}
+
+inline Color Color::operator*(const Color& c) const {
+   return Color(red * c.red, green * c.green, blue * c.blue, alpha);
+}
+
+inline Color Color::operator/(const float a) const {
+   return Color(red / a, green / a, blue / a, alpha);
+}
+
+inline Color Color::operator+(const Color& c) const {
+   return Color(red + c.red, green + c.green, blue + c.blue, alpha);
+}
+
 extern const Color BLACK;
 extern const Color RED;
 

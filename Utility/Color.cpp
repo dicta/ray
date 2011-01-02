@@ -71,26 +71,6 @@ Color& Color::operator/= (const float a) {
    return *this;
 }
 
-Color Color::operator*(const float a) const {
-   Color result(red * a, green * a, blue * a, alpha);
-   return result;
-}
-
-Color Color::operator*(const Color& c) const {
-   Color result(red * c.red, green * c.green, blue * c.blue, alpha);
-   return result;
-}
-
-Color Color::operator/(const float a) const {
-   Color result(red / a, green / a, blue / a, alpha);
-   return result;
-}
-
-Color Color::operator+(const Color& c) const {
-   Color result(red + c.red, green + c.green, blue + c.blue, alpha);
-   return result;
-}
-
 void Color::normalize() {
    float maxVal = max(red, max(green, blue));
    if(maxVal > 1.0) {
