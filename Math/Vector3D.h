@@ -16,7 +16,6 @@ public:
    
    Vector3D operator-() const;
 
-   Point3D operator+(const Point3D& p);
    Vector3D operator+(const Vector3D& p) const;
    Vector3D& operator+=(const Vector3D& p);
    Vector3D operator-(const Vector3D& p) const;
@@ -38,6 +37,42 @@ public:
 
 inline Vector3D Vector3D::operator-() const {
    return Vector3D(-x, -y, -z);
+}
+
+inline Vector3D Vector3D::operator+ (const Vector3D& p) const {
+   return Vector3D(x + p.x, y + p.y, z + p.z);
+}
+
+inline Vector3D Vector3D::operator- (const Vector3D& p) const {
+   return Vector3D(x - p.x, y - p.y, z - p.z);
+}
+
+inline Vector3D Vector3D::operator* (const double d) const {
+   return Vector3D(x * d, y * d, z * d);
+}
+
+inline Vector3D Vector3D::operator/ (const double d) const {
+   return Vector3D(x / d, y / d, z / d);
+}
+
+inline double Vector3D::dot(const Vector3D& v) const {
+   return (x * v.x) + (y * v.y) + (z * v.z);
+}
+
+inline Vector3D Vector3D::cross(const Vector3D& v) const {
+   return Vector3D(
+                   (y * v.z) - (z * v.y),  //x component
+                   -((x * v.z) - (z * v.x)), //y component
+                   (x * v.y) - (y * v.x)   //z component
+                   );
+}
+
+inline Vector3D Vector3D::cross(const double _x, const double _y, const double _z) const {
+   return Vector3D(
+                   (y * _z) - (z * _y),  //x component
+                   -((x * _z) - (z * _x)), //y component
+                   (x * _y) - (y * _x)   //z component
+                   );                   
 }
 
 #endif

@@ -21,4 +21,8 @@ public:
    float x, y;
 };
 
+inline Point2D Point2D::operator*(const float a) const {
+   return Point2D(x * a, y * a);
+}
+
 #endif

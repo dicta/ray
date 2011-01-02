@@ -1,5 +1,4 @@
 #include "Point3D.h"
-#include "Vector3D.h"
 #include <stdio.h>
 #include <math.h>
 
@@ -26,35 +25,15 @@ void Point3D::set(Array* a) {
    z = a->at(2)->getDouble();
 }
 
-double Point3D::distance(const Point3D& p) const {
-   return (*this - p).length();
-}
-
 double Point3D::distanceSquared(const Point3D& p) const {
 	return (	(x - p.x) * (x - p.x) 
            + 	(y - p.y) * (y - p.y)
            +	(z - p.z) * (z - p.z) );
 }
 
-Point3D Point3D::operator+ (const Vector3D& p) const {
-   return Point3D(x + p.x, y + p.y, z + p.z);
-}
-
 Point3D& Point3D::operator+= (const Vector3D& v) {
    this->set(x + v.x, y + v.y, z + v.z);
    return *this;
-}
-
-Point3D Point3D::operator- (const Vector3D& p) const {
-   return Point3D(x - p.x, y - p.y, z - p.z);
-}
-
-Vector3D Point3D::operator- (const Point3D& p) const {
-   return Vector3D(x - p.x, y - p.y, z - p.z);
-}
-
-Point3D Point3D::operator* (const double d) const {
-   return Point3D(x * d, y * d, z * d);
 }
 
 Point3D& Point3D::operator*= (const double d) {

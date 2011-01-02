@@ -23,39 +23,9 @@ void Vector3D::set(Array* a) {
    z = a->at(2)->getDouble();
 }
 
-Point3D Vector3D::operator+ (const Point3D& p) {
-   Point3D result;
-   result.set(x + p.x, y + p.y, z + p.z);
-   return result;
-}
-
-Vector3D Vector3D::operator+ (const Vector3D& p) const {
-   Vector3D result;
-   result.set(x + p.x, y + p.y, z + p.z);
-   return result;
-}
-
 Vector3D& Vector3D::operator+= (const Vector3D& p) {
    this->set(x + p.x, y + p.y, z + p.z);
    return *this;
-}
-
-Vector3D Vector3D::operator- (const Vector3D& p) const {
-   Vector3D result;
-   result.set(x - p.x, y - p.y, z - p.z);
-   return result;
-}
-
-Vector3D Vector3D::operator* (const double d) const {
-   Vector3D result;
-   result.set(x * d, y * d, z * d);
-   return result;
-}
-
-Vector3D Vector3D::operator/ (const double d) const {
-   Vector3D result;
-   result.set(x / d, y / d, z / d);
-   return result;
 }
 
 Vector3D& Vector3D::operator*= (const double d) {
@@ -82,32 +52,12 @@ bool Vector3D::operator== (const Vector3D& v) {
 }
 
 double Vector3D::length() {
-   return sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+   return sqrt(x * x + y * y + z * z);
 }
 
 Vector3D& Vector3D::normalize() {
    *this = *this * (1.0 / this->length());
    return *this;
-}
-
-double Vector3D::dot(const Vector3D& v) const {
-   return (x * v.x) + (y * v.y) + (z * v.z);
-}
-
-Vector3D Vector3D::cross(const Vector3D& v) const {
-  return Vector3D(
-    (y * v.z) - (z * v.y),  //x component
-    -((x * v.z) - (z * v.x)), //y component
-    (x * v.y) - (y * v.x)   //z component
-  );
-}
-
-Vector3D Vector3D::cross(const double _x, const double _y, const double _z) const {
-   return Vector3D(
-                   (y * _z) - (z * _y),  //x component
-                   -((x * _z) - (z * _x)), //y component
-                   (x * _y) - (y * _x)   //z component
-                   );                   
 }
 
 Vector3D& Vector3D::selfCross(const Vector3D& v) {

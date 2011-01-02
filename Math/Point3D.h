@@ -1,15 +1,8 @@
 #ifndef _POINT3D_H
 #define _POINT3D_H
 
-#ifdef WIN32
-#include <GL/gl.h>
-#else
-#include <GLUT/glut.h>
-#endif
-
 #include "Parser/Value.h"
-
-class Vector3D;
+#include "Vector3D.h"
 
 class Point3D {
 
@@ -32,9 +25,29 @@ public:
    Point3D& operator=(const Point3D& p);
    bool operator==(const Point3D& p) const;
 
-   GLdouble x;
-   GLdouble y;
-   GLdouble z;
+   double x;
+   double y;
+   double z;
 };
+
+inline double Point3D::distance(const Point3D& p) const {
+   return (*this - p).length();
+}
+
+inline Point3D Point3D::operator+ (const Vector3D& p) const {
+   return Point3D(x + p.x, y + p.y, z + p.z);
+}
+
+inline Point3D Point3D::operator- (const Vector3D& p) const {
+   return Point3D(x - p.x, y - p.y, z - p.z);
+}
+
+inline Vector3D Point3D::operator- (const Point3D& p) const {
+   return Vector3D(x - p.x, y - p.y, z - p.z);
+}
+
+inline Point3D Point3D::operator* (const double d) const {
+   return Point3D(x * d, y * d, z * d);
+}
 
 #endif
