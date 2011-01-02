@@ -1,23 +1,24 @@
-#position {
-#   location       [ 100.0 50.0 150.0 ]
-#   color          [ 1.0 1.0 1.0 ]
-#   radiance       3.0
-#}
-
 ambientOccluder {
+#ambient {
    radiance       1.0
    color          [ 1.0 1.0 1.0 ]
    minColor       [ 0.0 0.0 0.0 ]
    numSamples     64
 }
 
+environment {
+   radiance          1.0
+   color             [ 1.0 1.0 1.0 ]
+   numSamples        64
+}
+
 areaLight {
-   radiance          17.0
+   radiance          14.0
    color             [ 1.0 1.0 1.0 ]
 
    rectangle {
-      origin         [ -499.0 -27.0 0.0 ]
-      a              [ 0.0 0.0 -150.0 ]
+      origin         [ -499.0 0.0 0.0 ]
+      a              [ 0.0 0.0 -200.0 ]
       b              [ 0.0 400.0 0.0 ]
    
       material {

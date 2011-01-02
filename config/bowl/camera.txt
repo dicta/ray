@@ -1,0 +1,9 @@
+camera {
+   type                 "pinhole"
+   numSamples           200
+   angle                25.0
+   eye                  [ 9.5 7.5 7.5 ]
+   lookat               [ 2.5 0.0 1.5 ]
+   up                   [ 0.0 1.0 0.0 ]
+   tracer               "area"
+}
