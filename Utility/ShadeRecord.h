@@ -18,15 +18,19 @@ class Material;
 class ShadeRecord {
    
 public:
-   ShadeRecord() {
-      hit = false;
-   }
+   ShadeRecord();
+   ~ShadeRecord();
 
    Vector3D normal;
    Point3D localHitPoint;
    Material* material;
    bool hit;
    double t;
+   
+   // The following are used by area lights
+   Point3D* samplePoint;
+   Vector3D* lightNormal;
+   Vector3D* wi;
 };
 
 #endif
