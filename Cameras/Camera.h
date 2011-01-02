@@ -28,7 +28,8 @@ public:
    virtual void setHash(Hash* hash);
 
    void computeUVW();
-   virtual void renderScene() = 0;
+   void render();
+   virtual void renderScene(SDL_Rect& rect) = 0;
    
    void setEye(Array* a) { eye.set(a); }
    void setLookat(Array* a) { lookat.set(a); }
@@ -37,7 +38,8 @@ public:
    void setSurface(SDL_Surface* s) { surface = s; }
    
 protected:
-   void setPixel(int x, int y, const Color& color);
+   void setPixel(SDL_Surface* s, int x, int y, const Color& color);
+   SDL_Surface* createSurface(const SDL_Rect& rect);
 
    Point3D eye;
    Point3D lookat;
@@ -50,6 +52,8 @@ protected:
    int width;
    int height;
    float viewPlaneDistance;
+   
+   pthread_mutex_t surfLock;
 };
 
 #endif

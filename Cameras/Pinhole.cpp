@@ -20,17 +20,18 @@
 Pinhole::Pinhole(int w, int h) : Camera(w, h) {
 }
 
-void Pinhole::renderScene() {
+void Pinhole::renderScene(SDL_Rect& rect) {
    Color pixelColor;
    Ray ray;
    double x, y;
    
    ray.origin = eye;
    
-   SDL_LockSurface(surface);
+   SDL_Surface* s = createSurface(rect);
+   SDL_LockSurface(s);
 
-   for(int r = 0; r < height; r++) {
-      for(int c = 0; c < width; c++) {
+   for(int r = rect.y, o = rect.y + rect.h - 1; r < rect.y + rect.h; r++, o--) {
+      for(int c = rect.x; c < rect.x + rect.w; c++) {
          pixelColor = BLACK;
 
          for(int j = 0; j < sampler->getNumSamples(); j++) {
@@ -45,10 +46,17 @@ void Pinhole::renderScene() {
          
          pixelColor /= sampler->getNumSamples();
          pixelColor.normalize();
-         setPixel(c, height - r - 1, pixelColor);
+         setPixel(s, c - rect.x, o - rect.y, pixelColor);
       }
    }
 
-   SDL_UnlockSurface(surface);
+   SDL_UnlockSurface(s);
+   rect.y = height - rect.h - rect.y;
+   
+   pthread_mutex_lock(&surfLock);
+   SDL_BlitSurface(s, NULL, surface, &rect);
    SDL_UpdateRect(surface, 0, 0, width, height);
+   pthread_mutex_unlock(&surfLock);
+   
+   SDL_FreeSurface(s);
 }

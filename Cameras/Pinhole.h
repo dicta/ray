@@ -18,7 +18,7 @@ public:
    Pinhole(int w, int h);
    virtual ~Pinhole() {}
 
-   virtual void renderScene();
+   virtual void renderScene(SDL_Rect& rect);
 };
 
 #endif
