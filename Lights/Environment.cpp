@@ -26,7 +26,7 @@ void Environment::setHash(Hash* hash) {
    sampler->mapSamplesToHemisphere(1);
 }
 
-Vector3D Environment::getLightDirection(const ShadeRecord& sr) {
+Vector3D Environment::getLightDirection(ShadeRecord& sr) {
    w = sr.normal;
    v = Vector3D(0.0034, 1.0, 0.0071).cross(w);
    v.normalize();

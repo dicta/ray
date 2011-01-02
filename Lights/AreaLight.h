@@ -22,7 +22,7 @@ public:
    AreaLight();
    virtual ~AreaLight();
    
-   virtual Vector3D getLightDirection(const ShadeRecord& sr);
+   virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
    
@@ -33,9 +33,9 @@ public:
 private:
    LightObject* object;
    Material* material;
-   Point3D samplePoint;
-   Vector3D lightNormal;
-   Vector3D wi;
+//   Point3D samplePoint;
+//   Vector3D lightNormal;
+//   Vector3D wi;
 };
 
 #endif

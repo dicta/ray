@@ -22,27 +22,36 @@ AreaLight::~AreaLight() {
    delete material;
 }
 
-Vector3D AreaLight::getLightDirection(const ShadeRecord& sr) {
-   samplePoint = object->sample();
-   lightNormal = object->getNormal(samplePoint);
-   wi = samplePoint - sr.localHitPoint;
-   wi.normalize();
+Vector3D AreaLight::getLightDirection(ShadeRecord& sr) {
+   sr.samplePoint = new Point3D(object->sample());
+   sr.lightNormal = new Vector3D(object->getNormal(*sr.samplePoint));
    
+   Vector3D wi = *sr.samplePoint - sr.localHitPoint;
+   wi.normalize();
+   sr.wi = new Vector3D(wi);
+
    return wi;
 }
 
 void AreaLight::setHash(Hash* hash) {
    material->setHash(hash);
    
-   Hash* rect = hash->getValue("rectangle")->getHash();
-   object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect);
-   object->ignoreShadowRays = true;
+   if(hash->contains("rectangle")) {
+      Hash* rect = hash->getValue("rectangle")->getHash();
+      object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect);
+      object->ignoreShadowRays = true;
+   }
+   else if(hash->contains("disk")) {
+      Hash* disk = hash->getValue("disk")->getHash();
+      object = (LightObject*) GeometryManager::instance().createObject("disk", disk);
+      object->ignoreShadowRays = true;
+   }
 }
 
 bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
-   double ts = (samplePoint - ray.origin).dot(ray.direction);
-   
+   double ts = (*sr.samplePoint - ray.origin).dot(ray.direction);
+      
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
       if((*it)->shadowHit(ray, t) && (t < ts)) {
          return true;
@@ -52,7 +61,7 @@ bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
 }
 
 Color AreaLight::L(const ShadeRecord& sr) {
-   float ndotd = (lightNormal * -1).dot(wi);
+   float ndotd = -(*sr.lightNormal).dot(*sr.wi);
    if(ndotd > 0.0) {
       return material->getLe(sr);
    }
@@ -60,8 +69,8 @@ Color AreaLight::L(const ShadeRecord& sr) {
 }
 
 float AreaLight::G(const ShadeRecord& sr) {
-   float ndotd = (lightNormal * -1.0).dot(wi);
-   float d2 = samplePoint.distanceSquared(sr.localHitPoint);
+   float ndotd = -(*sr.lightNormal).dot(*sr.wi);
+   float d2 = sr.samplePoint->distanceSquared(sr.localHitPoint);
    return ndotd / d2;
 }
 

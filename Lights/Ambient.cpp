@@ -13,7 +13,7 @@
 Ambient::Ambient() : Light(), ls(0.0), color(1, 1, 1) {
 }
 
-Vector3D Ambient::getLightDirection(const ShadeRecord& sr) {
+Vector3D Ambient::getLightDirection(ShadeRecord& sr) {
    return Vector3D();
 }
 

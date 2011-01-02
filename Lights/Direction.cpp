@@ -16,7 +16,7 @@ void Direction::setHash(Hash* hash) {
    direction.normalize();
 }
 
-Vector3D Direction::getLightDirection(const ShadeRecord& sr) {
+Vector3D Direction::getLightDirection(ShadeRecord& sr) {
    return direction;
 }
 

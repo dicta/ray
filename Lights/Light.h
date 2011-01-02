@@ -14,7 +14,7 @@ public:
    Light() {}
    virtual ~Light() {}
    
-   virtual Vector3D getLightDirection(const ShadeRecord& sr) = 0;
+   virtual Vector3D getLightDirection(ShadeRecord& sr) = 0;
    virtual void setHash(Hash* hash) = 0;
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr) { return false; }
    

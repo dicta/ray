@@ -19,7 +19,7 @@ public:
    PositionLight(const Point3D& loc);
    virtual ~PositionLight() {}
 
-   virtual Vector3D getLightDirection(const ShadeRecord& sr);
+   virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual Color L(const ShadeRecord& sr);
