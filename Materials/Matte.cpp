@@ -50,7 +50,7 @@ void Matte::setHash(Hash* hash) {
    diffuseBRDF->setKd(hash->getDouble("kd"));
 }
 
-Color Matte::shade(const ShadeRecord& sr, const Ray& ray) {
+Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
    
@@ -71,7 +71,7 @@ Color Matte::shade(const ShadeRecord& sr, const Ray& ray) {
    return L;
 }
 
-Color Matte::areaLightShade(const ShadeRecord& sr, const Ray& ray) {
+Color Matte::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
    

@@ -15,11 +15,11 @@ void Emissive::setHash(Hash* hash) {
    color.set(hash->getValue("color")->getArray());
 }
 
-Color Emissive::shade(const ShadeRecord& sr, const Ray& ray) {
+Color Emissive::shade(ShadeRecord& sr, const Ray& ray) {
    return areaLightShade(sr, ray);
 }
 
-Color Emissive::areaLightShade(const ShadeRecord& sr, const Ray& ray)  {
+Color Emissive::areaLightShade(ShadeRecord& sr, const Ray& ray)  {
    if((sr.normal * -1.0).dot(ray.direction) > 0.0) {
       return color * ls;
    }

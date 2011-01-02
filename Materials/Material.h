@@ -19,8 +19,8 @@ class Hash;
 class Material {
    
 public:
-   virtual Color shade(const ShadeRecord& sr, const Ray& ray) { return BLACK; }
-   virtual Color areaLightShade(const ShadeRecord& sr, const Ray& ray) { return BLACK; }
+   virtual Color shade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
+   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual void setHash(Hash* hash) = 0;
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
 };

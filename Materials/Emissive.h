@@ -15,8 +15,8 @@
 class Emissive : public Material {
    
 public:
-   virtual Color shade(const ShadeRecord& sr, const Ray& ray);
-   virtual Color areaLightShade(const ShadeRecord& sr, const Ray& ray);
+   virtual Color shade(ShadeRecord& sr, const Ray& ray);
+   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual Color getLe(const ShadeRecord& sr) const;
    

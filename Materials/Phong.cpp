@@ -54,7 +54,7 @@ void Phong::setHash(Hash* hash) {
    specularBRDF->setExp(hash->getDouble("exp"));
 }
     
-Color Phong::shade(const ShadeRecord& sr, const Ray& ray) {
+Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
    
@@ -75,6 +75,6 @@ Color Phong::shade(const ShadeRecord& sr, const Ray& ray) {
    return L;
 }
 
-Color Phong::areaLightShade(const ShadeRecord& sr, const Ray& ray) {
+Color Phong::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    return shade(sr, ray);
 }

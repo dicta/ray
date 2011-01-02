@@ -22,8 +22,8 @@ public:
    Phong();
    ~Phong();
    
-   virtual Color shade(const ShadeRecord& sr, const Ray& ray);
-   virtual Color areaLightShade(const ShadeRecord& sr, const Ray& ray);
+   virtual Color shade(ShadeRecord& sr, const Ray& ray);
+   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    
 private:
