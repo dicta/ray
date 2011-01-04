@@ -30,12 +30,14 @@ void WoodTexture::setHash(Hash* hash) {
 }
 
 Color WoodTexture::getColor(const ShadeRecord& sr) const {
+   Point3D hitPoint = sr.localHitPoint;
+
    // Perturb the hit point
-   Vector3D offset = noise->vectorFbm(sr.localHitPoint * ringNoiseFreq);
-   Point3D ringPoint = sr.localHitPoint + offset * ringNoise;
+   Vector3D offset = noise->vectorFbm(hitPoint * ringNoiseFreq);
+   Point3D ringPoint = hitPoint + offset * ringNoise;
    
    // Perturb the trunk along z axis
-   Vector3D tempV = noise->vectorNoise(Point3D(0, 0, sr.localHitPoint.y * trunkWobbleFreq)) * trunkWobble;
+   Vector3D tempV = noise->vectorNoise(Point3D(0, 0, hitPoint.y * trunkWobbleFreq)) * trunkWobble;
    ringPoint.x += tempV.x;
    ringPoint.z += tempV.z;
    
@@ -52,7 +54,7 @@ Color WoodTexture::getColor(const ShadeRecord& sr) const {
    double inRing = smoothPulseTrain(0.1, 0.55, 0.7, 0.95, 1.0, r);
    
    // Define the grain
-   Point3D grainPoint(sr.localHitPoint * grainFreq);
+   Point3D grainPoint(hitPoint * grainFreq);
    grainPoint.y *= 0.05;
    
    double dpGrain = 0.2;
