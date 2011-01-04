@@ -54,7 +54,7 @@ Color AmbientOccluder::L(const ShadeRecord& sr) {
    u = v.cross(w);
    
    Ray shadowRay;
-   shadowRay.origin = sr.localHitPoint;
+   shadowRay.origin = sr.hitPoint;
    
    Point3D* sp = sampler->sampleHemisphere();
    shadowRay.direction = u * sp->x + v * sp->y + w * sp->z;

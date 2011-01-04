@@ -25,7 +25,7 @@ Vector3D PositionLight::getLightDirection(ShadeRecord& sr) {
 //   newLoc.y = location.y + 3.0 * (2.0 * rand_float() - 1.0);
 //   newLoc.z = location.z + 3.0 * (2.0 * rand_float() - 1.0);
 //   return (newLoc - hitPoint).normalize();
-   return (location - sr.localHitPoint).normalize();
+   return (location - sr.hitPoint).normalize();
 }
 
 bool PositionLight::inShadow(const Ray& ray, const ShadeRecord& sr) {

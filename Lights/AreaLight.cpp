@@ -26,7 +26,7 @@ Vector3D AreaLight::getLightDirection(ShadeRecord& sr) {
    sr.samplePoint = new Point3D(object->sample());
    sr.lightNormal = new Vector3D(object->getNormal(*sr.samplePoint));
    
-   Vector3D wi = *sr.samplePoint - sr.localHitPoint;
+   Vector3D wi = *sr.samplePoint - sr.hitPoint;
    wi.normalize();
    sr.wi = new Vector3D(wi);
 
@@ -70,7 +70,7 @@ Color AreaLight::L(const ShadeRecord& sr) {
 
 float AreaLight::G(const ShadeRecord& sr) {
    float ndotd = -(*sr.lightNormal).dot(*sr.wi);
-   float d2 = sr.samplePoint->distanceSquared(sr.localHitPoint);
+   float d2 = sr.samplePoint->distanceSquared(sr.hitPoint);
    return ndotd / d2;
 }
 
