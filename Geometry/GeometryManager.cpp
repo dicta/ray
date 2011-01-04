@@ -18,6 +18,7 @@
 #include "Torus.h"
 #include "Box.h"
 #include "Annulus.h"
+#include "Instance.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
 
@@ -57,7 +58,7 @@ void GeometryManager::loadObjects(string fname) {
    fp.close();
 }
 
-GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
+GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
    GeometryObject* obj;
 
    if(type == "sphere") {
@@ -84,11 +85,18 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash) {
    else if(type == "annulus") {
       obj = new Annulus();
    }
+   else if(type == "instance") {
+      obj = new Instance();
+   }
    else {
       return NULL;
    }
    
    obj->setHash(hash);
-   objects.push_back(obj);
+   
+   if(addToList) {
+      objects.push_back(obj);
+   }
+
    return obj;
 }

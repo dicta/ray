@@ -32,7 +32,7 @@ public:
    GeometryIter begin() const { return objects.begin(); }
    GeometryIter end() const { return objects.end(); }
    
-   GeometryObject* createObject(string type, Hash* hash);
+   GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
    
 private:
    GeometryManager();
