@@ -22,6 +22,7 @@ public:
    ~ShadeRecord();
 
    Vector3D normal;
+   Point3D hitPoint;
    Point3D localHitPoint;
    Material* material;
    bool hit;

@@ -9,11 +9,17 @@
 
 #include "ShadeRecord.h"
 
-ShadeRecord::ShadeRecord() {
-   hit = false;
-   samplePoint = NULL;
-   lightNormal = NULL;
-   wi = NULL;
+ShadeRecord::ShadeRecord() : 
+   normal(), 
+   hitPoint(), 
+   localHitPoint(), 
+   material(NULL), 
+   hit(false), 
+   t(0), 
+   samplePoint(NULL),
+   lightNormal(NULL),
+   wi(NULL)
+{
 }
 
 ShadeRecord::~ShadeRecord() {
