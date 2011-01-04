@@ -17,14 +17,15 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
    double tmin = 1.7 * pow(10, 308);
    ShadeRecord sr;
    Vector3D normal;
-   Point3D hitPoint;
+   Point3D localHitPoint;
 
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
          tmin = t;
          sr.hit = true;
          sr.material = (*it)->getMaterial();
-         hitPoint = sr.localHitPoint;
+         sr.hitPoint = ray.origin + ray.direction * t;
+         localHitPoint = sr.localHitPoint;
          normal = sr.normal;
       }
    }
@@ -32,7 +33,7 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
    if(sr.hit) {
       sr.t = tmin;
       sr.normal = normal;
-      sr.localHitPoint = hitPoint;
+      sr.localHitPoint = localHitPoint;
    }
    
    return sr;
