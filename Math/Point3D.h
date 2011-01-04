@@ -8,6 +8,7 @@ class Point3D {
 
 public:
    Point3D(double xx = 0.0, double yy = 0.0, double zz = 0.0);
+   Point3D(const Point3D& p);
    Point3D(Array* a);
 
    void set(double xx, double yy, double zz);

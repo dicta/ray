@@ -7,6 +7,10 @@ static double ERROR = 0.0001;
 Point3D::Point3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {
 }
 
+Point3D::Point3D(const Point3D& p) {
+   set(p.x, p.y, p.z);
+}
+
 Point3D::Point3D(Array* a) {
    x = a->at(0)->getDouble();
    y = a->at(1)->getDouble();
