@@ -20,11 +20,9 @@ class Plane : public GeometryObject {
    
 public:
    Plane();
-   Plane(const Point3D& p, const Vector3D& n);
 
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
-
    virtual void setHash(Hash* hash);
 
 private:

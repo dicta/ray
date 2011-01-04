@@ -16,10 +16,6 @@
 Plane::Plane() : point(Point3D(1, 0, 0)), normal(Vector3D(0, 0, 1)) {
 }
 
-Plane::Plane(const Point3D& p, const Vector3D& n) : point(p), normal(n) {
-   normal.normalize();
-}
-
 bool Plane::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double t = (point - ray.origin).dot(normal) / (ray.direction.dot(normal));
    
@@ -51,16 +47,4 @@ void Plane::setHash(Hash* hash) {
    normal.normalize();
    
    setupMaterial(hash->getValue("material")->getHash());
-   
-//   a = hash->getValue("color")->getArray();
-   
-//   Matte* m = new Matte();
-//   m->setKa(0.25);
-//   m->setKd(0.65);
-//   m->setColor(Color(a));
-   
-//   PlaneChecker* pt = new PlaneChecker(Color(a), Color(), 10);
-//   m->setTexture(pt);
-   
-//   setMaterial(m);
 }
