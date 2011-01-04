@@ -59,7 +59,7 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
       float ndotwi = sr.normal.dot(wi);
       
       if(ndotwi > 0.0) {
-         Ray shadowRay(sr.localHitPoint, wi);
+         Ray shadowRay(sr.hitPoint, wi);
          bool inShadow = (*it)->inShadow(shadowRay, sr);
          
          if(!inShadow) {
@@ -80,7 +80,7 @@ Color Matte::areaLightShade(ShadeRecord& sr, const Ray& ray) {
       float ndotwi = sr.normal.dot(wi);
       
       if(ndotwi > 0.0) {
-         Ray shadowRay(sr.localHitPoint, wi);
+         Ray shadowRay(sr.hitPoint, wi);
          bool inShadow = (*it)->inShadow(shadowRay, sr);
          
          if(!inShadow) {
