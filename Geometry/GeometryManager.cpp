@@ -18,6 +18,7 @@
 #include "Torus.h"
 #include "Box.h"
 #include "Annulus.h"
+#include "Compound/Wedge.h"
 #include "Instance.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
@@ -84,6 +85,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "annulus") {
       obj = new Annulus();
+   }
+   else if(type == "wedge") {
+      obj = new Wedge();
    }
    else if(type == "instance") {
       obj = new Instance();

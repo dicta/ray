@@ -20,6 +20,7 @@ class Rectangle : public LightObject {
    
 public:
    Rectangle();
+   Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b);
    ~Rectangle();
    
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
@@ -31,6 +32,8 @@ public:
    virtual double pdf(const ShadeRecord& sr) const;
    
 private:
+   void setup();
+
    Point3D origin;
    Vector3D a;
    Vector3D b;

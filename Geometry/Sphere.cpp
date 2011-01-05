@@ -14,7 +14,28 @@
 #include "Materials/Matte.h"
 #include "Math/Maths.h"
 
-Sphere::Sphere() : center(0, 0, 0), radius(1.0), thetaRange(false), phiRange(false), cosThetaMin(0), cosThetaMax(0), phiMin(0), phiMax(0) {
+Sphere::Sphere() :
+   center(0, 0, 0),
+   radius(1.0),
+   thetaRange(false),
+   phiRange(false),
+   cosThetaMin(0),
+   cosThetaMax(0),
+   phiMin(0),
+   phiMax(0)
+{
+}
+
+Sphere::Sphere(const Point3D& c, double r) :
+   center(c),
+   radius(r),
+   thetaRange(false),
+   phiRange(false),
+   cosThetaMin(0),
+   cosThetaMax(0),
+   phiMin(0),
+   phiMax(0)
+{
 }
 
 bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {

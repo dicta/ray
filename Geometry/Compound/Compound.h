@@ -13,7 +13,7 @@ class Compound : public GeometryObject {
    
 public:
    Compound() {}
-   virtual ~Compound() {}
+   virtual ~Compound();
    
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;

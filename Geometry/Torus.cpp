@@ -3,7 +3,36 @@
 #include "Parser/Hash.h"
 #include <math.h>
 
-Torus::Torus() : GeometryObject(), bbox(), thetaRange(false), phiRange(false), minTheta(0), maxTheta(0), minPhi(0), maxPhi(0) {
+Torus::Torus() :
+   GeometryObject(),
+   a(0),
+   b(0),
+   bbox(),
+   thetaRange(false),
+   phiRange(false),
+   minTheta(0),
+   maxTheta(0),
+   minPhi(0),
+   maxPhi(0)
+{
+}
+
+Torus::Torus(double _a, double _b) :
+   GeometryObject(),
+   a(_a),
+   b(_b),
+   bbox(),
+   thetaRange(false),
+   phiRange(false),
+   minTheta(0),
+   maxTheta(0),
+   minPhi(0),
+   maxPhi(0)
+{
+   bbox.x0 = bbox.z0 = -a - b;
+   bbox.y0 = -b;
+   bbox.x1 = bbox.z1 = a + b;
+   bbox.y1 = b;
 }
 
 void Torus::setHash(Hash* hash) {
@@ -178,4 +207,16 @@ bool Torus::partCheck(const Ray& ray, double t) const {
    }
 
    return true;
+}
+
+void Torus::setThetaRange(double min, double max) {
+   thetaRange = true;
+   minTheta = min * DEG_TO_RAD;
+   maxTheta = max * DEG_TO_RAD;
+}
+
+void Torus::setPhiRange(double min, double max) {
+   phiRange = true;
+   minPhi = min * DEG_TO_RAD;
+   maxPhi = max * DEG_TO_RAD;
 }

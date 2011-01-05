@@ -16,8 +16,36 @@ Rectangle::Rectangle() : LightObject() {
    sampler = new MultiJittered(100);
 }
 
+Rectangle::Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b) :
+   LightObject(),
+   origin(o),
+   a(_a),
+   b(_b)
+{
+   sampler = new MultiJittered(100);
+   setup();
+}
+
 Rectangle::~Rectangle() {
    delete sampler;
+}
+
+void Rectangle::setHash(Hash* hash) {
+   origin.set(hash->getValue("origin")->getArray());
+   a.set(hash->getValue("a")->getArray());
+   b.set(hash->getValue("b")->getArray());
+   setup();
+
+   setupMaterial(hash->getValue("material")->getHash());
+}
+
+void Rectangle::setup() {
+   normal = a.cross(b).normalize();
+
+   lengthASquared = a.length() * a.length();
+   lengthBSquared = b.length() * b.length();
+
+   inverseArea = 1.0 / (a.length() * b.length());
 }
 
 bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -70,20 +98,6 @@ bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
    }
    
    return true;
-}
-
-void Rectangle::setHash(Hash* hash) {
-   origin.set(hash->getValue("origin")->getArray());   
-   a.set(hash->getValue("a")->getArray());
-   b.set(hash->getValue("b")->getArray());
-   normal = a.cross(b).normalize();
-   
-   lengthASquared = a.length() * a.length();
-   lengthBSquared = b.length() * b.length();
-   
-   inverseArea = 1.0 / (a.length() * b.length());
-
-   setupMaterial(hash->getValue("material")->getHash());
 }
 
 Point3D Rectangle::sample() const {

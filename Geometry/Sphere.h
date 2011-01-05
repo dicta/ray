@@ -28,6 +28,7 @@ class Sphere : public GeometryObject {
    
 public:
    Sphere();
+   Sphere(const Point3D& c, double r);
 
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;   

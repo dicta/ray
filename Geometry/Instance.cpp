@@ -5,6 +5,9 @@
 Instance::Instance() : object(NULL), invMatrix(), fwdMatrix() {
 }
 
+Instance::Instance(GeometryObject* obj) : object(obj), invMatrix(), fwdMatrix() {
+}
+
 Instance::~Instance() {
    delete object;
 }

@@ -19,7 +19,14 @@ class Instance : public GeometryObject {
    
 public:
    Instance();
+   Instance(GeometryObject* obj);
    virtual ~Instance();
+   
+   void translate(double x, double y, double z);
+   void scale(double x, double y, double z);
+   void rotateX(double angle);
+   void rotateY(double angle);
+   void rotateZ(double angle);
 
    /**
     * Hash values:
@@ -37,5 +44,25 @@ private:
    Matrix invMatrix;
    Matrix fwdMatrix;
 };
+
+inline void Instance::translate(double x, double y, double z) {
+   invMatrix.invTranslate(x, y, z);
+}
+
+inline void Instance::scale(double x, double y, double z) {
+   invMatrix.invScale(x, y, z);
+}
+
+inline void Instance::rotateX(double angle) {
+   invMatrix.invRotateX(angle);
+}
+
+inline void Instance::rotateY(double angle) {
+   invMatrix.invRotateY(angle);
+}
+
+inline void Instance::rotateZ(double angle) {
+   invMatrix.invRotateZ(angle);
+}
 
 #endif

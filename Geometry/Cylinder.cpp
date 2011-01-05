@@ -1,17 +1,24 @@
-/*
- *  Cylinder.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/25/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Cylinder.h"
 #include "Parser/Hash.h"
-#include <math.h>
+#include "Math/Maths.h"
 
-Cylinder::Cylinder() : radius(1.0), minY(-1.0), maxY(1.0) {
+Cylinder::Cylinder() : radius(1.0), minY(-1.0), maxY(1.0), rangeSet(false), minAngle(0), maxAngle(0) {
+}
+
+Cylinder::Cylinder(float r, float min, float max) :
+   radius(r),
+   minY(min),
+   maxY(max),
+   rangeSet(false),
+   minAngle(0),
+   maxAngle(0)
+{
+}
+
+void Cylinder::setAngleRange(double min, double max) {
+   rangeSet = true;
+   minAngle = min * DEG_TO_RAD;
+   maxAngle = max * DEG_TO_RAD;
 }
 
 void Cylinder::setHash(Hash* hash) {
@@ -36,7 +43,7 @@ bool Cylinder::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double t = (-b - e) / denom;
    double yHit = ray.origin.y + ray.direction.y * t;
    
-   if(t > epsilon && minY <= yHit && yHit <= maxY) {
+   if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
       tmin = t;
       sr.localHitPoint = ray.origin + ray.direction * t;
       sr.normal.set(sr.localHitPoint.x / radius, 0.0, sr.localHitPoint.z / radius);
@@ -50,7 +57,7 @@ bool Cylinder::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    t = (-b + e) / denom;
    yHit = ray.origin.y + ray.direction.y * t;
 
-   if(t > epsilon && minY <= yHit && yHit <= maxY) {
+   if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
       tmin = t;
       sr.localHitPoint = ray.origin + ray.direction * t;
       sr.normal.set(sr.localHitPoint.x / radius, 0.0, sr.localHitPoint.z / radius);
@@ -79,7 +86,7 @@ bool Cylinder::shadowHit(const Ray& ray, double& tmin) const {
    double t = (-b - e) / denom;
    double yHit = ray.origin.y + ray.direction.y * t;
    
-   if(t > epsilon && minY <= yHit && yHit <= maxY) {
+   if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
       tmin = t;
       return true;
    }
@@ -87,10 +94,27 @@ bool Cylinder::shadowHit(const Ray& ray, double& tmin) const {
    t = (-b + e) / denom;
    yHit = ray.origin.y + ray.direction.y * t;
 
-   if(t > epsilon && minY <= yHit && yHit <= maxY) {
+   if(t > epsilon && minY <= yHit && yHit <= maxY && partCheck(ray, t)) {
       tmin = t;
       return true;
    }
    
    return false;
+}
+
+bool Cylinder::partCheck(const Ray& ray, double t) const {
+   if(!rangeSet) {
+      return true;
+   }
+
+   Point3D hit = ray.origin + ray.direction * t;
+   double angle = atan2(hit.x, hit.z);
+   if(angle < 0.0) {
+      angle += 2.0 * M_PI;
+   }
+   if(angle < minAngle || angle > maxAngle) {
+      return false;
+   }
+
+   return true;
 }

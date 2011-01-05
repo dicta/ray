@@ -7,8 +7,10 @@
 const float invRAND_MAX = 1.0 / (float) RAND_MAX;
 const double INV_PI = 1.0 / M_PI;
 
-// Multiply to convert from degrees to radians
+/** Multiply to convert from degrees to radians */
 const double DEG_TO_RAD = M_PI / 180.0;
+/** Multiply to convert from radians to degrees */
+const double RAD_TO_DEG = 180.0 / M_PI;
 
 inline float rand_float() {
 	return((float)rand() * invRAND_MAX);
