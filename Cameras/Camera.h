@@ -14,6 +14,7 @@
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Utility/Color.h"
+#include <pthread.h>
 
 class Tracer;
 class Sampler;
