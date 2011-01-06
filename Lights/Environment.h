@@ -21,9 +21,7 @@ public:
    
 private:
    Material* material;
-   Vector3D u, v, w;
    Sampler* sampler;
-   Vector3D wi;
 };
 
 #endif
