@@ -1,7 +1,10 @@
 config {
    width       800
    height      600
-   camera      "config/scene2/camera.txt"
-   lights      "config/scene2/lights.txt"
-   objects     "config/scene2/cylinder.txt"
+   threads     4
+   boxWidth    10
+   boxHeight   10
+   camera      "config/test/camera.txt"
+   lights      "config/test/lights.txt"
+   objects     "config/test/objects.txt"
 }

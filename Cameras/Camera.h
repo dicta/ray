@@ -37,6 +37,7 @@ public:
    void setUp(Array* a) { up.set(a); }
    
    void setSurface(SDL_Surface* s) { surface = s; }
+   void setThreadParameters(int tc, int w, int h);
    
 protected:
    void setPixel(SDL_Surface* s, int x, int y, const Color& color);
@@ -55,6 +56,11 @@ protected:
    float viewPlaneDistance;
    
    pthread_mutex_t surfLock;
+   
+private:
+   int threadCount;
+   int boxw;
+   int boxh;
 };
 
 #endif

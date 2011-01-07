@@ -8,10 +8,7 @@
 #include <math.h>
 #include <fstream>
 
-//const int width = 1024;
-//const int height = 768;
 const int bpp = 0;
-//const double scale = 1.0;
 
 SDLApp::SDLApp() :stopApp(false) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -36,7 +33,11 @@ void SDLApp::loadConfiguration() {
    Hash *h = parser.readValue()->getHash();
    int width = h->getInteger("width");
    int height = h->getInteger("height");
-
+   
+   int threadCount = h->getInteger("threads");
+   int boxw = h->getInteger("boxWidth");
+   int boxh = h->getInteger("boxHeight");
+   
    surface = SDL_SetVideoMode(width, height, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
@@ -47,6 +48,7 @@ void SDLApp::loadConfiguration() {
    setupCamera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->computeUVW();
+   camera->setThreadParameters(threadCount, boxw, boxh);
    
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
@@ -79,22 +81,16 @@ void SDLApp::setupCamera(string fname, int width, int height) {
 
 void SDLApp::run() {
    SDL_Event event;
-   
-   Uint32 start = SDL_GetTicks();
    camera->render();
-   Uint32 stop = SDL_GetTicks();
-   
-   printf("Render time = %f seconds\n", (stop - start) / 1000.0);
 
    while(!stopApp) {
-      while ( SDL_PollEvent(&event)) {
-         switch (event.type) {
-//            case SDL_KEYDOWN :
-            case SDL_QUIT:
-               stopApp = true;
-               break;
-         }
-      }      
+      SDL_WaitEvent(&event);
+      switch (event.type) {
+//         case SDL_KEYDOWN :
+         case SDL_QUIT:
+            stopApp = true;
+            break;
+      }
    }
 }
 

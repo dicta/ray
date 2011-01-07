@@ -16,33 +16,48 @@
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include <math.h>
+#include <queue>
 
-typedef struct {
-   Camera* camera;
-   SDL_Rect rect;
-} ThreadStruct;
+using namespace std;
+
+queue<SDL_Rect> rects;
+pthread_mutex_t rectLock;
 
 void* thread(void* arg) {
-   Uint32 start = SDL_GetTicks();
+   Camera* c = (Camera*) arg;
+   SDL_Rect r;
    
-   ThreadStruct* ts = (ThreadStruct*) arg;
-   ts->camera->renderScene(ts->rect);
-   delete ts;
-   
-   Uint32 stop = SDL_GetTicks();
-   printf("Thread time = %f seconds\n", (stop - start) / 1000.0);
-   
-   return 0;
+   while(true) {
+      pthread_mutex_lock(&rectLock);
+      if(rects.empty()) {
+         pthread_mutex_unlock(&rectLock);
+         pthread_exit(NULL);
+      }
+      r = rects.front();
+      rects.pop();
+      pthread_mutex_unlock(&rectLock);
+      
+      c->renderScene(r);
+   }
+   pthread_exit(NULL);
 }
 
-Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h) {
+Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h), threadCount(1), boxw(0), boxh(0) {
    pthread_mutex_init(&surfLock, NULL);
+   pthread_mutex_init(&rectLock, NULL);
 }
 
 Camera::~Camera() {
    delete sampler;
    delete tracer;
    pthread_mutex_destroy(&surfLock);
+   pthread_mutex_destroy(&rectLock);
+}
+
+void Camera::setThreadParameters(int tc, int w, int h) {
+   threadCount = tc;
+   boxw = w;
+   boxh = h;
 }
 
 void Camera::setHash(Hash* h) {   
@@ -76,21 +91,20 @@ void Camera::setHash(Hash* h) {
 }
 
 void Camera::render() {
-   for(int h = 0; h < height; h += 100) {
-      for(int w = 0; w < width; w += 100) {
+   for(int h = 0; h < height; h += boxh) {
+      for(int w = 0; w < width; w += boxw) {
          SDL_Rect rect;
-         rect.w = 100;
-         rect.h = 100;
+         rect.w = boxw;
+         rect.h = boxh;
          rect.x = w;
          rect.y = h;
-         
-         ThreadStruct* ts = new ThreadStruct;
-         ts->camera = this;
-         ts->rect = rect;
-         
-         pthread_t tid;
-         pthread_create(&tid, NULL, thread, (void *) ts);
+         rects.push(rect);
       }
+   }
+
+   pthread_t tid;
+   for(int i = 0; i < threadCount; i++) {
+      pthread_create(&tid, NULL, thread, (void *) this);
    }
 }
 
