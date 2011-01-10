@@ -19,6 +19,7 @@
 #include "Box.h"
 #include "Annulus.h"
 #include "Compound/Wedge.h"
+#include "Compound/WedgeRing.h"
 #include "Instance.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
@@ -88,6 +89,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "wedge") {
       obj = new Wedge();
+   }
+   else if(type == "wedgeRing") {
+      obj = new WedgeRing();
    }
    else if(type == "instance") {
       obj = new Instance();
