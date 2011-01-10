@@ -22,8 +22,9 @@ using namespace std;
 
 queue<SDL_Rect> rects;
 pthread_mutex_t rectLock;
+int threadCount;
 
-void* thread(void* arg) {
+void* renderThread(void* arg) {
    Camera* c = (Camera*) arg;
    SDL_Rect r;
    
@@ -42,9 +43,31 @@ void* thread(void* arg) {
    pthread_exit(NULL);
 }
 
-Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h), threadCount(1), boxw(0), boxh(0) {
+void* timerThread(void* arg) {
+   pthread_attr_t attr;
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
+   
+   Uint32 start = SDL_GetTicks();
+   
+   pthread_t tid;
+   for(int i = 0; i < threadCount; i++) {
+      pthread_create(&tid, &attr, renderThread, arg);
+      pthread_join(tid, NULL);
+   }
+   
+   pthread_attr_destroy(&attr);
+   
+   Uint32 end = SDL_GetTicks();
+   printf("Runtime = %f seconds\n", (end - start) / 1000.0);
+   
+   pthread_exit(NULL);
+}
+
+Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h), boxw(0), boxh(0) {
    pthread_mutex_init(&surfLock, NULL);
    pthread_mutex_init(&rectLock, NULL);
+   threadCount = 1;
 }
 
 Camera::~Camera() {
@@ -103,9 +126,7 @@ void Camera::render() {
    }
 
    pthread_t tid;
-   for(int i = 0; i < threadCount; i++) {
-      pthread_create(&tid, NULL, thread, (void *) this);
-   }
+   pthread_create(&tid, NULL, timerThread, (void *) this);
 }
 
 void Camera::computeUVW() {

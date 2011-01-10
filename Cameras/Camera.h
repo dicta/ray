@@ -58,7 +58,6 @@ protected:
    pthread_mutex_t surfLock;
    
 private:
-   int threadCount;
    int boxw;
    int boxh;
 };
