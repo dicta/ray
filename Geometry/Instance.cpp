@@ -56,7 +56,8 @@ bool Instance::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    
    if(object->hit(invRay, tmin, sr)) {
       sr.normal = invMatrix.transformNormal(sr.normal);
-      sr.normal.normalize();      
+      sr.normal.normalize();
+      sr.localHitPoint = ray.origin + ray.direction * tmin;
       return true;
    }
    
