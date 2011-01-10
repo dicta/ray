@@ -2,6 +2,7 @@
 #define _VECTOR3D_H
 
 #include "Parser/Value.h"
+#include <math.h>
 
 class Point3D;
 
@@ -26,6 +27,7 @@ public:
    bool operator==(const Vector3D& v);
 
    Vector3D& normalize();
+   Vector3D absValue() const;
    double dot(const Vector3D& v) const;
    Vector3D cross(const Vector3D& v) const;
    Vector3D cross(const double _x, const double _y, const double _z) const;
@@ -73,6 +75,10 @@ inline Vector3D Vector3D::cross(const double _x, const double _y, const double _
                    -((x * _z) - (z * _x)), //y component
                    (x * _y) - (y * _x)   //z component
                    );                   
+}
+
+inline Vector3D Vector3D::absValue() const {
+   return Vector3D(fabs(x), fabs(y), fabs(z));
 }
 
 #endif
