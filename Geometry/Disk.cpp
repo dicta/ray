@@ -9,16 +9,29 @@
 
 #include "Disk.h"
 #include "Parser/Hash.h"
+#include "Samplers/MultiJittered.h"
+#include <math.h>
 
-Disk::Disk() : GeometryObject(), center(), normal(), radiusSquared(1) {
+Disk::Disk() : LightObject(), center(), normal(), radiusSquared(1) {
+   sampler = new MultiJittered(100);
+   sampler->mapSamplesToUnitDisk();
+}
+
+Disk::~Disk() {
+   delete sampler;
 }
 
 void Disk::setHash(Hash* hash) {
    center.set(hash->getValue("center")->getArray());
    normal.set(hash->getValue("normal")->getArray());
    normal.normalize();
-   float radius = hash->getDouble("radius");
+   
+   radius = hash->getDouble("radius");
    radiusSquared = radius * radius;
+   inverseArea = 1.0 / M_PI * radiusSquared;
+   
+   a = Vector3D(0, 0, 1).cross(normal);
+   b = normal.cross(a);
    
    setupMaterial(hash->getValue("material")->getHash());
 }
@@ -53,4 +66,17 @@ bool Disk::shadowHit(const Ray& ray, double& tmin) const {
       return true;
    }
    return false;
+}
+
+Point3D Disk::sample() const {
+   Point2D* point = sampler->sampleUnitDisk();
+   return (center + a * radius * point->x + b * radius * point->y);
+}
+
+Vector3D Disk::getNormal(const Point3D& point) const {
+   return normal;
+}
+
+double Disk::pdf(const ShadeRecord& sr) const {
+   return inverseArea;
 }

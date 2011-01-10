@@ -31,6 +31,7 @@ public:
 
    void setupMaterial(Hash* hash);
    Material* getMaterial() const { return material; }
+   void setMaterial(Material *m) { material = m; }
 
    static const double epsilon;
 
