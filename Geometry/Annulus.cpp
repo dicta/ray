@@ -104,7 +104,7 @@ bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
    double dist = center.distanceSquared(p);
 
    // If distance is between outer and inner radius, it hits the annulus
-   if(innerSquared <= dist && dist < outerSquared) {
+   if(innerSquared <= dist && dist < outerSquared && partCheck(p)) {
       tmin = t;
       return true;
    }
