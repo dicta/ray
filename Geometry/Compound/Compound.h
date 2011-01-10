@@ -12,11 +12,12 @@ typedef vector<GeometryObject*>::const_iterator GeometryIter;
 class Compound : public GeometryObject {
    
 public:
-   Compound() {}
+   Compound();
    virtual ~Compound();
    
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
+   BBox getBBox() const { return bbox; }
    
 protected:
    vector<GeometryObject*> objects;

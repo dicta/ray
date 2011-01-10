@@ -1,6 +1,9 @@
 #include "Compound.h"
 #include <math.h>
 
+Compound::Compound() : GeometryObject(), bbox() {
+}
+
 Compound::~Compound() {
    for(unsigned int i = 0; i < objects.size(); i++) {
       delete objects[i];
@@ -10,7 +13,7 @@ Compound::~Compound() {
 
 bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
-//      return false;
+      return false;
    }
    
    double t;
