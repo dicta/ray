@@ -11,25 +11,44 @@
 Wedge::Wedge() {
 }
 
+Wedge::Wedge(float ir, float outr, float br, float a1, float a2, float y1, float y2) :
+   innerR(ir),
+   outerR(outr),
+   bevelR(br),
+   angle1(a1),
+   angle2(a2),
+   minY(y1),
+   maxY(y2),
+   cover(true)
+{
+   build();
+}
+
 Wedge::~Wedge() {
 }
 
 void Wedge::setHash(Hash* hash) {
-   float innerR = hash->getDouble("innerRadius");
-   float outerR = hash->getDouble("outerRadius");
-   float bevelR = hash->getDouble("bevelRadius");
-   float angle1 = hash->getDouble("angle1");
-   float angle2 = hash->getDouble("angle2");
-   float minY = hash->getDouble("minY");
-   float maxY = hash->getDouble("maxY");
+   innerR = hash->getDouble("innerRadius");
+   outerR = hash->getDouble("outerRadius");
+   bevelR = hash->getDouble("bevelRadius");
+   angle1 = hash->getDouble("angle1");
+   angle2 = hash->getDouble("angle2");
+   minY = hash->getDouble("minY");
+   maxY = hash->getDouble("maxY");
    
-   bool cover = true;
+   cover = true;
    if(hash->contains("cover")) {
       if(hash->getString("cover") == "false") {
          cover = false;
       }
    }
    
+   build();
+   
+   setupMaterial(hash->getValue("material")->getHash());
+}
+ 
+void Wedge::build() {
    double sinAngle1 = sin(angle1 * DEG_TO_RAD);
    double cosAngle1 = cos(angle1 * DEG_TO_RAD);
    double sinAngle2 = sin(angle2 * DEG_TO_RAD);
@@ -262,6 +281,4 @@ void Wedge::setHash(Hash* hash) {
       bbox.x1 = max(xc1, xc3);
       bbox.z1 = zc4 + bevelR;
    }
-   
-   setupMaterial(hash->getValue("material")->getHash());
 }
