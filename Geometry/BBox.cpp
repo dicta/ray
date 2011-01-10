@@ -46,3 +46,23 @@ bool BBox::hit(const Ray& ray) const {
    
    return (t0 < t1 && t1 > GeometryObject::epsilon);
 }
+
+void BBox::expand(const BBox& b) {
+   x0 = min(x0, b.x0);
+   y0 = min(y0, b.y0);
+   z0 = min(z0, b.z0);
+   
+   x1 = max(x1, b.x1);
+   y1 = max(y1, b.y1);
+   z1 = max(z1, b.z1);
+}
+
+void BBox::expand(const Point3D& b) {
+   x0 = min(x0, b.x);
+   y0 = min(y0, b.y);
+   z0 = min(z0, b.z);
+   
+   x1 = max(x1, b.x);
+   y1 = max(y1, b.y);
+   z1 = max(z1, b.z);
+}
