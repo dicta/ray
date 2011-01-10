@@ -27,8 +27,9 @@ LatticeNoise::permutations[256] =
 					        137,214,145, 93, 92,100,245,  0,216,186, 60, 83,105, 97,204, 52
 				    	};
 
-LatticeNoise::LatticeNoise(int seed) {
-   initValueTable(253);
+LatticeNoise::LatticeNoise(int seed) : numOctaves(1), lacunarity(1.0), gain(1.0), fsMin(0.0), fsMax(1.0) {
+   initValueTable(seed);
+   initVectorTable(seed);
 }
 
 LatticeNoise::~LatticeNoise() {
@@ -60,8 +61,19 @@ void LatticeNoise::initVectorTable(int seed) {
 
 void LatticeNoise::setHash(Hash* h) {
    numOctaves = h->getInteger("numOctaves");
-   lacunarity = h->getDouble("lacunarity");
-   gain = h->getDouble("gain");
+   
+   if(h->contains("lacunarity")) {
+      lacunarity = h->getDouble("lacunarity");
+   }
+   else {
+      lacunarity = 1.0;
+   }
+   if(h->contains("gain")) {
+      gain = h->getDouble("gain");
+   }
+   else {
+      gain = 1.0;
+   }
 
    // Compute the bounds
    if(gain == 1.0) {
@@ -102,7 +114,21 @@ float LatticeNoise::turbulence(const Point3D& p) const {
    }
 
    // Map to [0, 1]
-   sum /= fsMax;
+//   sum /= fsMax;
+   return sum;
+}
+
+Vector3D LatticeNoise::vectorTurbulence(const Point3D& p) const {
+   float amplitude = 1.0;
+   float frequency = 1.0;
+   Vector3D sum;
+   
+   for(int j = 0; j < numOctaves; j++) {
+      sum += vectorNoise(p * frequency).absValue() * amplitude;
+      amplitude *= 0.5;
+      frequency *= 2.0;
+   }
+   
    return sum;
 }
 

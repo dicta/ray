@@ -17,7 +17,10 @@ public:
    
    void setHash(Hash* h);
    float fractalSum(const Point3D& p) const;
+   
    float turbulence(const Point3D& p) const;
+   Vector3D vectorTurbulence(const Point3D& p) const;
+   
    float fbm(const Point3D& p) const;
    Vector3D vectorFbm(const Point3D& p) const;
 
