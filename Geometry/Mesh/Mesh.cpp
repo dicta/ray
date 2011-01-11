@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include "Parser/Hash.h"
 
 typedef vector<Vector3D*>::const_iterator VectorIter;
 
@@ -62,6 +63,7 @@ void Mesh::calculateNormals() {
 }
 
 void Mesh::setHash(Hash* hash) {
+   setupMaterial(hash->getValue("material")->getHash());
 }
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
