@@ -72,13 +72,7 @@ Color& Color::operator/= (const float a) {
 }
 
 void Color::normalize() {
-   float maxVal = max(red, max(green, blue));
-   if(maxVal > 1.0) {
-      red /= maxVal;
-      green /= maxVal;
-      blue /= maxVal;
-   }
-//   red = min(red, 1.0f);
-//   green = min(green, 1.0f);
-//   blue = min(blue, 1.0f);
+   red = min(red, 1.0f);
+   green = min(green, 1.0f);
+   blue = min(blue, 1.0f);
 }
