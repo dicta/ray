@@ -29,8 +29,12 @@ public:
    Mesh();
    virtual ~Mesh();
 
+   void pointsReserve(int size) { points.reserve(size); }
    int addPoint(Point3D* p);
+
+   void facesReserve(int size) { faces.reserve(size); }
    void addFace(Face* f);
+
    void calculateNormals();
    
    virtual void setHash(Hash* hash);

@@ -68,7 +68,7 @@ void Mesh::setHash(Hash* hash) {
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
-//      return false;
+      return false;
    }
 
    bool hit = false;
