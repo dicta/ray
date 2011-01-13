@@ -9,7 +9,9 @@ Instance::Instance(GeometryObject* obj) : object(obj), invMatrix(), fwdMatrix() 
 }
 
 Instance::~Instance() {
-   delete object;
+   if(object->doDelete) {
+      delete object;
+   }
 }
 
 void Instance::setHash(Hash* hash) {
@@ -17,35 +19,42 @@ void Instance::setHash(Hash* hash) {
    string type = objHash->getString("type");
 
    object = GeometryManager::instance().createObject(type, objHash, false);
-   material = object->getMaterial();
+   
+   if(hash->contains("material")) {
+      setupMaterial(hash->getValue("material")->getHash());
+   }
+   else {
+      material = object->getMaterial();
+   }
 
-   Array* transforms = hash->getValue("transforms")->getArray();
-   int idx = 0;
-   while(idx < transforms->size()) {
-      type = transforms->at(idx)->getString();
-      idx++;
-      
-      if(type == "translate") {
-         Array* a = transforms->at(idx)->getArray();
-         invMatrix.invTranslate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
-         fwdMatrix.translate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
-      }
-      else if(type == "scale") {
-         Array* a = transforms->at(idx)->getArray();
-         invMatrix.invScale(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
-      }
-      else if(type == "rotateX") {
-         invMatrix.invRotateX(transforms->at(idx)->getDouble());
-         fwdMatrix.rotateX(transforms->at(idx)->getDouble());
-      }
-      else if(type == "rotateY") {
-         invMatrix.invRotateY(transforms->at(idx)->getDouble());
-      }
-      else if(type == "rotateZ") {
-         invMatrix.invRotateZ(transforms->at(idx)->getDouble());
-      }
+   if(hash->contains("transforms")) {
+      Array* transforms = hash->getValue("transforms")->getArray();
+      int idx = 0;
+      while(idx < transforms->size()) {
+         type = transforms->at(idx)->getString();
+         idx++;
 
-      idx++;
+         if(type == "translate") {
+            Array* a = transforms->at(idx)->getArray();
+            invMatrix.invTranslate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+            fwdMatrix.translate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+         }
+         else if(type == "scale") {
+            Array* a = transforms->at(idx)->getArray();
+            invMatrix.invScale(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
+         }
+         else if(type == "rotateX") {
+            invMatrix.invRotateX(transforms->at(idx)->getDouble());
+            fwdMatrix.rotateX(transforms->at(idx)->getDouble());
+         }
+         else if(type == "rotateY") {
+            invMatrix.invRotateY(transforms->at(idx)->getDouble());
+         }
+         else if(type == "rotateZ") {
+            invMatrix.invRotateZ(transforms->at(idx)->getDouble());
+         }
+         idx++;
+      }
    }
 }
 
