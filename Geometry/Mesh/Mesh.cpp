@@ -30,6 +30,12 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(Face* f) {
+   int idx0 = f->vertIdxs[0];
+   int idx1 = f->vertIdxs[1];
+   int idx2 = f->vertIdxs[2];
+
+   f->normal = (*points[idx1] - *points[idx0]).cross(*points[idx2] - *points[idx0]);
+   f->normal.normalize();
    faces.push_back(f);
 }
 
@@ -43,27 +49,24 @@ void Mesh::calculateNormals() {
       int idx1 = (*fi)->vertIdxs[0];
       int idx2 = (*fi)->vertIdxs[1];
       int idx3 = (*fi)->vertIdxs[2];
-      
-      Point3D* p0 = points[idx1];
-      Point3D* p1 = points[idx2];
-      Point3D* p2 = points[idx3];
-      
-      Vector3D n(*p1 - *p0);
-      n = n.cross(*p2 - *p1);
-      n.normalize();
-      
-      *normals[idx1] += n;
-      *normals[idx2] += n;
-      *normals[idx3] += n;
+
+      *normals[idx1] += (*fi)->normal;
+      *normals[idx2] += (*fi)->normal;
+      *normals[idx3] += (*fi)->normal;
    }
    
    for(VectorIter it = normals.begin(); it != normals.end(); it++) {
+      if((*it)->x == 0.0 && (*it)->y == 0.0 && (*it)->z == 0.0) {
+         (*it)->y  = 1.0;
+      }
       (*it)->normalize();
    }
 }
 
 void Mesh::setHash(Hash* hash) {
-   setupMaterial(hash->getValue("material")->getHash());
+   if(hash->contains("material")) {
+      setupMaterial(hash->getValue("material")->getHash());
+   }
 }
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -79,7 +82,6 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       if(hitFace(*it, ray, t, sr) && (t < tmin)) {
          hit = true;
          tmin = t;
-         sr.localHitPoint = ray.origin + ray.direction * t;
       }
    }
 
@@ -95,11 +97,9 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    double e = v0->y - v1->y, f = v0->y - v2->y, g = ray.direction.y, h = v0->y - ray.origin.y;
    double i = v0->z - v1->z, j = v0->z - v2->z, k = ray.direction.z, l = v0->z - ray.origin.z;
    
-   double m = f * k -g * j, n = h * k -g * l, p = f * l - h * j;
-   double q = g * i -e * k, s = e * j - f * i;
-   
-   double invDenom = 1.0 / (a * m + b * q + c * s);
-   
+   double m = f * k - g * j, n = h * k - g * l, p = f * l - h * j;
+   double q = g * i - e * k, s = e * j - f * i;
+   double invDenom  = 1.0 / (a * m + b * q + c * s);
    double e1 = d * m - b * n - c * p;
    double beta = e1 * invDenom;
    
@@ -126,8 +126,10 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       return false;
    }
    
+   tmin = t;
    sr.normal = interpolateNormal(face, beta, gamma);
-   
+   sr.localHitPoint = ray.origin + ray.direction * t;
+
    return true;
 }
 

@@ -45,8 +45,9 @@ void PlyParser::loadModel(string fname) {
       if(strcmp("vertex", elist[i]) == 0) {
          // set up for getting vertex elements
          // the three properties are the vertex coordinates
-         ply_get_property(ply, elist[i], &vertProps[0]);      
-		  	ply_get_property(ply, elist[i], &vertProps[2]);
+         ply_get_property(ply, elist[i], &vertProps[0]);
+         ply_get_property(ply, elist[i], &vertProps[1]);
+         ply_get_property(ply, elist[i], &vertProps[2]);
          
          pointsReserve(num_elems);
          
@@ -74,7 +75,7 @@ void PlyParser::loadModel(string fname) {
    }
    
    ply_close(ply);
-   printf("done loading");
+   printf("done loading\n");
 
    calculateNormals();
    printf("normals calculated\n");
