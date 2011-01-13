@@ -23,6 +23,9 @@
 #include "Instance.h"
 #include "parser/Parser.h"
 #include "Materials/Matte.h"
+#include "Mesh/MeshManager.h"
+#include "Mesh/Mesh.h"
+#include "Mesh/PlyParser.h"
 
 auto_ptr<GeometryManager> GeometryManager::s_instance;
 
@@ -38,7 +41,9 @@ GeometryManager::GeometryManager() {
 
 GeometryManager::~GeometryManager() {
    for(unsigned int i = 0; i < objects.size(); i++) {
-      delete objects[i];
+      if(objects[i]->doDelete) {
+         delete objects[i];
+      }
    }
    objects.clear();
 }
@@ -52,11 +57,11 @@ void GeometryManager::loadObjects(string fname) {
       if(tok.getTokenType() != Tokenizer::TokenName) {
          return ;
       }
-      
+
       string type = tok.getStringValue();
       createObject(type, parser.readValue()->getHash());
    }
-   
+
    fp.close();
 }
 
@@ -96,12 +101,19 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    else if(type == "instance") {
       obj = new Instance();
    }
+   else if(type == "mesh") {
+      string name = hash->getString("name");
+      obj = MeshManager::instance().getMesh(name);
+//PlyParser* p = new PlyParser();
+//p->loadModel("config/dragon_vrip.ply");
+//obj = p;
+   }
    else {
       return NULL;
    }
-   
+
    obj->setHash(hash);
-   
+
    if(addToList) {
       objects.push_back(obj);
    }

@@ -16,7 +16,7 @@
 
 const double GeometryObject::epsilon = 1.0 * pow(10, -6);
 
-GeometryObject::GeometryObject() : material(NULL) {
+GeometryObject::GeometryObject() : doDelete(true), material(NULL) {
 }
 
 GeometryObject::~GeometryObject() {

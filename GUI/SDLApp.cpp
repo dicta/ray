@@ -5,6 +5,7 @@
 #include "Parser/Parser.h"
 #include "Lights/LightManager.h"
 #include "Geometry/GeometryManager.h"
+#include "Geometry/Mesh/MeshManager.h"
 #include <math.h>
 #include <fstream>
 
@@ -50,6 +51,10 @@ void SDLApp::loadConfiguration() {
    camera->computeUVW();
    camera->setThreadParameters(threadCount, boxw, boxh);
    
+   if(h->contains("mesh")) {
+      MeshManager::instance().loadMeshes(h->getString("mesh"));
+   }
+
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
 }

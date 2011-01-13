@@ -4,6 +4,7 @@
 typedef vector<Vector3D*>::const_iterator VectorIter;
 
 Mesh::Mesh() : GeometryObject(), bbox() {
+   doDelete = false;
 }
 
 Mesh::~Mesh() {
