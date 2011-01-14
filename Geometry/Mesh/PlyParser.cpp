@@ -79,4 +79,6 @@ void PlyParser::loadModel(string fname) {
 
    calculateNormals();
    printf("normals calculated\n");
+   
+   setupCells();
 }

@@ -20,6 +20,7 @@ public:
 
    int vertIdxs[3];
    Vector3D normal;
+   BBox bbox;
 };
 
 typedef vector<Face*>::const_iterator FaceIter;
@@ -42,6 +43,8 @@ public:
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
    
+   void setupCells();
+   
 protected:
    bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
    Vector3D interpolateNormal(Face* face, const double beta, const double gamma) const;
@@ -49,7 +52,10 @@ protected:
    vector<Point3D*> points;
    vector<Vector3D*> normals;
    vector<Face*> faces;
+   vector<vector<Face*> > cells;
    BBox bbox;
+   
+   int nx, ny, nz;
 };
 
 #endif

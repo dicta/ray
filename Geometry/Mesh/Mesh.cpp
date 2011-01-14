@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include "Parser/Hash.h"
+#include "Math/Maths.h"
 
 typedef vector<Vector3D*>::const_iterator VectorIter;
 
@@ -37,6 +38,11 @@ void Mesh::addFace(Face* f) {
 
    f->normal = (*points[idx1] - *points[idx0]).cross(*points[idx2] - *points[idx0]);
    f->normal.normalize();
+   
+   f->bbox.expand(*points[idx0]);
+   f->bbox.expand(*points[idx1]);
+   f->bbox.expand(*points[idx2]);
+   
    faces.push_back(f);
 }
 
@@ -70,23 +76,103 @@ void Mesh::setHash(Hash* hash) {
    }
 }
 
+//bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+//   if(!bbox.hit(ray)) {
+//      return false;
+//   }
+//
+//   bool hit = false;
+//   double t;
+//   tmin = 1.7 * pow(10.0, 308.0);
+//   
+//   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
+//      if(hitFace(*it, ray, t, sr) && (t < tmin)) {
+//         hit = true;
+//         tmin = t;
+//      }
+//   }
+//
+//   return hit;
+//}
+
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   if(!bbox.hit(ray)) {
-      return false;
+   double x0 = bbox.x0;
+   double y0 = bbox.y0;
+   double z0 = bbox.z0;
+   double x1 = bbox.x1;
+   double y1 = bbox.y1;
+   double z1 = bbox.z1;
+	
+   double tx_min, ty_min, tz_min;
+   double tx_max, ty_max, tz_max; 
+	
+	// the following code includes modifications from Shirley and Morley (2003)
+	
+   double a = 1.0 / ray.direction.x;
+   if (a >= 0) {
+      tx_min = (x0 - ray.origin.x) * a;
+      tx_max = (x1 - ray.origin.x) * a;
    }
-
-   bool hit = false;
-   double t;
-   tmin = 1.7 * pow(10.0, 308.0);
+   else {
+      tx_min = (x1 - ray.origin.x) * a;
+      tx_max = (x0 - ray.origin.x) * a;
+   }
+	
+	double b = 1.0 / ray.direction.y;
+	if (b >= 0) {
+		ty_min = (y0 - ray.origin.y) * b;
+		ty_max = (y1 - ray.origin.y) * b;
+	}
+	else {
+		ty_min = (y1 - ray.origin.y) * b;
+		ty_max = (y0 - ray.origin.y) * b;
+	}
+	
+	double c = 1.0 / ray.direction.z;
+	if (c >= 0) {
+		tz_min = (z0 - ray.origin.z) * c;
+		tz_max = (z1 - ray.origin.z) * c;
+	}
+	else {
+		tz_min = (z1 - ray.origin.z) * c;
+		tz_max = (z0 - ray.origin.z) * c;
+	}
+	
+	double t0, t1;
+	
+	if (tx_min > ty_min)
+		t0 = tx_min;
+	else
+		t0 = ty_min;
    
-   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
-      if(hitFace(*it, ray, t, sr) && (t < tmin)) {
-         hit = true;
-         tmin = t;
-      }
+	if (tz_min > t0)
+		t0 = tz_min;
+   
+	if (tx_max < ty_max)
+		t1 = tx_max;
+	else
+		t1 = ty_max;
+   
+	if (tz_max < t1)
+		t1 = tz_max;
+   
+	if (t0 > t1)
+		return(false);   
+   
+   int ix, iy, iz;
+   
+   if(bbox.contains(ray.origin)) {
+      // Ray starts inside grid
+      ix = clamp((ray.origin.x - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
+      iy = clamp((ray.origin.y - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
+      iz = clamp((ray.origin.z - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
    }
-
-   return hit;
+   else {
+      Point3D p = ray.origin + ray.direction * t0;  // initial hit point with grid's bounding box
+      ix = clamp((p.x - x0) * nx / (x1 - x0), 0, nx - 1);
+      iy = clamp((p.y - y0) * ny / (y1 - y0), 0, ny - 1);
+      iz = clamp((p.z - z0) * nz / (z1 - z0), 0, nz - 1);
+   }
 }
 
 bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -144,4 +230,40 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
                  + *normals[face->vertIdxs[2]] * gamma);
    normal.normalize();
 	return normal;
+}
+
+void Mesh::setupCells() {
+   // dimensions of the grid in the x, y, and z directions
+   double wx = bbox.x1 - bbox.x0;
+   double wy = bbox.y1 - bbox.y0;
+   double wz = bbox.z1 - bbox.z0;
+
+   double multiplier = 2.0;
+   
+   double s = pow(wx * wy * wz / faces.size(), 0.33333333);
+   nx = multiplier * wx / s + 1;
+   ny = multiplier * wy / s + 1;
+   nz = multiplier * wz / s + 1;
+   
+   int numCells = nx * ny * nz;
+   cells.reserve(numCells);
+   
+   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
+      int ixmin = clamp(((*it)->bbox.x0 - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
+      int iymin = clamp(((*it)->bbox.y0 - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
+      int izmin = clamp(((*it)->bbox.z0 - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
+      int ixmax = clamp(((*it)->bbox.x1 - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
+      int iymax = clamp(((*it)->bbox.y1 - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
+      int izmax = clamp(((*it)->bbox.z1 - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
+      
+      // add the object to the cells
+      for(int iz = izmin; iz <= izmax; iz++) {
+         for(int iy = iymin; iy <= iymax; iy++) {
+            for(int ix = ixmin; ix <= ixmax; ix++) {
+               int index = ix + nx * iy + nx * ny * iz;
+               cells[index].push_back(*it);
+            }
+         }
+      }
+   }
 }

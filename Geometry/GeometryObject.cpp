@@ -33,6 +33,7 @@ void GeometryObject::setupMaterial(Hash* hash) {
    }
    else {
       // Matte is the default type
+      
       material = new Matte();
    }
 
