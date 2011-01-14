@@ -111,6 +111,9 @@ void Camera::setHash(Hash* h) {
       Texture* tex = Texture::createTexture(h->getValue("bgTexture")->getHash());
       tracer->setBackgroundTexture(tex);
    }
+   else if(h->contains("bgColor")) {
+      tracer->setBackgroundColor(h->getValue("bgColor")->getArray());
+   }
 }
 
 void Camera::render() {
