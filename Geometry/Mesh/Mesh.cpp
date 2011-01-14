@@ -75,27 +75,29 @@ void Mesh::setHash(Hash* hash) {
       setupMaterial(hash->getValue("material")->getHash());
    }
 }
-
-//bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-//   if(!bbox.hit(ray)) {
-//      return false;
-//   }
-//
-//   bool hit = false;
-//   double t;
-//   tmin = 1.7 * pow(10.0, 308.0);
-//   
-//   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
-//      if(hitFace(*it, ray, t, sr) && (t < tmin)) {
-//         hit = true;
-//         tmin = t;
-//      }
-//   }
-//
-//   return hit;
-//}
-
+/*
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+   if(!bbox.hit(ray)) {
+      return false;
+   }
+
+   bool hit = false;
+   double t;
+   tmin = 1.7 * pow(10.0, 308.0);
+
+   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
+      if(hitFace(*it, ray, t, sr) && (t < tmin)) {
+         hit = true;
+         tmin = t;
+      }
+   }
+
+   return hit;
+}
+*/
+bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+   double kHugeValue	= 1.0E10;
+
    double x0 = bbox.x0;
    double y0 = bbox.y0;
    double z0 = bbox.z0;
@@ -163,15 +165,134 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    
    if(bbox.contains(ray.origin)) {
       // Ray starts inside grid
-      ix = clamp((ray.origin.x - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
-      iy = clamp((ray.origin.y - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
-      iz = clamp((ray.origin.z - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
+      ix = (int) clamp((ray.origin.x - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
+      iy = (int) clamp((ray.origin.y - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
+      iz = (int) clamp((ray.origin.z - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
    }
    else {
       Point3D p = ray.origin + ray.direction * t0;  // initial hit point with grid's bounding box
-      ix = clamp((p.x - x0) * nx / (x1 - x0), 0, nx - 1);
-      iy = clamp((p.y - y0) * ny / (y1 - y0), 0, ny - 1);
-      iz = clamp((p.z - z0) * nz / (z1 - z0), 0, nz - 1);
+      ix = (int) clamp((p.x - x0) * nx / (x1 - x0), 0, nx - 1);
+      iy = (int) clamp((p.y - y0) * ny / (y1 - y0), 0, ny - 1);
+      iz = (int) clamp((p.z - z0) * nz / (z1 - z0), 0, nz - 1);
+   }
+   
+   // ray parameter increments per cell in the x, y, and z directions
+
+   double dtx = (tx_max - tx_min) / nx;
+   double dty = (ty_max - ty_min) / ny;
+   double dtz = (tz_max - tz_min) / nz;
+
+   double   tx_next, ty_next, tz_next;
+   int   ix_step, iy_step, iz_step;
+   int   ix_stop, iy_stop, iz_stop;
+
+   if (ray.direction.x > 0) {
+      tx_next = tx_min + (ix + 1) * dtx;
+      ix_step = +1;
+      ix_stop = nx;
+   }
+   else {
+      tx_next = tx_min + (nx - ix) * dtx;
+      ix_step = -1;
+      ix_stop = -1;
+   }
+
+   if (ray.direction.x == 0.0) {
+      tx_next = kHugeValue;
+      ix_step = -1;
+      ix_stop = -1;
+   }
+
+
+   if (ray.direction.y > 0) {
+      ty_next = ty_min + (iy + 1) * dty;
+      iy_step = +1;
+      iy_stop = ny;
+   }
+   else {
+      ty_next = ty_min + (ny - iy) * dty;
+      iy_step = -1;
+      iy_stop = -1;
+   }
+
+   if (ray.direction.y == 0.0) {
+      ty_next = kHugeValue;
+      iy_step = -1;
+      iy_stop = -1;
+   }
+
+   if (ray.direction.z > 0) {
+      tz_next = tz_min + (iz + 1) * dtz;
+      iz_step = +1;
+      iz_stop = nz;
+   }
+   else {
+      tz_next = tz_min + (nz - iz) * dtz;
+      iz_step = -1;
+      iz_stop = -1;
+   }
+
+   if (ray.direction.z == 0.0) {
+      tz_next = kHugeValue;
+      iz_step = -1;
+      iz_stop = -1;
+   }
+
+   // Traverse the grid
+   while(true) {
+      vector<Face*> cell = cells[ix + nx * iy + nx * ny * iz];
+      if (tx_next < ty_next && tx_next < tz_next) {
+         double t;
+         bool hit = false;
+         tmin = tx_next;
+         for(FaceIter it = cell.begin(); it != cell.end(); it++) {
+            if(hitFace(*it, ray, t, sr) && t < tmin) {
+               tmin = t;
+               hit = true;
+            }
+         }
+         if(hit) return true;
+
+         tx_next += dtx;
+         ix += ix_step;
+         if (ix == ix_stop) return false;
+      }
+      else {
+         if (ty_next < tz_next) {
+            double t;
+            bool hit = false;
+            tmin = ty_next;
+            for(FaceIter it = cell.begin(); it != cell.end(); it++) {
+               if(hitFace(*it, ray, t, sr) && t < tmin) {
+                  tmin = t;
+                  hit = true;
+               }
+            }
+            if(hit) return true;
+
+            ty_next += dty;
+            iy += iy_step;
+
+            if (iy == iy_stop) return false;
+         }
+         else {
+            double t;
+            bool hit = false;
+            tmin = tz_next;
+            for(FaceIter it = cell.begin(); it != cell.end(); it++) {
+               if(hitFace(*it, ray, t, sr) && t < tmin) {
+                  tmin = t;
+                  hit = true;
+               }
+            }
+            if(hit) return true;
+
+            tz_next += dtz;
+            iz += iz_step;
+
+            if (iz == iz_stop) return false;
+         }
+      }
    }
 }
 
