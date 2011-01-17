@@ -34,6 +34,12 @@ void Matrix::invTranslate(double x, double y, double z) {
    m[2][3] = -m[2][0] * x - m[2][1] * y - m[2][2] * z + m[2][3];
 }
 
+void Matrix::scale(double x, double y, double z) {
+   m[0][0] *= x;  m[0][1] *= y;  m[0][2] *= z;
+   m[1][0] *= x;  m[1][1] *= y;  m[1][2] *= z;
+   m[2][0] *= x;  m[2][1] *= y;  m[2][2] *= z;
+}
+
 void Matrix::invScale(double x, double y, double z) {
    double invX = 1.0 / x;
    double invY = 1.0 / y;
@@ -81,6 +87,25 @@ void Matrix::invRotateX(double angle) {
    m[2][2] = m22;
 }
 
+void Matrix::rotateY(double angle) {
+   double cosA = cos(angle * DEG_TO_RAD);
+   double sinA = sin(angle * DEG_TO_RAD);
+   
+   double m00 = m[0][0] * cosA - m[0][2] * sinA;
+   double m02 = m[0][0] * sinA + m[0][2] * cosA;
+   double m10 = m[1][0] * cosA - m[1][2] * sinA;
+   double m12 = m[1][0] * sinA + m[1][2] * cosA;
+   double m20 = m[2][0] * cosA - m[2][2] * sinA;
+   double m22 = m[2][0] * sinA + m[2][2] * cosA;
+   
+   m[0][0] = m00;
+   m[0][2] = m02;
+   m[1][0] = m10;
+   m[1][2] = m12;
+   m[2][0] = m20;
+   m[2][2] = m22;
+}
+
 void Matrix::invRotateY(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
@@ -98,6 +123,25 @@ void Matrix::invRotateY(double angle) {
    m[1][2] = m12;
    m[2][0] = m20;
    m[2][2] = m22;
+}
+
+void Matrix::rotateZ(double angle) {
+   double cosA = cos(angle * DEG_TO_RAD);
+   double sinA = sin(angle * DEG_TO_RAD);
+
+   double m00 = m[0][0] * cosA + m[0][1] * sinA;
+   double m01 = -m[0][1] * sinA + m[0][2] * cosA;
+   double m10 = m[1][0] * cosA + m[1][1] * sinA;
+   double m11 = -m[1][1] * sinA + m[1][2] * cosA;   
+   double m20 = m[2][0] * cosA + m[2][1] * sinA;
+   double m21 = -m[2][1] * sinA + m[2][2] * cosA;
+   
+   m[0][0] = m00;
+   m[0][1] = m01;
+   m[1][0] = m10;
+   m[1][1] = m11;
+   m[2][0] = m20;
+   m[2][1] = m21;
 }
 
 void Matrix::invRotateZ(double angle) {

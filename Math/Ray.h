@@ -18,6 +18,7 @@ class Ray {
 public:
    Ray();
    Ray(const Point3D& o, const Vector3D& d);
+   Ray(const Ray& ray);
 
    Point3D origin;
    Vector3D direction;
