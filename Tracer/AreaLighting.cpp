@@ -13,10 +13,15 @@
 AreaLighting::AreaLighting() : Tracer() {
 }
 
-Color AreaLighting::traceRay(const Ray& ray) {
+Color AreaLighting::traceRay(const Ray& ray, const int depth) {
+   if(depth > maxDepth) {
+      return BLACK;
+   }
+
    ShadeRecord sr = hitObjects(ray);
    
    if(sr.hit) {
+      sr.depth = depth;
       return sr.material->areaLightShade(sr, ray);
    }
    else {

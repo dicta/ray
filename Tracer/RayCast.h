@@ -18,7 +18,7 @@ public:
    RayCast();
    virtual ~RayCast() {}
    
-   Color traceRay(const Ray& ray);
+   Color traceRay(const Ray& ray, const int depth);
 };
 
 #endif

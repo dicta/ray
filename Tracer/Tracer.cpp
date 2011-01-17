@@ -34,6 +34,7 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
       sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
+      sr.tracer = this;
    }
    
    return sr;

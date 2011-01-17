@@ -13,10 +13,15 @@
 RayCast::RayCast() : Tracer() {
 }
 
-Color RayCast::traceRay(const Ray& ray) {
+Color RayCast::traceRay(const Ray& ray, const int depth) {
+   if(depth > maxDepth) {
+      return BLACK;
+   }
+
    ShadeRecord sr = hitObjects(ray);
    
    if(sr.hit) {
+      sr.depth = depth;
       return sr.material->shade(sr, ray);
    }
    else {

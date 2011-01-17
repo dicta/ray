@@ -19,7 +19,7 @@ public:
    AreaLighting();
    virtual ~AreaLighting() {}
    
-   Color traceRay(const Ray& ray);
+   Color traceRay(const Ray& ray, const int depth);
 };
 
 #endif
