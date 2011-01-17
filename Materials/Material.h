@@ -1,12 +1,3 @@
-/*
- *  Material.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/17/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
@@ -16,6 +7,15 @@
 
 class Hash;
 
+/**
+ * Hash values:
+ *    - type <i>string</i> - Defines the type of material to use. (phong, reflective, matte)
+ *
+ * Material classes:
+ *    - Matte
+ *    - Phong
+ *    - Reflective
+ */
 class Material {
    
 public:

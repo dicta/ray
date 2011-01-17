@@ -1,12 +1,3 @@
-/*
- *  Matte.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/17/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _MATTE_H_
 #define _MATTE_H_
 
@@ -15,6 +6,16 @@
 class Lambertian;
 class Texture;
 
+/**
+ * Hash values:
+ * <ul>
+ * <li>ka <i>val</i> - Ambient contibution
+ * <li>kd <i>val</i> - Diffuse contribution
+ * <li>color [ r g b ] - Optional material color
+ * <li>texture {} - Optional texture hash. See Texture.
+ * </ul>
+ * If neither color or texture is specified, material defaults to black.
+ */
 class Matte : public Material {
    
 public:

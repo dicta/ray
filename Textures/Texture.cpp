@@ -1,12 +1,3 @@
-/*
- *  Texture.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/18/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "Texture.h"
 #include "Parser/Hash.h"
 #include "PlaneChecker.h"

@@ -12,6 +12,16 @@
 
 #include "Texture.h"
 
+/**
+ * Hash values:
+ * <ul>
+ * <li>color1 [ r g b ] - Primary square color
+ * <li>color2 [ r g b ] - Seconday square color
+ * <li>size <i>value</i> - Size of each square in world units
+ * <li>borderColor [ r g b ] - Optional. Color of border around each square
+ * <li>borderWidth <i>value</i> - Optional. Size of border in world units
+ * </ul>
+ */
 class PlaneChecker : public Texture {
    
 public:

@@ -4,6 +4,12 @@
 #include "GeometryObject.h"
 #include "BBox.h"
 
+/**
+ * Hash values:
+ *    - a <i>value</i> - Radius of the ring. Measured from torus center to the tube center.
+ *    - b <i>value</i> - Radius of the tube.
+ *    - material {} - Material hash.
+ */
 class Torus : public GeometryObject {
 
 public:

@@ -1,12 +1,3 @@
-/*
- *  Plane.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _PLANE_H_
 #define _PLANE_H_
 
@@ -16,6 +7,14 @@
 
 class Hash;
 
+/**
+ * Hash values:
+ * <ul>
+ * <li>point [ x y z ] - Point on plane
+ * <li>normal [ x y z ] - Normal to the plane
+ * <li>material {} - Material hash. See the Material class.
+ * </ul>
+ */
 class Plane : public GeometryObject {
    
 public:

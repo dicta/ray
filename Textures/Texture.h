@@ -1,12 +1,3 @@
-/*
- *  Texture.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/18/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _TEXTURE_H_
 #define _TEXTURE_H_
 
@@ -15,6 +6,12 @@
 
 class Hash;
 
+/**
+ * Hash values:<br>
+ * type <i>string</i> - Type of texture.<br>
+ *
+ * Possible types are planeChecker, noise, sky, wood, granite, marble
+ */
 class Texture {
 
 public:
