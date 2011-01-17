@@ -16,13 +16,10 @@ public:
    
    void setKs(const float k) { ks = k; }
    void setExp(const float e) { exp = e; }
-//   void setSampler(Sampler* sp, const float exp);
-//   void setNormal(const Vector3D& n);
 
 private:
    float ks;
    float exp;
-//   Sampler* sampler;
 };
 
 #endif
