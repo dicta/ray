@@ -41,7 +41,7 @@ void Pinhole::renderScene(SDL_Rect& rect) {
             ray.direction = u * x + v * y - w * viewPlaneDistance;
             ray.direction.normalize();
             
-            pixelColor += tracer->traceRay(ray);
+            pixelColor += tracer->traceRay(ray, 0);
          }
          
          pixelColor /= sampler->getNumSamples();

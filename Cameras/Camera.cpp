@@ -10,7 +10,6 @@
 #include "Camera.h"
 #include "Samplers/MultiJittered.h"
 #include "Samplers/Regular.h"
-#include "Tracer/MultiObjects.h"
 #include "Tracer/RayCast.h"
 #include "Tracer/AreaLighting.h"
 #include "Parser/Hash.h"

@@ -58,7 +58,7 @@ void ThinLens::renderScene(SDL_Rect& rect) {
             ray.direction = u * (dirX - lp.x) + v * (dirY - lp.y) - w * f;
             ray.direction.normalize();
             
-            pixelColor += tracer->traceRay(ray);
+            pixelColor += tracer->traceRay(ray, 1);
          }
          
          pixelColor /= sampler->getNumSamples();
