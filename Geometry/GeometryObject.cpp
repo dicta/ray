@@ -10,6 +10,7 @@
 #include "GeometryObject.h"
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
+#include "Materials/Reflective.h"
 #include "Parser/Hash.h"
 #include <math.h>
 #include <string>
@@ -30,6 +31,9 @@ void GeometryObject::setupMaterial(Hash* hash) {
    
    if(type == "phong") {
       material = new Phong();
+   }
+   else if(type == "reflective") {
+      material = new Reflective();
    }
    else {
       // Matte is the default type
