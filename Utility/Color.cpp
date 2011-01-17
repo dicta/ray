@@ -64,6 +64,13 @@ Color& Color::operator+= (const Color& c) {
    return *this;
 }
 
+Color& Color::operator+=(const float a) {
+   red += a;
+   green += a;
+   blue += a;
+   return *this;
+}
+
 Color& Color::operator/= (const float a) {
    red /= a;
    green /= a;
