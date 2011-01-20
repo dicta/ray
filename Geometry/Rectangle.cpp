@@ -97,6 +97,8 @@ bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
       return false;
    }
    
+   tmin = t;
+   
    return true;
 }
 
