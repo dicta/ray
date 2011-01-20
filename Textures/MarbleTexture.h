@@ -5,6 +5,16 @@
 
 class LatticeNoise;
 
+/**
+ * Hash values:
+ *    - seed <i>integer</i> - Seed value for the random number generator
+ *    - mainColor [ r g b ] - Main marble color
+ *    - veinColor [ r g b ] - Color of marble veins
+ *    - numOctaves <i>integer</i> - Number of lookups to perform in noise data. Each successive octave contributes to
+ *                                  finer amounts of detail
+ *    - lacunarity <i>double</i> - Optional. Defaults to 1
+ *    - gain <i>double</i> - Optional, defaults to 1.0.
+ */
 class MarbleTexture : public Texture {
    
 public:

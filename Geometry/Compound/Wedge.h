@@ -5,6 +5,18 @@
 
 class Hash;
 
+/**
+ * Hash values:
+ *    - innerRadius <i>double</i> - Radius from (0,0,0) to the inside edge of the wedges
+ *    - outerRadius <i>double</i> - Radius from (0,0,0) to the outside edge of the wedges
+ *    - bevelRadius <i>double</i> - Radius of the side spheres, cylinders, and tori
+ *    - angle1 <i>double</i> - Starting angle of the wedge. angle 0 is on the positive Z axis.
+ *    - angle2 <i>double</i> - Ending angle of the wedge.
+ *    - minY <i>double</i> - Minimum Y value of the wedges
+ *    - maxY <i>double</i> - Maximum Y value of the wedges
+ *    - cover [ "true" | "false" ] - If set to false, a skeletal wedge is rendered
+ *    - material {} - Material hash
+ */
 class Wedge : public Compound {
 
 public:
