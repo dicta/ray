@@ -4,6 +4,7 @@
 #include "parser/Parser.h"
 #include "MeditParser.h"
 #include "PlyParser.h"
+#include "LightWaveParser.h"
 
 auto_ptr<MeshManager> MeshManager::s_instance;
 
@@ -52,6 +53,11 @@ void MeshManager::loadMesh(string type, Hash* hash) {
    }
    else if(type == "ply") {
       PlyParser* p = new PlyParser();
+      p->loadModel(filename);
+      objects[objName] = p;
+   }
+   else if(type == "lwo") {
+      LightWaveParser* p = new LightWaveParser();
       p->loadModel(filename);
       objects[objName] = p;
    }
