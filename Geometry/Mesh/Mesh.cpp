@@ -342,7 +342,8 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
 }
 
 bool Mesh::shadowHit(const Ray& ray, double& tmin) const {
-   return false;
+   ShadeRecord sr;
+   return hit(ray, tmin, sr);
 }
 
 Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gamma) const {
