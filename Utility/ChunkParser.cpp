@@ -1,7 +1,7 @@
 #include "ChunkParser.h"
 #include "bytes.h"
 
-char readChar(ifstream &in) {
+unsigned char readChar(ifstream &in) {
    char c;
    in.read(&c, 1);
    return c;
@@ -20,6 +20,27 @@ int read4ByteInt(ifstream &in) {
    in.read((char *) &ret, 4);
    LE_TO_CPU_INT32(ret, ret);
    return ret;
+}
+
+short read2ByteInt(ifstream &in) {
+   short ret;
+   in.read((char *) &ret, 2);
+   LE_TO_CPU_INT16(ret, ret);
+   return ret;
+}
+
+int readVariableInt(ifstream &in, int & vsize) {
+   streampos pos = in.tellg();
+   unsigned char c = readChar(in);
+   in.seekg(pos);
+   
+   if(c == 0xFF) {
+      vsize = 4;
+      return read4ByteInt(in);
+   }
+   
+   vsize = 2;
+   return read2ByteInt(in);
 }
 
 string readString(ifstream &in) {
