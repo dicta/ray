@@ -28,25 +28,62 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
       else if(chunkID == "PNTS") {
          count += parsePoints();
       }
+      else if(chunkID == "POLS") {
+         count += parsePolygons();
+      }
+      else if(chunkID == "PTAG") {
+         parsePTag();
+      }
       else {
          count += skipChunk();
       }
    }
+   
+   in.close();
+   
+   calculateNormals();
+   setupCells();
 }
 
 int LightWaveParser::parseTags() {
    int size = read4ByteInt(in);
    int count = 4;
+   
+   int idx = 0;
 
    while(count < size) {
       string tagName = readString(in);
       if(tagName.size() > 0) {
-         fprintf(stderr, "%s\n", tagName.c_str());
+         fprintf(stderr, "%d = %s\n", idx++, tagName.c_str());
       }
       count += tagName.size() + 1;
    }
    
    return count;
+}
+
+int LightWaveParser::parsePTag() {
+   int size = read4ByteInt(in);
+   int count = 4;
+   string subtag = readChunkID(in, 4);
+   
+   if(subtag == "SURF") {
+      while(count < size) {
+         short fidx = read2ByteInt(in);
+         short tidx = read2ByteInt(in);
+         printf("face %d uses %d\n", fidx, tidx);
+         count += 4;
+      }
+   }
+   else {
+      char c;
+      while(count < size) {
+         c = readChar(in);
+         count++;
+      }
+   }
+   
+   return size + 4;
 }
 
 int LightWaveParser::parsePoints() {
@@ -64,6 +101,38 @@ int LightWaveParser::parsePoints() {
    return count;
 }
 
+int LightWaveParser::parsePolygons() {
+   int size = read4ByteInt(in);
+   int count = 4;
+   
+   string type = readChunkID(in, 4);
+   count += 4;
+   int vsize;
+   
+   while(count < size) {
+      short pointCnt = read2ByteInt(in);
+      count += 2;
+      
+      if(pointCnt == 3) {
+         int i1 = readVariableInt(in, vsize);
+         count += vsize;
+         
+         int i2 = readVariableInt(in, vsize);
+         count += vsize;
+
+         int i3 = readVariableInt(in, vsize);
+         count += vsize;
+
+         addFace(new Face(i1, i2, i3));
+      }
+      else {
+         printf("count = %d\n", pointCnt);
+      }
+   }
+
+   return count;
+}
+
 int LightWaveParser::skipChunk() {
    int count = 0;
    int size = read4ByteInt(in);
@@ -73,5 +142,5 @@ int LightWaveParser::skipChunk() {
       c = readChar(in);
    }
    
-   return count;
+   return size + 4;
 }

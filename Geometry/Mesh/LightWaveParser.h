@@ -20,7 +20,9 @@ private:
    ifstream in;
    
    int parseTags();
+   int parsePTag();
    int parsePoints();
+   int parsePolygons();
    int skipChunk();
 };
 
