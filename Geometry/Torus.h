@@ -33,6 +33,7 @@ private:
    BBox bbox;
    bool thetaRange, phiRange;
    double minTheta, maxTheta;
+   double cosThetaMin, cosThetaMax;
    double minPhi, maxPhi;
 };
 

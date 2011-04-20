@@ -44,7 +44,9 @@ void Torus::setHash(Hash* hash) {
       thetaRange = true;
       Array* a = hash->getValue("thetaRange")->getArray();
       minTheta = a->at(0)->getDouble() * DEG_TO_RAD;
+      cosThetaMin = cos(minTheta);
       maxTheta = a->at(1)->getDouble() * DEG_TO_RAD;
+      cosThetaMax = cos(maxTheta);
    }
    
    if(hash->contains("phiRange")) {
@@ -187,11 +189,7 @@ bool Torus::partCheck(const Ray& ray, double t) const {
    Point3D hit = ray.origin + ray.direction * t;
 
    if(thetaRange) {
-      double theta = atan2(hit.x, hit.y);
-      if(theta < 0.0) {
-         theta += 2.0 * M_PI;
-      }
-      if(theta < minTheta || theta > maxTheta) {
+      if(hit.y > a * cosThetaMin || hit.y < a * cosThetaMax) {
          return false;
       }
    }
