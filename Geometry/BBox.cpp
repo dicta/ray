@@ -1,7 +1,7 @@
 #include "BBox.h"
 #include "GeometryObject.h"
 
-BBox::BBox() : x0(0), y0(0), z0(0), x1(0), y1(0), z1(0) {
+BBox::BBox() : x0(1e6), y0(1e6), z0(1e6), x1(-1e6), y1(-1e6), z1(-1e6) {
 }
 
 bool BBox::hit(const Ray& ray) const {
