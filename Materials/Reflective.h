@@ -6,6 +6,16 @@
 class PerfectSpecular;
 class Hash;
 
+/**
+ * Hash values:
+ *    - kr <i>value</i> - reflective contribution
+ *    - reflectColor [ r g b ] - reflection color
+ *    - ka <i>value</i> - ambient contribution
+ *    - kd <i>value</i> - diffuse contribution
+ *    - ks <i>value</i> - specular contribution
+ *    - exp <i>value</i> - specular exponent
+ *    - color [ r g b ] - Optional material color
+ */
 class Reflective : public Phong {
    
 public:
@@ -15,6 +25,8 @@ public:
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
+   
+   virtual void setColor(float r, float g, float b);
    
 private:
    PerfectSpecular* psBRDF;

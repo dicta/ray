@@ -29,3 +29,10 @@ Color Emissive::areaLightShade(ShadeRecord& sr, const Ray& ray)  {
 Color Emissive::getLe(const ShadeRecord& sr) const {
    return color * ls;
 }
+
+void Emissive::setColor(float r, float g, float b) {
+   color.set(r, g, b);
+}
+
+void Emissive::setDiffuse(float d) {
+}

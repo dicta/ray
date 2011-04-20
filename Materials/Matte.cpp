@@ -82,3 +82,13 @@ Color Matte::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    
    return L;
 }
+
+void Matte::setColor(float r, float g, float b) {
+   ambientBRDF->setColor(new Color(r, g, b));
+   diffuseBRDF->setColor(new Color(r, g, b));
+}
+
+void Matte::setDiffuse(float d) {
+   ambientBRDF->setKd(d);
+   diffuseBRDF->setKd(d);
+}

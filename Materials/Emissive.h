@@ -20,6 +20,9 @@ public:
    virtual void setHash(Hash* hash);
    virtual Color getLe(const ShadeRecord& sr) const;
    
+   virtual void setColor(float r, float g, float b);
+   virtual void setDiffuse(float d);
+   
 private:
    float ls;
    Color color;

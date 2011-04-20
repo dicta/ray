@@ -23,6 +23,9 @@ public:
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual void setHash(Hash* hash) = 0;
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
+   
+   virtual void setColor(float r, float g, float b) = 0;
+   virtual void setDiffuse(float d) = 0;
 };
 
 #endif

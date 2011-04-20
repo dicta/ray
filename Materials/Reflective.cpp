@@ -32,3 +32,7 @@ Color Reflective::shade(ShadeRecord& sr, const Ray& ray) {
 Color Reflective::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    return shade(sr, ray);
 }
+
+void Reflective::setColor(float r, float g, float b) {
+   psBRDF->setColor(Color(r, g, b));
+}

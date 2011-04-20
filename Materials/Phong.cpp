@@ -78,3 +78,12 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
 Color Phong::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    return shade(sr, ray);
 }
+
+void Phong::setColor(float r, float g, float b) {
+   ambientBRDF->setColor(new Color(r, g, b));
+   diffuseBRDF->setColor(new Color(r, g, b));
+}
+
+void Phong::setDiffuse(float d) {
+   diffuseBRDF->setKd(d);
+}
