@@ -1,6 +1,7 @@
 #include "Annulus.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
+#include "Materials/Material.h"
 
 Annulus::Annulus() :
    GeometryObject(),
@@ -105,8 +106,11 @@ bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
 
    // If distance is between outer and inner radius, it hits the annulus
    if(innerSquared <= dist && dist < outerSquared && partCheck(p)) {
-      tmin = t;
-      return true;
+      float alpha = material->getAlpha(p);
+      if(alpha > 0.2) {
+         tmin = t;
+         return true;
+      }
    }
    return false;
 }

@@ -37,6 +37,7 @@ public:
    inline Uint8 getRed() const { return (Uint8)(red * 255); }
    inline Uint8 getGreen() const { return (Uint8)(green * 255); }
    inline Uint8 getBlue() const { return (Uint8)(blue * 255); }
+   inline Uint8 getAlpha() const { return (Uint8)(alpha * 255); }
    
    float red, green, blue, alpha;
 };

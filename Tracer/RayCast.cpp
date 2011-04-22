@@ -22,7 +22,14 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
    
    if(sr.hit) {
       sr.depth = depth;
-      return sr.material->shade(sr, ray);
+      Color c = sr.material->shade(sr, ray);
+      
+      if(c.getAlpha() < 255) {
+         Ray newRay(sr.localHitPoint, ray.direction);
+         Color newColor = traceRay(newRay, depth);
+         return c * c.alpha + newColor * (1.0 - c.alpha);
+      }
+      return c;
    }
    else {
       if(texture != NULL) {

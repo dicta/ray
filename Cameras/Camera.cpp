@@ -152,7 +152,7 @@ void Camera::setPixel(SDL_Surface* s, int x, int y, const Color& color) {
    int bpp = s->format->BytesPerPixel;
    /* Here p is the address to the pixel we want to set */
    Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
-   Uint32 pixel = SDL_MapRGB(s->format, color.getRed(), color.getGreen(), color.getBlue());
+   Uint32 pixel = SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
    *(Uint32 *)p = pixel;
 }
 

@@ -3,6 +3,18 @@
 
 #include "GeometryObject.h"
 
+/**
+ * Creates an annulus (disk with a hollow center).
+ *
+ * Hash values:
+ * <ul>
+ * <li>center [x y z] - Center of the disk.
+ * <li>normal [x y z] - Normal of the disk.
+ * <li>innerRadius <i>value</i> - Radius of the the center opening. Double.
+ * <li>outerRadius <i>value</i> - Radius of the annulus. Double.
+ * <li>angleRange [min max] - Optional angle range for a part annulus. Doubles.
+ * </ul>
+ */
 class Annulus : public GeometryObject {
 
 public:
