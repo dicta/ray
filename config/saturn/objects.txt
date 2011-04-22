@@ -1,0 +1,64 @@
+rectangle {
+   origin [ -1200.0 -600.0 -800.0 ]
+   a [ 2400.0 0.0 0.0 ]
+   b [ 0.0 1200.0 0.0 ]
+   
+   material {
+      type  "matte"
+      ka    0.2
+      kd    0.3
+
+      texture {
+         type     "image"
+         filename "config/test/MilkyWay.jpg"
+         mapping  "uv"
+      }
+   }
+}
+
+sphere {
+   center [ 0.0 0.0 0.0 ]
+   radius 1.0
+   
+   material {
+      type  "matte"
+      ka 0.25
+      kd 0.75
+
+      texture {
+         type "tinstance"
+         transforms [ "rotateX" 9.0 "rotateZ" 345.0 ]
+
+         texture {
+            type     "image"
+            filename "config/test/saturnmap.jpg"
+            mapping  "sphere"
+         }
+      }
+   }
+}
+
+instance {
+   object {
+      type  "annulus"
+      center [ 0.0 0.0 0.0 ]
+      normal [ 0.0 1.0 0.0 ]
+      innerRadius 1.2361
+      outerRadius 2.3266
+
+      material {
+         type  "matte"
+         ka    0.2
+         kd    1.0
+
+         texture {
+            type     "image"
+            filename "config/test/rings.png"
+            mapping  "disk"
+            diskRange [ 1.2361 2.3266 ]
+         }
+      }
+   }
+   
+   transforms [ "rotateX" 9.0 "rotateZ" -15.0 ]
+}

@@ -1,9 +1,9 @@
 config {
-   width       800
-   height      600
-   threads     4
-   boxWidth    10
-   boxHeight   10
+   width       1024
+   height      768
+   threads     1
+   boxWidth    100
+   boxHeight   100
    camera      "config/test/camera.txt"
    lights      "config/test/lights.txt"
    objects     "config/test/objects.txt"
