@@ -8,6 +8,7 @@
 #include "Geometry/Mesh/MeshManager.h"
 #include <math.h>
 #include <fstream>
+#include <SDL_image.h>
 
 const int bpp = 0;
 
@@ -16,12 +17,15 @@ SDLApp::SDLApp() :stopApp(false) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
 	}
+	
+	IMG_Init(IMG_INIT_JPG);
 
    loadConfiguration();
 }
 
 SDLApp::~SDLApp() {
    delete camera;
+   IMG_Quit();
    SDL_Quit();
 }
 

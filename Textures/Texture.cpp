@@ -6,6 +6,8 @@
 #include "WoodTexture.h"
 #include "GraniteTexture.h"
 #include "MarbleTexture.h"
+#include "ImageTexture.h"
+#include "TInstance.h"
 
 Texture* Texture::createTexture(Hash* hash) {
    string type = hash->getString("type");
@@ -28,6 +30,12 @@ Texture* Texture::createTexture(Hash* hash) {
    }
    else if(type == "marble") {
       texture = new MarbleTexture();
+   }
+   else if(type == "image") {
+      texture = new ImageTexture();
+   }
+   else if(type == "tinstance") {
+       texture = new TInstance();
    }
    else {
       assert(false);
