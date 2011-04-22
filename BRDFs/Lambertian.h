@@ -17,6 +17,7 @@ public:
    void setKd(const float k) { kd = k; }
    void setColor(Color* c) { color = c; }
    void setTexture(Texture* t) { texture = t; }
+   virtual float getAlpha(const Point3D& p) const;
    
 private:
    float kd;
