@@ -59,13 +59,17 @@ void Matrix::rotateX(double angle) {
    double m12 = -m[1][1] * sinA + m[1][2] * cosA;
    double m21 = m[2][1] * cosA + m[2][2] * sinA;
    double m22 = -m[2][1] * sinA + m[2][2] * cosA;
-   
+   double m31 = m[3][1] * cosA + m[3][2] * sinA;
+   double m32 = -m[3][1] * sinA + m[3][2] * cosA;
+
    m[0][1] = m01;
    m[0][2] = m02;
    m[1][1] = m11;
    m[1][2] = m12;
    m[2][1] = m21;
    m[2][2] = m22;
+   m[3][1] = m31;
+   m[3][2] = m32;
 }
 
 void Matrix::invRotateX(double angle) {
@@ -78,13 +82,17 @@ void Matrix::invRotateX(double angle) {
    double m12 = m[1][1] * sinA + m[1][2] * cosA;
    double m21 = m[2][1] * cosA - m[2][2] * sinA;
    double m22 = m[2][1] * sinA + m[2][2] * cosA;
-   
+   double m31 = m[3][1] * cosA - m[3][2] * sinA;
+   double m32 = m[3][1] * sinA + m[3][2] * cosA;
+
    m[0][1] = m01;
    m[0][2] = m02;
    m[1][1] = m11;
    m[1][2] = m12;
    m[2][1] = m21;
    m[2][2] = m22;
+   m[3][1] = m31;
+   m[3][2] = m32;
 }
 
 void Matrix::rotateY(double angle) {
@@ -97,13 +105,17 @@ void Matrix::rotateY(double angle) {
    double m12 = m[1][0] * sinA + m[1][2] * cosA;
    double m20 = m[2][0] * cosA - m[2][2] * sinA;
    double m22 = m[2][0] * sinA + m[2][2] * cosA;
-   
+   double m30 = m[3][0] * cosA - m[3][2] * sinA;
+   double m32 = m[3][0] * sinA + m[3][2] * cosA;
+
    m[0][0] = m00;
    m[0][2] = m02;
    m[1][0] = m10;
    m[1][2] = m12;
    m[2][0] = m20;
    m[2][2] = m22;
+   m[3][0] = m30;
+   m[3][2] = m32;
 }
 
 void Matrix::invRotateY(double angle) {
@@ -116,13 +128,17 @@ void Matrix::invRotateY(double angle) {
    double m12 = -m[1][0] * sinA + m[1][2] * cosA;
    double m20 = m[2][0] * cosA + m[2][2] * sinA;
    double m22 = -m[2][0] * sinA + m[2][2] * cosA;
-   
+   double m30 = m[3][0] * cosA + m[3][2] * sinA;
+   double m32 = -m[3][0] * sinA + m[3][2] * cosA;
+
    m[0][0] = m00;
    m[0][2] = m02;
    m[1][0] = m10;
    m[1][2] = m12;
    m[2][0] = m20;
    m[2][2] = m22;
+   m[3][0] = m30;
+   m[3][2] = m32;
 }
 
 void Matrix::rotateZ(double angle) {
@@ -135,25 +151,31 @@ void Matrix::rotateZ(double angle) {
    double m11 = -m[1][1] * sinA + m[1][2] * cosA;   
    double m20 = m[2][0] * cosA + m[2][1] * sinA;
    double m21 = -m[2][1] * sinA + m[2][2] * cosA;
-   
+   double m30 = m[3][0] * cosA + m[3][1] * sinA;
+   double m31 = -m[3][1] * sinA + m[3][2] * cosA;
+
    m[0][0] = m00;
    m[0][1] = m01;
    m[1][0] = m10;
    m[1][1] = m11;
    m[2][0] = m20;
    m[2][1] = m21;
+   m[3][0] = m30;
+   m[3][1] = m31;
 }
 
 void Matrix::invRotateZ(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
-   
+
    double m00 = m[0][0] * cosA - m[0][1] * sinA;
-   double m01 = m[0][1] * sinA + m[0][2] * cosA;
+   double m01 = m[0][0] * sinA + m[0][1] * cosA;
    double m10 = m[1][0] * cosA - m[1][1] * sinA;
-   double m11 = m[1][1] * sinA + m[1][2] * cosA;   
+   double m11 = m[1][0] * sinA + m[1][1] * cosA;
    double m20 = m[2][0] * cosA - m[2][1] * sinA;
-   double m21 = m[2][1] * sinA + m[2][2] * cosA;
+   double m21 = m[2][0] * sinA + m[2][1] * cosA;
+   double m30 = m[3][0] * cosA - m[3][1] * sinA;
+   double m31 = m[3][0] * sinA + m[3][1] * cosA;
    
    m[0][0] = m00;
    m[0][1] = m01;
@@ -161,8 +183,9 @@ void Matrix::invRotateZ(double angle) {
    m[1][1] = m11;
    m[2][0] = m20;
    m[2][1] = m21;
+   m[3][0] = m30;
+   m[3][1] = m31;
 }
-
 
 Point3D Matrix::operator*(const Point3D& p) const {
    return Point3D(m[0][0] * p.x + m[0][1] * p.y + m[0][2] * p.z + m[0][3],
