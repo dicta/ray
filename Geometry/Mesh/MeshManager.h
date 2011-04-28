@@ -4,13 +4,15 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <vector>
 
 using namespace std;
 
 class Mesh;
 class Hash;
 
-typedef map<string, Mesh*>::const_iterator MeshIter;
+typedef map<string, vector<Mesh*> >::const_iterator MeshIter;
+typedef vector<Mesh*>::const_iterator VecIter;
 
 class MeshManager {
 
@@ -19,14 +21,14 @@ public:
    ~MeshManager();
    
    void loadMeshes(string fname);
-   Mesh* getMesh(string name) { return objects[name]; }
+   vector<Mesh*> getMesh(string name) { return objects[name]; }
    
 private:
    MeshManager();
    void loadMesh(string type, Hash* hash);
    
    static auto_ptr<MeshManager> s_instance;
-   map<string, Mesh*> objects;
+   map<string, vector<Mesh*> > objects;
 };
 
 #endif

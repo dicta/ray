@@ -5,6 +5,7 @@
 #include "MeditParser.h"
 #include "PlyParser.h"
 #include "LightWaveParser.h"
+#include "M3DSParser.h"
 
 auto_ptr<MeshManager> MeshManager::s_instance;
 
@@ -20,7 +21,7 @@ MeshManager::MeshManager() {
 
 MeshManager::~MeshManager() {
    for(MeshIter it = objects.begin(); it != objects.end(); it++) {
-      delete (*it).second;
+//      delete (*it).second;
    }
    objects.clear();
 }
@@ -45,20 +46,28 @@ void MeshManager::loadMeshes(string fname) {
 void MeshManager::loadMesh(string type, Hash* hash) {
    string objName = hash->getString("name");
    string filename = hash->getString("filename");
+   vector<Mesh*> vec;
 
    if(type == "medit") {
       MeditParser* mp = new MeditParser();
       mp->readMesh(filename);
-      objects[objName] = mp;
+      vec.push_back(mp);
    }
    else if(type == "ply") {
       PlyParser* p = new PlyParser();
       p->loadModel(filename);
-      objects[objName] = p;
+      vec.push_back(p);
    }
    else if(type == "lwo") {
       LightWaveParser* p = new LightWaveParser();
       p->loadModel(filename);
-      objects[objName] = p;
+      vec.push_back(p);
    }
+   else if(type == "m3ds") {
+      M3DSParser parser;
+      parser.load(filename);
+      vec = parser.getMeshs();
+   }
+
+   objects[objName] = vec;
 }

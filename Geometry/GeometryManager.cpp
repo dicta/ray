@@ -103,10 +103,12 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "mesh") {
       string name = hash->getString("name");
-      obj = MeshManager::instance().getMesh(name);
-//PlyParser* p = new PlyParser();
-//p->loadModel("config/dragon_vrip.ply");
-//obj = p;
+      vector<Mesh*> m = MeshManager::instance().getMesh(name);
+      for(VecIter it = m.begin(); it != m.end(); it++) {
+         (*it)->setHash(hash);
+         objects.push_back(*it);
+      }
+      return NULL;
    }
    else {
       return NULL;

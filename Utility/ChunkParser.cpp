@@ -29,6 +29,13 @@ short read2ByteInt(ifstream &in) {
    return ret;
 }
 
+uint16 readUshort(ifstream &in) {
+   uint16 ret;
+   in.read((char *) &ret, sizeof(uint16));
+   LE_TO_CPU_INT16(ret, ret);
+   return ret;
+}
+
 int readVariableInt(ifstream &in, int & vsize) {
    streampos pos = in.tellg();
    unsigned char c = readChar(in);
