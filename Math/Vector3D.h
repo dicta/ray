@@ -64,7 +64,7 @@ inline double Vector3D::dot(const Vector3D& v) const {
 inline Vector3D Vector3D::cross(const Vector3D& v) const {
    return Vector3D(
                    (y * v.z) - (z * v.y),  //x component
-                   -((x * v.z) - (z * v.x)), //y component
+                   (z * v.x) - (x * v.z), //y component
                    (x * v.y) - (y * v.x)   //z component
                    );
 }
@@ -72,7 +72,7 @@ inline Vector3D Vector3D::cross(const Vector3D& v) const {
 inline Vector3D Vector3D::cross(const double _x, const double _y, const double _z) const {
    return Vector3D(
                    (y * _z) - (z * _y),  //x component
-                   -((x * _z) - (z * _x)), //y component
+                   (z * _x) - (x * _z), //y component
                    (x * _y) - (y * _x)   //z component
                    );                   
 }

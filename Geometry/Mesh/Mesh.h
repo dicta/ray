@@ -6,6 +6,7 @@
 #include "Geometry/GeometryObject.h"
 #include "Geometry/BBox.h"
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -44,6 +45,8 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
    
    void setupCells();
+   int determinant(Face* f);
+   string name;
    
 protected:
    bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;

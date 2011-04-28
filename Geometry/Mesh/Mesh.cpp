@@ -2,10 +2,14 @@
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 
+#define COUNTER 0
+#define CLOCKWISE 1
+
 typedef vector<Vector3D*>::const_iterator VectorIter;
 
 Mesh::Mesh() : GeometryObject(), bbox() {
    doDelete = false;
+   name = "";
 }
 
 Mesh::~Mesh() {
@@ -32,11 +36,22 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(Face* f) {
+   int dir = determinant(f);
+   if(dir == COUNTER) {
+//      f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
+   }
+   else {
+//      f->normal = ((*points[idx2]) - (*points[idx0])).cross((*points[idx1]) - (*points[idx0]));
+      int t = f->vertIdxs[0];
+      f->vertIdxs[0] = f->vertIdxs[1];
+      f->vertIdxs[1] = t;
+   }
+
    int idx0 = f->vertIdxs[0];
    int idx1 = f->vertIdxs[1];
    int idx2 = f->vertIdxs[2];
 
-   f->normal = (*points[idx1] - *points[idx0]).cross(*points[idx2] - *points[idx0]);
+   f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
    f->normal.normalize();
    
    f->bbox.expand(*points[idx0]);
@@ -45,6 +60,25 @@ void Mesh::addFace(Face* f) {
    
    faces.push_back(f);
 }
+
+int Mesh::determinant(Face* f) {
+	double x1 = points[f->vertIdxs[0]]->x;
+	double y1 = points[f->vertIdxs[0]]->y;
+	double x2 = points[f->vertIdxs[1]]->x;
+	double y2 = points[f->vertIdxs[1]]->y;
+	double x3 = points[f->vertIdxs[2]]->x;
+	double y3 = points[f->vertIdxs[2]]->y;
+
+	double determ = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
+	if (determ >= 0.0) {
+    	printf("counter\n");
+    	return COUNTER;
+   }
+	else {
+    	printf("clockwise\n");
+      return CLOCKWISE;
+   }
+} /* End of determinant */
 
 void Mesh::calculateNormals() {
    normals.reserve(points.size());
@@ -75,7 +109,7 @@ void Mesh::setHash(Hash* hash) {
       setupMaterial(hash->getValue("material")->getHash());
    }
 }
-/*
+
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
       return false;
@@ -94,7 +128,7 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
    return hit;
 }
-*/
+/*
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double kHugeValue	= 1.0E10;
 
@@ -295,7 +329,7 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       }
    }
 }
-
+*/
 bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Point3D* v0 = points[face->vertIdxs[0]];
    Point3D* v1 = points[face->vertIdxs[1]];
@@ -335,7 +369,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    }
    
    tmin = t;
-   sr.normal = interpolateNormal(face, beta, gamma);
+   sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
    sr.localHitPoint = ray.origin + ray.direction * t;
 
    return true;
@@ -369,7 +403,11 @@ void Mesh::setupCells() {
    
    int numCells = nx * ny * nz;
    cells.reserve(numCells);
-   
+   for(int i = 0; i < numCells; i++) {
+      vector<Face*> v;
+      cells.push_back(v);
+   }
+
    for(FaceIter it = faces.begin(); it != faces.end(); it++) {
       int ixmin = clamp(((*it)->bbox.x0 - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
       int iymin = clamp(((*it)->bbox.y0 - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
@@ -383,7 +421,7 @@ void Mesh::setupCells() {
          for(int iy = iymin; iy <= iymax; iy++) {
             for(int ix = ixmin; ix <= ixmax; ix++) {
                int index = ix + nx * iy + nx * ny * iz;
-               cells[index].push_back(*it);
+               cells[index].push_back(new Face(0, 1, 2)); // *it);
             }
          }
       }
