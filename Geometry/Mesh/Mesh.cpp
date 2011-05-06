@@ -42,21 +42,26 @@ void Mesh::addFace(Face* f) {
    }
    else {
 //      f->normal = ((*points[idx2]) - (*points[idx0])).cross((*points[idx1]) - (*points[idx0]));
-      int t = f->vertIdxs[0];
-      f->vertIdxs[0] = f->vertIdxs[1];
-      f->vertIdxs[1] = t;
+//      int t = f->vertIdxs[0];
+//      f->vertIdxs[0] = f->vertIdxs[1];
+//      f->vertIdxs[1] = t;
    }
+   
+   Point3D* p1 = points[f->vertIdxs[0]];
+   Point3D* p2 = points[f->vertIdxs[1]];
+   Point3D* p3 = points[f->vertIdxs[2]];
+   
+   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
+   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
+   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
 
-   int idx0 = f->vertIdxs[0];
-   int idx1 = f->vertIdxs[1];
-   int idx2 = f->vertIdxs[2];
-
-   f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
+   f->normal.set(x, y, z);
+//   f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
    f->normal.normalize();
    
-   f->bbox.expand(*points[idx0]);
-   f->bbox.expand(*points[idx1]);
-   f->bbox.expand(*points[idx2]);
+   f->bbox.expand(*p1);
+   f->bbox.expand(*p2);
+   f->bbox.expand(*p3);
    
    faces.push_back(f);
 }
@@ -71,11 +76,11 @@ int Mesh::determinant(Face* f) {
 
 	double determ = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
 	if (determ >= 0.0) {
-    	printf("counter\n");
+//    	printf("counter\n");
     	return COUNTER;
    }
 	else {
-    	printf("clockwise\n");
+//    	printf("clockwise\n");
       return CLOCKWISE;
    }
 } /* End of determinant */
@@ -107,6 +112,24 @@ void Mesh::calculateNormals() {
 void Mesh::setHash(Hash* hash) {
    if(hash->contains("material")) {
       setupMaterial(hash->getValue("material")->getHash());
+   }
+   
+   if(hash->contains("verticies")) {
+      Array* verts = hash->getValue("verticies")->getArray();
+      for(int i = 0; i < verts->size(); i++) {
+         Array* vert = verts->at(i)->getArray();
+         addPoint(new Point3D(vert->at(0)->getDouble(), vert->at(1)->getDouble(), vert->at(2)->getDouble()));
+      }
+   }
+   
+   if(hash->contains("faces")) {
+      Array* faces = hash->getValue("faces")->getArray();
+      for(int i = 0; i < faces->size(); i++) {
+         Array* f = faces->at(i)->getArray();
+         addFace(new Face(f->at(0)->getInteger(), f->at(1)->getInteger(), f->at(2)->getInteger()));
+      }
+      
+      calculateNormals();
    }
 }
 
@@ -369,7 +392,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    }
    
    tmin = t;
-   sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
+   sr.normal = interpolateNormal(face, beta, gamma);
    sr.localHitPoint = ray.origin + ray.direction * t;
 
    return true;
