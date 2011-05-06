@@ -101,6 +101,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    else if(type == "instance") {
       obj = new Instance();
    }
+   else if(type == "triangles") {
+      obj = new Mesh();
+   }
    else if(type == "mesh") {
       string name = hash->getString("name");
       vector<Mesh*> m = MeshManager::instance().getMesh(name);
