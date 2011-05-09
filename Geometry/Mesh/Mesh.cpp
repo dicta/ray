@@ -36,17 +36,6 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(Face* f) {
-   int dir = determinant(f);
-   if(dir == COUNTER) {
-//      f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
-   }
-   else {
-//      f->normal = ((*points[idx2]) - (*points[idx0])).cross((*points[idx1]) - (*points[idx0]));
-//      int t = f->vertIdxs[0];
-//      f->vertIdxs[0] = f->vertIdxs[1];
-//      f->vertIdxs[1] = t;
-   }
-   
    Point3D* p1 = points[f->vertIdxs[0]];
    Point3D* p2 = points[f->vertIdxs[1]];
    Point3D* p3 = points[f->vertIdxs[2]];
@@ -55,8 +44,8 @@ void Mesh::addFace(Face* f) {
    double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
    double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
 
-   f->normal.set(x, y, z);
-//   f->normal = ((*points[idx1]) - (*points[idx0])).cross((*points[idx2]) - (*points[idx0]));
+//   f->normal.set(x, y, z);
+   f->normal = ((*points[f->vertIdxs[1]]) - (*points[f->vertIdxs[0]])).cross((*points[f->vertIdxs[2]]) - (*points[f->vertIdxs[0]]));
    f->normal.normalize();
    
    f->bbox.expand(*p1);
@@ -354,45 +343,38 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 }
 */
 bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   Point3D* v0 = points[face->vertIdxs[0]];
-   Point3D* v1 = points[face->vertIdxs[1]];
-   Point3D* v2 = points[face->vertIdxs[2]];
+   Point3D* p1 = points[face->vertIdxs[0]];
+   Point3D* p2 = points[face->vertIdxs[1]];
+   Point3D* p3 = points[face->vertIdxs[2]];
+
+   Vector3D e1 = *p2 - *p1;
+   Vector3D e2 = *p3 - *p1;
+   Vector3D s1 = ray.direction.cross(e2);
+   double div = s1.dot(e1);
+   if(div < epsilon) {
+      return false;
+   }
+   float invDiv = 1.0 / div;
    
-   double a = v0->x - v1->x, b = v0->x - v2->x, c = ray.direction.x, d = v0->x - ray.origin.x;
-   double e = v0->y - v1->y, f = v0->y - v2->y, g = ray.direction.y, h = v0->y - ray.origin.y;
-   double i = v0->z - v1->z, j = v0->z - v2->z, k = ray.direction.z, l = v0->z - ray.origin.z;
-   
-   double m = f * k - g * j, n = h * k - g * l, p = f * l - h * j;
-   double q = g * i - e * k, s = e * j - f * i;
-   double invDenom  = 1.0 / (a * m + b * q + c * s);
-   double e1 = d * m - b * n - c * p;
-   double beta = e1 * invDenom;
-   
-   if(beta < 0.0) {
+   Vector3D s = ray.origin - *p1;
+   double b1 = s1.dot(s) * invDiv;
+   if(b1 < epsilon || b1 > 1.0) {
       return false;
    }
    
-   double r = e * l - h * i;
-   double e2 = a * n + d * q + c * r;
-   double gamma = e2 * invDenom;
-   
-   if(gamma < 0.0) {
+   Vector3D s2 = s.cross(e1);
+   double b2 = s2.dot(ray.direction) * invDiv;
+   if(b2 < epsilon || (b1 + b2) > 1.0) {
       return false;
    }
    
-   if(beta + gamma > 1.0) {
-      return false;
-   }
-   
-   double e3 = a * p - b * r + d * s;
-   double t = e3 * invDenom;
-   
+   double t = s2.dot(e2) * invDiv;
    if(t < epsilon) {
       return false;
    }
-   
+
    tmin = t;
-   sr.normal = interpolateNormal(face, beta, gamma);
+   sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
    sr.localHitPoint = ray.origin + ray.direction * t;
 
    return true;
