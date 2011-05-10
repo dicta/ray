@@ -1,6 +1,6 @@
 camera {
    type                 "pinhole"
-   numSamples           1
+   numSamples           10
    angle                30.0
    eye                  [ 0.0 0.0 4.0 ]
    lookat               [ 0.0 0.0 0.0 ]

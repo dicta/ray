@@ -10,7 +10,7 @@ rectangle {
 
       texture {
          type     "image"
-         filename "config/test/MilkyWay.jpg"
+         filename "config/saturn/MilkyWay.jpg"
          mapping  "uv"
       }
    }
@@ -31,7 +31,7 @@ sphere {
 
          texture {
             type     "image"
-            filename "config/test/saturnmap.jpg"
+            filename "config/saturn/saturnmap.jpg"
             mapping  "sphere"
          }
       }
@@ -53,7 +53,7 @@ instance {
 
          texture {
             type     "image"
-            filename "config/test/rings.png"
+            filename "config/saturn/rings.png"
             mapping  "disk"
             diskRange [ 1.2361 2.3266 ]
          }
