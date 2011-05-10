@@ -19,6 +19,8 @@ public:
    Ray();
    Ray(const Point3D& o, const Vector3D& d);
    Ray(const Ray& ray);
+   
+   Point3D operator()(double t) const { return origin + direction * t; }
 
    Point3D origin;
    Vector3D direction;

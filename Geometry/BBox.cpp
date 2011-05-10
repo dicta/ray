@@ -5,46 +5,34 @@ BBox::BBox() : x0(1e6), y0(1e6), z0(1e6), x1(-1e6), y1(-1e6), z1(-1e6) {
 }
 
 bool BBox::hit(const Ray& ray) const {
-   double ox = ray.origin.x;     double oy = ray.origin.y;     double oz = ray.origin.z;
-   double dx = ray.direction.x;  double dy = ray.direction.y;  double dz = ray.direction.z;
-   
-   double txMin, tyMin, tzMin;
-   double txMax, tyMax, tzMax;
-   
-   double a = 1.0 / dx;
-   if(a >= 0.0) {
-      txMin = (x0 - ox) * a;
-      txMax = (x1 - ox) * a;
-   }
-   else {
-      txMin = (x1 - ox) * a;
-      txMax = (x0 - ox) * a;
-   }
-   
-   double b = 1.0 / dy;
-   if(b >= 0.0) {
-      tyMin = (y0 - oy) * b;
-      tyMax = (y1 - oy) * b;
-   }
-   else {
-      tyMin = (y1 - oy) * b;
-      tyMax = (y0 - oy) * b;
-   }
+   double t0, t1;
+   return hit(ray, t0, t1);
+}
 
-   double c = 1.0 / dz;
-   if(c >= 0.0) {
-      tzMin = (z0 - oz) * c;
-      tzMax = (z1 - oz) * c;
-   }
-   else {
-      tzMin = (z1 - oz) * c;
-      tzMax = (z0 - oz) * c;
-   }
+bool BBox::hit(const Ray& ray, double& hitt0, double& hitt1) const {
+   double t0 = 0;
+   double t1 = 1.0E10;
 
-   double t0 = max(max(txMin, tyMin), tzMin);
-   double t1 = min(min(txMax, tyMax), tzMax);
+   if(!slabHit(x0, x1, ray.origin.x, ray.direction.x, t0, t1)) return false;
+   if(!slabHit(y0, y1, ray.origin.y, ray.direction.y, t0, t1)) return false;
+   if(!slabHit(z0, z1, ray.origin.z, ray.direction.z, t0, t1)) return false;
+
+   hitt0 = t0;
+   hitt1 = t1;
+   return true;
+}
+
+bool BBox::slabHit(double b0, double b1, double ro, double rd, double& t0, double& t1) const {
+   double near = (b0 - ro) / rd;
+   double far = (b1 - ro) / rd;
+   if(near > far) swap(near, far);
+   t0 = near > t0 ? near : t0;
+   t1 = far < t1 ? far : t1;
    
-   return (t0 < t1 && t1 > GeometryObject::epsilon);
+   if(t0 > t1) {
+      return false;
+   }
+   return true;
 }
 
 void BBox::expand(const BBox& b) {
@@ -55,6 +43,10 @@ void BBox::expand(const BBox& b) {
    x1 = max(x1, b.x1);
    y1 = max(y1, b.y1);
    z1 = max(z1, b.z1);
+   
+   wx = x1 - x0;
+   wy = y1 - y0;
+   wz = z1 - z0;
 }
 
 void BBox::expand(const Point3D& b) {
@@ -65,4 +57,20 @@ void BBox::expand(const Point3D& b) {
    x1 = max(x1, b.x); // + GeometryObject::epsilon);
    y1 = max(y1, b.y); // + GeometryObject::epsilon);
    z1 = max(z1, b.z); // + GeometryObject::epsilon);
+   
+   wx = x1 - x0;
+   wy = y1 - y0;
+   wz = z1 - z0;
+}
+
+double BBox::maxExtent() const {
+   if(wx > wy && wx > wz) {
+      return wx;
+   }
+   else if(wy > wz) {
+      return wy;
+   }
+   else {
+      return wz;
+   }
 }

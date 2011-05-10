@@ -40,9 +40,9 @@ void Mesh::addFace(Face* f) {
    Point3D* p2 = points[f->vertIdxs[1]];
    Point3D* p3 = points[f->vertIdxs[2]];
    
-   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
-   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
-   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
+//   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
+//   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
+//   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
 
 //   f->normal.set(x, y, z);
    f->normal = ((*points[f->vertIdxs[1]]) - (*points[f->vertIdxs[0]])).cross((*points[f->vertIdxs[2]]) - (*points[f->vertIdxs[0]]));
@@ -54,25 +54,6 @@ void Mesh::addFace(Face* f) {
    
    faces.push_back(f);
 }
-
-int Mesh::determinant(Face* f) {
-	double x1 = points[f->vertIdxs[0]]->x;
-	double y1 = points[f->vertIdxs[0]]->y;
-	double x2 = points[f->vertIdxs[1]]->x;
-	double y2 = points[f->vertIdxs[1]]->y;
-	double x3 = points[f->vertIdxs[2]]->x;
-	double y3 = points[f->vertIdxs[2]]->y;
-
-	double determ = (x2 - x1) * (y3 - y1) - (x3 - x1) * (y2 - y1);
-	if (determ >= 0.0) {
-//    	printf("counter\n");
-    	return COUNTER;
-   }
-	else {
-//    	printf("clockwise\n");
-      return CLOCKWISE;
-   }
-} /* End of determinant */
 
 void Mesh::calculateNormals() {
    normals.reserve(points.size());
@@ -121,7 +102,7 @@ void Mesh::setHash(Hash* hash) {
       calculateNormals();
    }
 }
-
+/*
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
       return false;
@@ -140,87 +121,36 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
    return hit;
 }
-/*
-bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   double kHugeValue	= 1.0E10;
+*/
 
-   double x0 = bbox.x0;
-   double y0 = bbox.y0;
-   double z0 = bbox.z0;
-   double x1 = bbox.x1;
-   double y1 = bbox.y1;
-   double z1 = bbox.z1;
-	
-   double tx_min, ty_min, tz_min;
-   double tx_max, ty_max, tz_max; 
-	
+bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 	// the following code includes modifications from Shirley and Morley (2003)
-	
-   double a = 1.0 / ray.direction.x;
-   if (a >= 0) {
-      tx_min = (x0 - ray.origin.x) * a;
-      tx_max = (x1 - ray.origin.x) * a;
+
+   double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
+   double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
+   if(ray.direction.x < 0) swap(tx_min, tx_max);
+
+   double ty_min = (bbox.y0 - ray.origin.y) / ray.direction.y;
+   double ty_max = (bbox.y1 - ray.origin.y) / ray.direction.y;
+   if(ray.direction.y < 0) swap(ty_min, ty_max);
+
+   double tz_min = (bbox.z0 - ray.origin.z) / ray.direction.z;
+   double tz_max = (bbox.z1 - ray.origin.z) / ray.direction.z;
+   if(ray.direction.z < 0) swap(tz_min, tz_max);
+
+	double t0 = max(max(tx_min, ty_min), tz_min);
+	double t1 = min(min(tx_max, ty_max), tz_max);
+   
+	if (t0 > t1) return(false);
+   
+   Point3D p = ray.origin;
+   if(!bbox.contains(ray.origin)) {
+      p = ray(t0);
    }
-   else {
-      tx_min = (x1 - ray.origin.x) * a;
-      tx_max = (x0 - ray.origin.x) * a;
-   }
-	
-	double b = 1.0 / ray.direction.y;
-	if (b >= 0) {
-		ty_min = (y0 - ray.origin.y) * b;
-		ty_max = (y1 - ray.origin.y) * b;
-	}
-	else {
-		ty_min = (y1 - ray.origin.y) * b;
-		ty_max = (y0 - ray.origin.y) * b;
-	}
-	
-	double c = 1.0 / ray.direction.z;
-	if (c >= 0) {
-		tz_min = (z0 - ray.origin.z) * c;
-		tz_max = (z1 - ray.origin.z) * c;
-	}
-	else {
-		tz_min = (z1 - ray.origin.z) * c;
-		tz_max = (z0 - ray.origin.z) * c;
-	}
-	
-	double t0, t1;
-	
-	if (tx_min > ty_min)
-		t0 = tx_min;
-	else
-		t0 = ty_min;
-   
-	if (tz_min > t0)
-		t0 = tz_min;
-   
-	if (tx_max < ty_max)
-		t1 = tx_max;
-	else
-		t1 = ty_max;
-   
-	if (tz_max < t1)
-		t1 = tz_max;
-   
-	if (t0 > t1)
-		return(false);   
-   
-   int ix, iy, iz;
-   
-   if(bbox.contains(ray.origin)) {
-      // Ray starts inside grid
-      ix = (int) clamp((ray.origin.x - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
-      iy = (int) clamp((ray.origin.y - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
-      iz = (int) clamp((ray.origin.z - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
-   }
-   else {
-      Point3D p = ray.origin + ray.direction * t0;  // initial hit point with grid's bounding box
-      ix = (int) clamp((p.x - x0) * nx / (x1 - x0), 0, nx - 1);
-      iy = (int) clamp((p.y - y0) * ny / (y1 - y0), 0, ny - 1);
-      iz = (int) clamp((p.z - z0) * nz / (z1 - z0), 0, nz - 1);
-   }
+
+   int ix = (int) clamp((p.x - bbox.x0) * nx / (bbox.wx), 0, nx - 1);
+   int iy = (int) clamp((p.y - bbox.y0) * ny / (bbox.wy), 0, ny - 1);
+   int iz = (int) clamp((p.z - bbox.z0) * nz / (bbox.wz), 0, nz - 1);
    
    // ray parameter increments per cell in the x, y, and z directions
 
@@ -228,120 +158,82 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double dty = (ty_max - ty_min) / ny;
    double dtz = (tz_max - tz_min) / nz;
 
-   double   tx_next, ty_next, tz_next;
-   int   ix_step, iy_step, iz_step;
-   int   ix_stop, iy_stop, iz_stop;
-
-   if (ray.direction.x > 0) {
-      tx_next = tx_min + (ix + 1) * dtx;
-      ix_step = +1;
-      ix_stop = nx;
-   }
-   else {
-      tx_next = tx_min + (nx - ix) * dtx;
-      ix_step = -1;
-      ix_stop = -1;
-   }
-
-   if (ray.direction.x == 0.0) {
-      tx_next = kHugeValue;
-      ix_step = -1;
-      ix_stop = -1;
-   }
-
-
-   if (ray.direction.y > 0) {
-      ty_next = ty_min + (iy + 1) * dty;
-      iy_step = +1;
-      iy_stop = ny;
-   }
-   else {
-      ty_next = ty_min + (ny - iy) * dty;
-      iy_step = -1;
-      iy_stop = -1;
-   }
-
-   if (ray.direction.y == 0.0) {
-      ty_next = kHugeValue;
-      iy_step = -1;
-      iy_stop = -1;
-   }
-
-   if (ray.direction.z > 0) {
-      tz_next = tz_min + (iz + 1) * dtz;
-      iz_step = +1;
-      iz_stop = nz;
-   }
-   else {
-      tz_next = tz_min + (nz - iz) * dtz;
-      iz_step = -1;
-      iz_stop = -1;
-   }
-
-   if (ray.direction.z == 0.0) {
-      tz_next = kHugeValue;
-      iz_step = -1;
-      iz_stop = -1;
-   }
+   int ix_step, iy_step, iz_step;
+   int ix_stop, iy_stop, iz_stop;
+   
+   double tx_next = calculateNext(ray.direction.x, tx_min, ix, dtx, nx, ix_step, ix_stop);
+   double ty_next = calculateNext(ray.direction.y, ty_min, iy, dty, ny, iy_step, iy_stop);
+   double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
 
    // Traverse the grid
    while(true) {
-      vector<Face*> cell = cells[ix + nx * iy + nx * ny * iz];
+      Voxel* cell = voxels[ix + nx * iy + nx * ny * iz];
+
       if (tx_next < ty_next && tx_next < tz_next) {
-         double t;
-         bool hit = false;
          tmin = tx_next;
-         for(FaceIter it = cell.begin(); it != cell.end(); it++) {
-            if(hitFace(*it, ray, t, sr) && t < tmin) {
-               tmin = t;
-               hit = true;
-            }
-         }
-         if(hit) return true;
+         if(checkCell(ray, cell, tmin, sr)) return true;
 
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
+      else if (ty_next < tz_next) {
+         tmin = ty_next;
+         if(checkCell(ray, cell, tmin, sr)) return true;
+
+         ty_next += dty;
+         iy += iy_step;
+         if (iy == iy_stop) return false;
+      }
       else {
-         if (ty_next < tz_next) {
-            double t;
-            bool hit = false;
-            tmin = ty_next;
-            for(FaceIter it = cell.begin(); it != cell.end(); it++) {
-               if(hitFace(*it, ray, t, sr) && t < tmin) {
-                  tmin = t;
-                  hit = true;
-               }
-            }
-            if(hit) return true;
+         tmin = tz_next;
+         if(checkCell(ray, cell, tmin, sr)) return true;
 
-            ty_next += dty;
-            iy += iy_step;
-
-            if (iy == iy_stop) return false;
-         }
-         else {
-            double t;
-            bool hit = false;
-            tmin = tz_next;
-            for(FaceIter it = cell.begin(); it != cell.end(); it++) {
-               if(hitFace(*it, ray, t, sr) && t < tmin) {
-                  tmin = t;
-                  hit = true;
-               }
-            }
-            if(hit) return true;
-
-            tz_next += dtz;
-            iz += iz_step;
-
-            if (iz == iz_stop) return false;
-         }
+         tz_next += dtz;
+         iz += iz_step;
+         if (iz == iz_stop) return false;
       }
    }
 }
-*/
+
+bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const {
+   if(cell == NULL) return false;
+
+   double t;
+   bool hit = false;
+
+   for(FaceIter it = cell->faces.begin(); it != cell->faces.end(); it++) {
+      if(hitFace(*it, ray, t, sr) && t < tmin) {
+         tmin = t;
+         hit = true;
+      }
+   }
+
+   return hit;
+}
+
+double Mesh::calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const {
+   double next;
+
+   if (fabs(rd) < epsilon) {
+      next = HUGE_VALUE;
+      step = -1;
+      stop = -1;
+   }
+   else if (rd > 0) {
+      next = min + (i + 1) * dt;
+      step = 1;
+      stop = n;
+   }
+   else {
+      next = min + (n - i) * dt;
+      step = -1;
+      stop = -1;
+   }
+   
+   return next;
+}
+
 bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Point3D* p1 = points[face->vertIdxs[0]];
    Point3D* p2 = points[face->vertIdxs[1]];
@@ -394,39 +286,33 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
 }
 
 void Mesh::setupCells() {
-   // dimensions of the grid in the x, y, and z directions
-   double wx = bbox.x1 - bbox.x0;
-   double wy = bbox.y1 - bbox.y0;
-   double wz = bbox.z1 - bbox.z0;
+   double root = 3.0 * pow(faces.size(), 1.0 / 3.0);
+   double voxelsPerUnit = root / bbox.maxExtent();
+   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;
+   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 64) + 1;
+   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 64) + 1;
 
-   double multiplier = 2.0;
-   
-   double s = pow(wx * wy * wz / faces.size(), 0.33333333);
-   nx = multiplier * wx / s + 1;
-   ny = multiplier * wy / s + 1;
-   nz = multiplier * wz / s + 1;
-   
    int numCells = nx * ny * nz;
-   cells.reserve(numCells);
-   for(int i = 0; i < numCells; i++) {
-      vector<Face*> v;
-      cells.push_back(v);
-   }
+   voxels = new Voxel*[numCells];
+   memset(voxels, 0, sizeof(Voxel*) * numCells);
 
    for(FaceIter it = faces.begin(); it != faces.end(); it++) {
-      int ixmin = clamp(((*it)->bbox.x0 - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
-      int iymin = clamp(((*it)->bbox.y0 - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
-      int izmin = clamp(((*it)->bbox.z0 - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
-      int ixmax = clamp(((*it)->bbox.x1 - bbox.x0) * nx / (bbox.x1 - bbox.x0), 0, nx - 1);
-      int iymax = clamp(((*it)->bbox.y1 - bbox.y0) * ny / (bbox.y1 - bbox.y0), 0, ny - 1);
-      int izmax = clamp(((*it)->bbox.z1 - bbox.z0) * nz / (bbox.z1 - bbox.z0), 0, nz - 1);
+      int ixmin = (int) clamp(((*it)->bbox.x0 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
+      int iymin = (int) clamp(((*it)->bbox.y0 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
+      int izmin = (int) clamp(((*it)->bbox.z0 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
+      int ixmax = (int) clamp(((*it)->bbox.x1 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
+      int iymax = (int) clamp(((*it)->bbox.y1 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
+      int izmax = (int) clamp(((*it)->bbox.z1 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
       
       // add the object to the cells
       for(int iz = izmin; iz <= izmax; iz++) {
          for(int iy = iymin; iy <= iymax; iy++) {
             for(int ix = ixmin; ix <= ixmax; ix++) {
                int index = ix + nx * iy + nx * ny * iz;
-               cells[index].push_back(new Face(0, 1, 2)); // *it);
+               if(voxels[index] == NULL) {
+                  voxels[index] = new Voxel();
+               }
+               voxels[index]->add(*it);
             }
          }
       }

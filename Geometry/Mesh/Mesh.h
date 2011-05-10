@@ -24,6 +24,13 @@ public:
    BBox bbox;
 };
 
+struct Voxel {
+   ~Voxel() { faces.clear(); }
+
+   vector<Face*> faces;
+   void add(Face* f) { faces.push_back(f); }
+};
+
 typedef vector<Face*>::const_iterator FaceIter;
 
 class Mesh : public GeometryObject {
@@ -45,20 +52,25 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
    
    void setupCells();
-   int determinant(Face* f);
    string name;
    
 protected:
    bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
    Vector3D interpolateNormal(Face* face, const double beta, const double gamma) const;
+   int getPointCount() const { return points.size(); }
+   Point3D* getPointAt(int idx) const { return points[idx]; }
 
    vector<Point3D*> points;
    vector<Vector3D*> normals;
    vector<Face*> faces;
-   vector<vector<Face*> > cells;
+   Voxel** voxels;
    BBox bbox;
    
    int nx, ny, nz;
+   
+private:
+   double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
+   bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
 };
 
 #endif
