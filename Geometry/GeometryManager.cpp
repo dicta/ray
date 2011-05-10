@@ -26,6 +26,7 @@
 #include "Mesh/MeshManager.h"
 #include "Mesh/Mesh.h"
 #include "Mesh/PlyParser.h"
+#include "Mesh/GeoSphere.h"
 
 auto_ptr<GeometryManager> GeometryManager::s_instance;
 
@@ -100,6 +101,9 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "instance") {
       obj = new Instance();
+   }
+   else if(type == "geo") {
+      obj = new GeoSphere();
    }
    else if(type == "triangles") {
       obj = new Mesh();
