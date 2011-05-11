@@ -3,7 +3,9 @@
 
 #include "Mesh.h"
 
+#include <vector>
 #include <string>
+#include <map>
 #include <iostream>
 #include <fstream>
 
@@ -16,6 +18,11 @@ public:
    
    void loadModel(string fname);
    
+   virtual Material* getMaterial() const;
+   
+protected:
+   virtual bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
+   
 private:
    ifstream in;
    
@@ -23,7 +30,11 @@ private:
    int parsePTag();
    int parsePoints();
    int parsePolygons();
+   int parseSurface();
    int skipChunk();
+   
+   vector<string> tags;
+   mutable map<string, Material*> materialMap;
 };
 
 #endif

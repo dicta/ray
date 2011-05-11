@@ -1,5 +1,6 @@
 #include "LightWaveParser.h"
 #include "Utility/ChunkParser.h"
+#include "Materials/Matte.h"
 
 LightWaveParser::LightWaveParser() : Mesh(), in() {
 }
@@ -34,6 +35,9 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
       else if(chunkID == "PTAG") {
          parsePTag();
       }
+      else if(chunkID == "SURF") {
+         parseSurface();
+      }
       else {
          count += skipChunk();
       }
@@ -55,6 +59,8 @@ int LightWaveParser::parseTags() {
       string tagName = readString(in);
       if(tagName.size() > 0) {
          fprintf(stderr, "%d = %s\n", idx++, tagName.c_str());
+         materialMap[tagName] = new Matte;
+         tags.push_back(tagName);
       }
       count += tagName.size() + 1;
    }
@@ -72,6 +78,7 @@ int LightWaveParser::parsePTag() {
          short fidx = read2ByteInt(in);
          short tidx = read2ByteInt(in);
          printf("face %d uses %d\n", fidx, tidx);
+//         faces[fidx]->materialName = tags[tidx];
          count += 4;
       }
    }
@@ -133,6 +140,56 @@ int LightWaveParser::parsePolygons() {
    return count;
 }
 
+int LightWaveParser::parseSurface() {
+   int size = read4ByteInt(in);
+   int count = 4;
+   
+   string sname = readString(in);
+   count += sname.size() + 1;
+   if(sname.size() % 2 == 0) {
+      count++;
+      readChar(in);
+   }
+
+   string pname = readString(in);
+   count += pname.size() + 1;
+   if(pname.size() % 2 == 0) {
+      count++;
+      readChar(in);
+   }
+   
+   while(count < size) {
+      string subName = readChunkID(in, 4);
+      short subSize = read2ByteInt(in);
+      count += 6;
+      
+      if(subName == "COLR") {
+         float r = readFloat(in);
+         float b = readFloat(in);
+         float g = readFloat(in);
+         read2ByteInt(in);
+         printf("Color = %f, %f, %f\n", r, g, b);
+         materialMap[sname]->setColor(r, g, b);
+         materialMap[sname]->setDiffuse(1.0);
+      }
+      else if(subName == "DIFF") {
+         float value = readFloat(in);
+         read2ByteInt(in);
+         printf("DIFF = %f\n", value);
+         materialMap[sname]->setDiffuse(value);
+      }
+      else {
+         printf("subName = %s\n", subName.c_str());
+         for(int i = 0; i < subSize; i++) {
+            readChar(in);
+         }
+      }
+      count += subSize;
+   }
+
+   return count;
+}
+
 int LightWaveParser::skipChunk() {
    int count = 0;
    int size = read4ByteInt(in);
@@ -143,4 +200,18 @@ int LightWaveParser::skipChunk() {
    }
    
    return size + 4;
+}
+
+Material* LightWaveParser::getMaterial() const {
+//   map<string, Material*>::const_iterator it =  materialMap.find(currentMaterial);
+//   return (*it).second;
+   return NULL;
+}
+
+bool LightWaveParser::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
+   bool ret = Mesh::hitFace(face, ray, tmin, sr);
+   if(ret == true) {
+//      currentMaterial = face->materialName;
+   }
+   return ret;
 }
