@@ -16,6 +16,7 @@
 #include "Math/Maths.h"
 #include <math.h>
 #include <queue>
+#include "Math/Matrix.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ void* timerThread(void* arg) {
    pthread_exit(NULL);
 }
 
-Camera::Camera(int w, int h) : eye(), lookat(), up(), width(w), height(h), boxw(0), boxh(0) {
+Camera::Camera(int w, int h) : eye(), width(w), height(h), boxw(0), boxh(0) {
    pthread_mutex_init(&surfLock, NULL);
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
@@ -84,8 +85,6 @@ void Camera::setThreadParameters(int tc, int w, int h) {
 
 void Camera::setHash(Hash* h) {   
    eye.set(h->getValue("eye")->getArray());
-   lookat.set(h->getValue("lookat")->getArray());
-   up.set(h->getValue("up")->getArray());
 
    float angle = h->getDouble("angle") / 2.0;
    viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
@@ -113,6 +112,8 @@ void Camera::setHash(Hash* h) {
    else if(h->contains("bgColor")) {
       tracer->setBackgroundColor(h->getValue("bgColor")->getArray());
    }
+   
+   computeUVW(h);
 }
 
 void Camera::render() {
@@ -131,20 +132,47 @@ void Camera::render() {
    pthread_create(&tid, NULL, timerThread, (void *) this);
 }
 
-void Camera::computeUVW() {
-   if(eye.x == lookat.x && eye.z == lookat.z && eye.y > lookat.y) {
-      u.set(1, 0, 0);
-      v.set(0, 0, 1);
-      w.set(0, 1, 0);
+void Camera::computeUVW(Hash* h) {
+   if(h->contains("lookat")) {
+      Point3D lookat(h->getValue("lookat")->getArray());
+      Vector3D up(0, 1, 0);
+      if(h->contains("up")) {
+         up.set(h->getValue("up")->getArray());
+      }
+
+      if(eye.x == lookat.x && eye.z == lookat.z && eye.y > lookat.y) {
+         u.set(1, 0, 0);
+         v.set(0, 0, 1);
+         w.set(0, 1, 0);
+      }
+      else {
+         up.normalize();
+         w = eye - lookat;
+         w.normalize();
+         u = up.cross(w);
+         u.normalize();
+         v = w.cross(u);
+      }
+   }
+   else if(h->contains("rotate")) {
+      Array* rotate = h->getValue("rotate")->getArray();
+      Matrix m;
+
+      m.rotateX(rotate->at(0)->getDouble());
+      m.rotateY(rotate->at(1)->getDouble());
+      m.rotateZ(rotate->at(2)->getDouble());
+
+      u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
+      v.set(m.m[1][0], m.m[1][1], m.m[1][2]);
+      w.set(m.m[2][0], m.m[2][1], m.m[2][2]);
+   
+      u.normalize();
+      v.normalize();
+      w.normalize();
    }
    else {
-      up.normalize();
-
-      w = eye - lookat;
-      w.normalize();
-      u = up.cross(w);
-      u.normalize();
-      v = w.cross(u);
+      fprintf(stderr, "Must specify either lookat or rotate in camera configuration.\n");
+      exit(1);
    }
 }
 

@@ -28,13 +28,12 @@ public:
    
    virtual void setHash(Hash* hash);
 
-   void computeUVW();
    void render();
    virtual void renderScene(SDL_Rect& rect) = 0;
    
-   void setEye(Array* a) { eye.set(a); }
-   void setLookat(Array* a) { lookat.set(a); }
-   void setUp(Array* a) { up.set(a); }
+//   void setEye(Array* a) { eye.set(a); }
+//   void setLookat(Array* a) { lookat.set(a); }
+//   void setUp(Array* a) { up.set(a); }
    
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
@@ -42,10 +41,9 @@ public:
 protected:
    void setPixel(SDL_Surface* s, int x, int y, const Color& color);
    SDL_Surface* createSurface(const SDL_Rect& rect);
+   void computeUVW(Hash* h);
 
    Point3D eye;
-   Point3D lookat;
-   Vector3D up;
    Vector3D u, v, w;
    Tracer* tracer;
    Sampler* sampler;

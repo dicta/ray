@@ -52,7 +52,6 @@ void SDLApp::loadConfiguration() {
    
    setupCamera(h->getString("camera"), width, height);
    camera->setSurface(surface);
-   camera->computeUVW();
    camera->setThreadParameters(threadCount, boxw, boxh);
    
    if(h->contains("mesh")) {
@@ -95,7 +94,12 @@ void SDLApp::run() {
    while(!stopApp) {
       SDL_WaitEvent(&event);
       switch (event.type) {
-//         case SDL_KEYDOWN :
+         case SDL_KEYDOWN:
+            if(event.key.keysym.sym == SDLK_ESCAPE) {
+               stopApp = true;
+            }
+            break;
+
          case SDL_QUIT:
             stopApp = true;
             break;
