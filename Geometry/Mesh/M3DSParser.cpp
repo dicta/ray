@@ -2,6 +2,7 @@
 #include "Mesh.h"
 #include "utility/ChunkParser.h"
 #include "utility/3dschunk.h"
+#include "Materials/Matte.h"
 
 bool M3DSParser::load(const string& filename) {
    in.open(filename.c_str(), ios::in | ios::binary);
@@ -26,8 +27,6 @@ bool M3DSParser::load(const string& filename) {
       processTopLevelChunk(contentSize);
 
       in.close();
-//      calculateNormals();
-
       return true;
    }
 }
@@ -68,14 +67,8 @@ void M3DSParser::processSceneChunk(int nBytes) {
          processModelChunk(contentSize - (name.length() + 1), name);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_ENTRY) {
-         Material* material = new Material();
-         processMaterialChunk(contentSize, material);
+         processMaterialChunk(contentSize);
       }
-/*      else if (chunkType == M3DCHUNK_BACKGROUND_COLOR) {
-         // Don't use background color so read it in and then discard it
-         Color color;
-         processColorChunk(contentSize, color);
-      }*/
       else {
          skipBytes(contentSize);
       }
@@ -123,15 +116,9 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
       if (chunkType == M3DCHUNK_POINT_ARRAY) {
          readPointArray(mesh);
       }
-//      else if (chunkType == M3DCHUNK_MESH_TEXTURE_COORDS) {
-//         readTextureCoordArray(mesh);
-//      }
       else if (chunkType == M3DCHUNK_FACE_ARRAY) {
          readFaceArray(mesh, contentSize);
       }
-//      else if (chunkType == M3DCHUNK_MESH_MATRIX) {
-//         readMatrix();
-//      }
       else {
          skipBytes(contentSize);
       }
@@ -144,9 +131,10 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    mesh->setupCells();
 }
 
-void M3DSParser::processMaterialChunk(int nBytes, Material* material) {
+void M3DSParser::processMaterialChunk(int nBytes) {
    int bytesRead = 0;
 
+   Matte* material = new Matte();
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshort(in);
       int chunkSize = read4ByteInt(in);
@@ -154,25 +142,25 @@ void M3DSParser::processMaterialChunk(int nBytes, Material* material) {
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_MATERIAL_NAME) {
-         material->name = readString(in);
+         string name = readString(in);
+         materials[name] = material;
       }
       else if (chunkType == M3DCHUNK_MATERIAL_AMBIENT) {
-         processColorChunk(contentSize, material->ambient);
+         material->setAmbientColor(processColorChunk(contentSize));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
-         processColorChunk(contentSize, material->diffuse);
+         material->setDiffuseColor(processColorChunk(contentSize));
       }
-      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
-         processColorChunk(contentSize, material->specular);
-      }
-      else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
-         processPercentageChunk(contentSize, material->shininess);
-      }
-      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
-         processPercentageChunk(contentSize, material->opacity);
-      }
-//      else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
-//         processTexmapChunk(contentSize, material->texID);
+//      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
+//         processColorChunk(contentSize);
+//      }
+//      else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
+//         float p;
+//         processPercentageChunk(contentSize, p);
+//      }
+//      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
+//         float p;
+//         processPercentageChunk(contentSize, p);
 //      }
       else {
          skipBytes(contentSize);
@@ -184,8 +172,10 @@ void M3DSParser::processMaterialChunk(int nBytes, Material* material) {
    }
 }
 
-void M3DSParser::processColorChunk(int nBytes, Color& color) {
+Color* M3DSParser::processColorChunk(int nBytes) {
    int bytesRead = 0;
+   Color* color = new Color;
+
    while (bytesRead < nBytes) {
       uint16 chunkType = readUshort(in);
       int chunkSize = read4ByteInt(in);
@@ -206,6 +196,8 @@ void M3DSParser::processColorChunk(int nBytes, Color& color) {
    if(bytesRead != nBytes) {
       cerr << "In processColorChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
    }
+   
+   return color;
 }
 
 void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
@@ -251,27 +243,54 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v0 = readUshort(in);
       uint16 v1 = readUshort(in);
       uint16 v2 = readUshort(in);
-      uint16 flags = readUshort(in);
+      readUshort(in);
       mesh->addFace(new Face(v0, v1, v2));
    }
 
    int bytesLeft = contentSize - (8 * nFaces + 2);
    if (bytesLeft > 0) {
-//      processFaceArrayChunk(bytesLeft, mesh);
-      skipBytes(bytesLeft);
+      processFaceArrayChunk(bytesLeft, mesh);
    }
 }
 
-void M3DSParser::readColor(Color& color) {
+void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
+   int bytesRead = 0;
+   
+   while(bytesRead < nBytes) {
+      uint16 chunkType = readUshort(in);
+      int chunkSize = read4ByteInt(in);
+      int contentSize = chunkSize - 6;
+      bytesRead += chunkSize;
+      
+      if (chunkType == M3DCHUNK_MESH_MATERIAL_GROUP) {
+         // For now, we just assume that there is only one material group
+         // per triangle mesh, and that the material applies to all faces in
+         // the mesh.
+         string materialName = readString(in);
+         uint16 nFaces = readUshort(in);
+         
+         for (uint16 i = 0; i < nFaces; i++) {
+            readUshort(in);
+         }
+         
+         mesh->setMaterial(materials[materialName]);
+      }
+      else {
+         skipBytes(contentSize);
+      }
+   }
+}
+
+void M3DSParser::readColor(Color* color) {
    unsigned char r = readChar(in);
    unsigned char g = readChar(in);
    unsigned char b = readChar(in);
 
-   color.set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
+   color->set((float) r / 255.0f, (float) g / 255.0f, (float) b / 255.0f);
 }
 
-void M3DSParser::readFloatColor(Color& color) {
-   color.set(readFloat(in) / 255.0f, readFloat(in) / 255.0f, readFloat(in) / 255.0f);
+void M3DSParser::readFloatColor(Color* color) {
+   color->set(readFloat(in) / 255.0f, readFloat(in) / 255.0f, readFloat(in) / 255.0f);
 }
 
 

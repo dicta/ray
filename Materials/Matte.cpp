@@ -97,3 +97,13 @@ void Matte::setDiffuse(float d) {
    ambientBRDF->setKd(d);
    diffuseBRDF->setKd(d);
 }
+
+void Matte::setAmbientColor(Color* c) {
+   ambientBRDF->setColor(c);
+   ambientBRDF->setKd(0.2);
+}
+
+void Matte::setDiffuseColor(Color* c) {
+   diffuseBRDF->setColor(c);
+   diffuseBRDF->setKd(0.8);
+}

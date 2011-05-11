@@ -30,8 +30,8 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const = 0;
 
    void setupMaterial(Hash* hash);
-   Material* getMaterial() const { return material; }
-   void setMaterial(Material *m) { material = m; }
+   virtual Material* getMaterial() const { return material; }
+   void setMaterial(Material *m);
    
    bool doDelete;
 

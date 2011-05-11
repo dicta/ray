@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 #include <fstream>
 #include "Utility/Color.h"
@@ -10,17 +11,7 @@
 using namespace std;
 
 class Mesh;
-
-struct Material {
-   string name;
-   int texID;
-   Color ambient;
-   Color diffuse;
-   Color specular;
-   Color emission;
-   float shininess;
-   float opacity;
-};
+class Matte;
 
 class M3DSParser {
 
@@ -36,19 +27,21 @@ private:
    void processSceneChunk(int nBytes);
    void processModelChunk(int nBytes, string name);
    void processTriMeshChunk(int nBytes, string name);
-   void processMaterialChunk(int nBytes, Material* material);
-   void processColorChunk(int nBytes, Color& color);
+   void processMaterialChunk(int nBytes);
+   Color* processColorChunk(int nBytes);
    void processPercentageChunk(int nBytes, float& percent);
-
+   void processFaceArrayChunk(int nBytes, Mesh* mesh);
+   
    void readPointArray(Mesh* mesh);
    void readFaceArray(Mesh* mesh, int contentSize);
-   void readColor(Color& color);
-   void readFloatColor(Color& color);
+   void readColor(Color* color);
+   void readFloatColor(Color* color);
    
    void skipBytes(int count);
 
    ifstream in;
    vector<Mesh*> meshs;
+   map<string, Matte*> materials;
 };
 
 #endif
