@@ -87,8 +87,8 @@ void Camera::setHash(Hash* h) {
    lookat.set(h->getValue("lookat")->getArray());
    up.set(h->getValue("up")->getArray());
 
-   float angle = h->getDouble("angle");
-   viewPlaneDistance = height * 0.5 / tan(angle * DEG_TO_RAD);
+   float angle = h->getDouble("angle") / 2.0;
+   viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
    
    int numSamples = h->getInteger("numSamples");
    if(numSamples == 1) {
