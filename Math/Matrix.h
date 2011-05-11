@@ -41,7 +41,4 @@ public:
    Vector3D transformNormal(const Vector3D& p) const;
 };
 
-
-
-
 #endif

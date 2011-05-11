@@ -11,6 +11,7 @@ class Vector3D {
 public:
    Vector3D(double xx = 0.0, double yy = 0.0, double zz = 0.0);
    Vector3D(const Vector3D &v);
+   Vector3D(Array* a);
 
    void set(double xx, double yy, double zz);
    void set(Array* a);

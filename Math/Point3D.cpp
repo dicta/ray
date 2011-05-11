@@ -12,9 +12,7 @@ Point3D::Point3D(const Point3D& p) {
 }
 
 Point3D::Point3D(Array* a) {
-   x = a->at(0)->getDouble();
-   y = a->at(1)->getDouble();
-   z = a->at(2)->getDouble();
+   set(a);
 }
 
 void Point3D::set(double xx, double yy, double zz) {

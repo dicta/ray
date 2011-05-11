@@ -11,6 +11,10 @@ Vector3D::Vector3D(const Vector3D &v) {
    set(v.x, v.y, v.z);
 }
 
+Vector3D::Vector3D(Array* a) {
+   set(a);
+}
+
 void Vector3D::set(double xx, double yy, double zz) {
    x = xx;
    y = yy;
