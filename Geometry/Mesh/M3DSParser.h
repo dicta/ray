@@ -11,7 +11,17 @@
 using namespace std;
 
 class Mesh;
-class Matte;
+class Material;
+
+struct MaterialProps {
+   string name;
+   Color* ambient;
+   Color* diffuse;
+   Color* specular;
+   float specHighlight;
+
+   MaterialProps();
+};
 
 class M3DSParser {
 
@@ -41,7 +51,7 @@ private:
 
    ifstream in;
    vector<Mesh*> meshs;
-   map<string, Matte*> materials;
+   map<string, Material*> materials;
 };
 
 #endif

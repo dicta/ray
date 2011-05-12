@@ -6,6 +6,39 @@
 #define CLOCKWISE 1
 
 typedef vector<Vector3D*>::const_iterator VectorIter;
+typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
+typedef map<int, Vector3D*>::const_iterator SGNormalIter;
+
+SmoothingGroup::~SmoothingGroup() {
+   for(SGNormalIter it = normals.begin(), end = normals.end(); it != end; it++) {
+      delete (*it).second;
+   }
+   normals.clear();
+}
+
+void SmoothingGroup::addFace(Face* f) {
+   for(int i = 0; i < 3; i++) {
+      if(normals.find(f->vertIdxs[i]) == normals.end()) {
+         normals[f->vertIdxs[i]] = new Vector3D();
+      }
+      *normals[f->vertIdxs[i]] += f->normal;
+   }
+}
+
+void SmoothingGroup::normalize() {
+   for(SGNormalIter sit = normals.begin(), end = normals.end(); sit != end; sit++) {
+      (*sit).second->normalize();
+   }
+}
+
+Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const double gamma) {
+   Vector3D normal(*normals[face->vertIdxs[0]] * (1.0 - beta - gamma)
+                 + *normals[face->vertIdxs[1]] * beta
+                 + *normals[face->vertIdxs[2]] * gamma);
+   normal.normalize();
+	return normal;
+}
+
 
 Mesh::Mesh() : GeometryObject(), bbox() {
    doDelete = false;
@@ -39,43 +72,46 @@ void Mesh::addFace(Face* f) {
    Point3D* p1 = points[f->vertIdxs[0]];
    Point3D* p2 = points[f->vertIdxs[1]];
    Point3D* p3 = points[f->vertIdxs[2]];
-   
-//   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
-//   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
-//   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
 
-//   f->normal.set(x, y, z);
-   f->normal = ((*points[f->vertIdxs[1]]) - (*points[f->vertIdxs[0]])).cross((*points[f->vertIdxs[2]]) - (*points[f->vertIdxs[0]]));
+   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
+   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
+   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
+
+   f->normal.set(x, y, z);
+//   f->normal = ((*points[f->vertIdxs[1]]) - (*points[f->vertIdxs[0]])).cross((*points[f->vertIdxs[2]]) - (*points[f->vertIdxs[0]]));
    f->normal.normalize();
    
-   f->bbox.expand(*p1);
-   f->bbox.expand(*p2);
-   f->bbox.expand(*p3);
+   f->bbox.expand(*points[f->vertIdxs[0]]);
+   f->bbox.expand(*points[f->vertIdxs[1]]);
+   f->bbox.expand(*points[f->vertIdxs[2]]);
    
    faces.push_back(f);
 }
 
 void Mesh::calculateNormals() {
-   normals.reserve(points.size());
-   for(unsigned int i = 0; i < points.size(); i++) {
-      normals.push_back(new Vector3D());
-   }
-   
-   for(FaceIter fi = faces.begin(); fi != faces.end(); fi++) {
-      int idx1 = (*fi)->vertIdxs[0];
-      int idx2 = (*fi)->vertIdxs[1];
-      int idx3 = (*fi)->vertIdxs[2];
-
-      *normals[idx1] += (*fi)->normal;
-      *normals[idx2] += (*fi)->normal;
-      *normals[idx3] += (*fi)->normal;
-   }
-   
-   for(VectorIter it = normals.begin(); it != normals.end(); it++) {
-      if((*it)->x == 0.0 && (*it)->y == 0.0 && (*it)->z == 0.0) {
-         (*it)->y  = 1.0;
+   if(!smoothingGroups.empty()) {
+      for(SmoothingGroupIter it = smoothingGroups.begin(); it != smoothingGroups.end(); it++) {
+         (*it).second->normalize();
       }
-      (*it)->normalize();
+   }
+   else {
+      normals.reserve(points.size());
+      for(unsigned int i = 0; i < points.size(); i++) {
+         normals.push_back(new Vector3D());
+      }
+   
+      for(FaceIter fi = faces.begin(); fi != faces.end(); fi++) {
+         *normals[(*fi)->vertIdxs[0]] += (*fi)->normal;
+         *normals[(*fi)->vertIdxs[1]] += (*fi)->normal;
+         *normals[(*fi)->vertIdxs[2]] += (*fi)->normal;
+      }
+   
+      for(VectorIter it = normals.begin(); it != normals.end(); it++) {
+         if((*it)->x == 0.0 && (*it)->y == 0.0 && (*it)->z == 0.0) {
+            (*it)->y  = 1.0;
+         }
+         (*it)->normalize();
+      }
    }
 }
 
@@ -266,7 +302,25 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    }
 
    tmin = t;
-   sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
+   if(!smoothingGroups.empty()) {
+      if(face->smoothGroup == 0) {
+         sr.normal = face->normal;
+      }
+      else {
+         Vector3D n;
+         for(int i = 0; i < 32; i++) {
+            int mask = (int) pow(2, i);
+            if(mask & face->smoothGroup) {
+               n += (*smoothingGroups.find(i)).second->interpolateNormal(face, b1, b2);
+            }
+         }
+         n.normalize();
+         sr.normal = n;
+      }
+   }
+   else {
+      sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
+   }
    sr.localHitPoint = ray.origin + ray.direction * t;
 
    return true;

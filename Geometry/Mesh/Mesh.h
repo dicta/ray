@@ -7,28 +7,39 @@
 #include "Geometry/BBox.h"
 #include <vector>
 #include <string>
+#include <map>
 
 using namespace std;
 
-class Face {
-   
-public:
+struct Face {
    Face(int idx1, int idx2, int idx3) {
       vertIdxs[0] = idx1;
       vertIdxs[1] = idx2;
       vertIdxs[2] = idx3;
+      smoothGroup = 0;
    }
 
    int vertIdxs[3];
    Vector3D normal;
    BBox bbox;
+   int smoothGroup;
 };
 
 struct Voxel {
    ~Voxel() { faces.clear(); }
-
    vector<Face*> faces;
    void add(Face* f) { faces.push_back(f); }
+};
+
+class SmoothingGroup {
+public:
+   ~SmoothingGroup();
+
+   void addFace(Face* f);
+   void normalize();
+   Vector3D interpolateNormal(Face* face, const double beta, const double gamma);
+   
+   map<int, Vector3D*> normals;
 };
 
 typedef vector<Face*>::const_iterator FaceIter;
@@ -44,6 +55,8 @@ public:
 
    void facesReserve(int size) { faces.reserve(size); }
    void addFace(Face* f);
+   FaceIter facesBegin() const { return faces.begin(); }
+   FaceIter facesEnd() const { return faces.end(); }
 
    void calculateNormals();
    
@@ -53,6 +66,7 @@ public:
    
    void setupCells();
    string name;
+   map<unsigned int, SmoothingGroup*> smoothingGroups;
    
 protected:
    bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;

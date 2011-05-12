@@ -22,6 +22,13 @@ int read4ByteInt(ifstream &in) {
    return ret;
 }
 
+unsigned int readUInt(ifstream &in) {
+   unsigned int ret;
+   in.read((char *) &ret, 4);
+   LE_TO_CPU_INT32(ret, ret);
+   return ret;
+}
+
 short read2ByteInt(ifstream &in) {
    short ret;
    in.read((char *) &ret, 2);

@@ -3,6 +3,16 @@
 #include "utility/ChunkParser.h"
 #include "utility/3dschunk.h"
 #include "Materials/Matte.h"
+#include "Materials/Phong.h"
+
+MaterialProps::MaterialProps() :
+   name(""),
+   ambient(NULL),
+   diffuse(NULL),
+   specular(NULL),
+   specHighlight(1.f)
+{
+}
 
 bool M3DSParser::load(const string& filename) {
    in.open(filename.c_str(), ios::in | ios::binary);
@@ -44,6 +54,7 @@ void M3DSParser::processTopLevelChunk(int nBytes) {
          processSceneChunk(contentSize);
       }
       else {
+         printf("processTopLevelChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -70,6 +81,7 @@ void M3DSParser::processSceneChunk(int nBytes) {
          processMaterialChunk(contentSize);
       }
       else {
+         printf("processSceneChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -92,6 +104,7 @@ void M3DSParser::processModelChunk(int nBytes, string name) {
          processTriMeshChunk(contentSize, name);
       }
       else {
+         printf("processModelChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -120,6 +133,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
          readFaceArray(mesh, contentSize);
       }
       else {
+         printf("processTriMeshChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -134,7 +148,9 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
 void M3DSParser::processMaterialChunk(int nBytes) {
    int bytesRead = 0;
 
-   Matte* material = new Matte();
+//   Matte* material = new Matte();
+   MaterialProps props;
+
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshort(in);
       int chunkSize = read4ByteInt(in);
@@ -142,29 +158,45 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_MATERIAL_NAME) {
-         string name = readString(in);
-         materials[name] = material;
+         props.name = readString(in);
+//         materials[name] = material;
       }
       else if (chunkType == M3DCHUNK_MATERIAL_AMBIENT) {
-         material->setAmbientColor(processColorChunk(contentSize));
+         props.ambient = processColorChunk(contentSize);
+//         material->setAmbientColor(processColorChunk(contentSize));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
-         material->setDiffuseColor(processColorChunk(contentSize));
+//         material->setDiffuseColor(processColorChunk(contentSize));
+         props.diffuse = processColorChunk(contentSize);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
-//         processColorChunk(contentSize);
+//         props.specular = processColorChunk(contentSize);
 //      }
-//      else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
-//         float p;
-//         processPercentageChunk(contentSize, p);
-//      }
+      else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
+         processPercentageChunk(contentSize, props.specHighlight);
+      }
 //      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
 //         float p;
 //         processPercentageChunk(contentSize, p);
 //      }
       else {
+         printf("processMaterialChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
+   }
+   
+   if(props.specular != NULL) {
+      Phong* material = new Phong();
+      material->setAmbientColor(props.ambient);
+      material->setDiffuseColor(props.diffuse);
+      material->setSpecularColor(props.specular);
+      materials[props.name] = material;
+   }
+   else {
+      Matte* material = new Matte();
+      material->setAmbientColor(props.ambient);
+      material->setDiffuseColor(props.diffuse);
+      materials[props.name] = material;
    }
 
    if(bytesRead != nBytes) {
@@ -189,6 +221,7 @@ Color* M3DSParser::processColorChunk(int nBytes) {
          readFloatColor(color);
       }
       else {
+         printf("processColorChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -215,6 +248,7 @@ void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
          percent = readFloat(in);
       }
       else {
+         printf("processPercentageChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
@@ -253,6 +287,10 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
    }
 }
 
+bool isPowerOfTwo(int x) {
+   return (x != 0) && ((x & (x - 1)) == 0);
+}
+
 void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
    int bytesRead = 0;
    
@@ -275,7 +313,23 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
          
          mesh->setMaterial(materials[materialName]);
       }
+      else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
+         for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
+            unsigned int group = readUInt(in);
+            for(int i = 0; i < 32; i++) {
+               int mask = (int) pow(2, i);
+               if(mask & group) {
+                  if(mesh->smoothingGroups.find(i) == mesh->smoothingGroups.end()) {
+                     mesh->smoothingGroups[i] = new SmoothingGroup();
+                  }
+                 (*it)->smoothGroup = group;
+                 mesh->smoothingGroups[i]->addFace(*it);
+               }
+            }
+         }
+      }
       else {
+         printf("processFaceArrayChunk %X %d\n", chunkType, chunkSize);
          skipBytes(contentSize);
       }
    }
