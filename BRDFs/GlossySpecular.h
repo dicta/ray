@@ -7,17 +7,19 @@ class GlossySpecular : public BRDF {
 
 public:
    GlossySpecular();
-   virtual ~GlossySpecular() {}
+   virtual ~GlossySpecular();
 
    virtual Color f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const;
    virtual Color rho(const ShadeRecord& sr, const Vector3D& wo) const;
 
    void setKs(const float k) { ks = k; }
    void setExp(const float e) { exp = e; }
+   void setColor(Color* c) { color = c; }
 
 private:
    float ks;
    float exp;
+   Color* color;
 };
 
 #endif

@@ -29,6 +29,11 @@ public:
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
    
+   void setAmbientColor(Color* c);
+   void setDiffuseColor(Color* c);
+   void setSpecularColor(Color* c);
+   void setSpecularHighlight(float sh);
+
 private:
    Lambertian* ambientBRDF;
    Lambertian* diffuseBRDF;

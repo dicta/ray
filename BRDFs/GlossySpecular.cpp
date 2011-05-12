@@ -2,16 +2,21 @@
 #include "Samplers/MultiJittered.h"
 #include <math.h>
 
-GlossySpecular::GlossySpecular() : ks(0.0), exp(0) { //, sampler(NULL) {
+GlossySpecular::GlossySpecular() : ks(0.0), exp(0), color(NULL) {
 }
 
-//void GlossySpecular::setSampler(Sampler* sp, const float exp) {
-// sampler = sp;
-//   // map to hemispher
-//}
+GlossySpecular::~GlossySpecular() {
+   if(color != NULL) {
+      delete color;
+   }
+}
 
 Color GlossySpecular::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
    Color L;
+   if(color != NULL) {
+      L = *color;
+   }
+
    float ndotwi = sr.normal.dot(wi);
    Vector3D r(wi * -1.0 + sr.normal * 2.0 * ndotwi);
    float rdotwo = r.dot(wo);
