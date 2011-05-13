@@ -19,6 +19,7 @@ struct MaterialProps {
    Color* diffuse;
    Color* specular;
    float specHighlight;
+   float highlightPercent;
 
    MaterialProps();
 };

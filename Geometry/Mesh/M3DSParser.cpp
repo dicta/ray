@@ -10,7 +10,8 @@ MaterialProps::MaterialProps() :
    ambient(NULL),
    diffuse(NULL),
    specular(NULL),
-   specHighlight(1.f)
+   specHighlight(100.f),
+   highlightPercent(0.f)
 {
 }
 
@@ -165,11 +166,18 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
          props.diffuse = processColorChunk(contentSize);
       }
-//      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
-//         props.specular = processColorChunk(contentSize);
-//      }
+      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
+         props.specular = processColorChunk(contentSize);
+      }
       else if (chunkType == M3DCHUNK_MATERIAL_SHININESS) {
          processPercentageChunk(contentSize, props.specHighlight);
+      }
+      else if (chunkType == M3DCHUNK_MATERIAL_SHIN2PCT) {
+         processPercentageChunk(contentSize, props.highlightPercent);
+      }
+      else if (chunkType == M3DCHUNK_MATERIAL_SHADING) {
+         short shade = readUshort(in);
+         printf("SHADING = %d\n", shade);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
 //         float p;
@@ -186,6 +194,8 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setAmbientColor(props.ambient);
       material->setDiffuseColor(props.diffuse);
       material->setSpecularColor(props.specular);
+      material->setSpecularHighlight(props.specHighlight);
+      material->setSpecularPercent(props.highlightPercent);
       materials[props.name] = material;
    }
    else {
@@ -238,7 +248,8 @@ void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_INT_PERCENTAGE) {
-         percent = read2ByteInt(in);
+         int p = read2ByteInt(in);
+         percent = p / 100.0;
       }
       else if (chunkType == M3DCHUNK_FLOAT_PERCENTAGE) {
          percent = readFloat(in);

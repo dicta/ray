@@ -95,14 +95,17 @@ void Phong::setAmbientColor(Color* c) {
 
 void Phong::setDiffuseColor(Color* c) {
    diffuseBRDF->setColor(c);
-   diffuseBRDF->setKd(0.8);
+   diffuseBRDF->setKd(0.6);
 }
 
 void Phong::setSpecularColor(Color* c) {
    specularBRDF->setColor(c);
-   specularBRDF->setKs(0.1);
 }
 
 void Phong::setSpecularHighlight(float sh) {
    specularBRDF->setExp(sh);
+}
+
+void Phong::setSpecularPercent(float p) {
+   specularBRDF->setKs(p);
 }

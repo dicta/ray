@@ -33,6 +33,7 @@ public:
    void setDiffuseColor(Color* c);
    void setSpecularColor(Color* c);
    void setSpecularHighlight(float sh);
+   void setSpecularPercent(float p);
 
 private:
    Lambertian* ambientBRDF;
