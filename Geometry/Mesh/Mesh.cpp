@@ -69,16 +69,23 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(Face* f) {
-   Point3D* p1 = points[f->vertIdxs[0]];
-   Point3D* p2 = points[f->vertIdxs[1]];
-   Point3D* p3 = points[f->vertIdxs[2]];
+//   Point3D* p1 = points[f->vertIdxs[0]];
+//   Point3D* p2 = points[f->vertIdxs[1]];
+//   Point3D* p3 = points[f->vertIdxs[2]];
 
-   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
-   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
-   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
-
-   f->normal.set(x, y, z);
-//   f->normal = ((*points[f->vertIdxs[1]]) - (*points[f->vertIdxs[0]])).cross((*points[f->vertIdxs[2]]) - (*points[f->vertIdxs[0]]));
+//   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
+//   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
+//   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
+//
+//   f->normal.set(x, y, z);
+   Vector3D v1 = *points[f->vertIdxs[1]] - *points[f->vertIdxs[0]];
+   Vector3D v2 = *points[f->vertIdxs[2]] - *points[f->vertIdxs[0]];
+   f->normal = v1.cross(v2);
+   
+   if(f->normal.length() == 0.0) {
+      f->normal.set(0, 1, 0);
+   }
+   
    f->normal.normalize();
    
    f->bbox.expand(*points[f->vertIdxs[0]]);

@@ -148,7 +148,6 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
 void M3DSParser::processMaterialChunk(int nBytes) {
    int bytesRead = 0;
 
-//   Matte* material = new Matte();
    MaterialProps props;
 
    while(bytesRead < nBytes) {
@@ -159,14 +158,11 @@ void M3DSParser::processMaterialChunk(int nBytes) {
 
       if (chunkType == M3DCHUNK_MATERIAL_NAME) {
          props.name = readString(in);
-//         materials[name] = material;
       }
       else if (chunkType == M3DCHUNK_MATERIAL_AMBIENT) {
          props.ambient = processColorChunk(contentSize);
-//         material->setAmbientColor(processColorChunk(contentSize));
       }
       else if (chunkType == M3DCHUNK_MATERIAL_DIFFUSE) {
-//         material->setDiffuseColor(processColorChunk(contentSize));
          props.diffuse = processColorChunk(contentSize);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_SPECULAR) {
