@@ -98,6 +98,9 @@ void SDLApp::run() {
             if(event.key.keysym.sym == SDLK_ESCAPE) {
                stopApp = true;
             }
+            else if(event.key.keysym.sym == 's') {
+               SDL_SaveBMP(surface, "test.bmp");
+            }
             break;
 
          case SDL_QUIT:
