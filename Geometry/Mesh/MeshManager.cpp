@@ -61,10 +61,11 @@ void MeshManager::loadMesh(string type, Hash* hash) {
    else if(type == "lwo") {
       LightWaveParser* p = new LightWaveParser();
       p->loadModel(filename);
-      vec.push_back(p);
+//      vec.push_back(p);
    }
    else if(type == "m3ds") {
       M3DSParser parser;
+      parser.setHash(hash);
       parser.load(filename);
       vec = parser.getMeshs();
    }

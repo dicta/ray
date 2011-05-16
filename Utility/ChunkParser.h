@@ -10,12 +10,21 @@ typedef unsigned short uint16;
 
 extern unsigned char readChar(ifstream &in);
 extern string readChunkID(ifstream &in, int size);
-extern int read4ByteInt(ifstream &in);
-extern unsigned int readUInt(ifstream& in);
-extern short read2ByteInt(ifstream &in);
-extern uint16 readUshort(ifstream& in);
-extern int readVariableInt(ifstream &in, int &vsize);
+
+extern int readIntLE(ifstream &in);
+extern int readIntBE(ifstream &in);
+extern unsigned int readUIntLE(ifstream& in);
+extern unsigned int readUIntBE(ifstream& in);
+
+extern short readShortLE(ifstream &in);
+extern short readShortBE(ifstream &in);
+extern uint16 readUshortLE(ifstream& in);
+extern uint16 readUshortBE(ifstream& in);
+
+extern int readVariableIntBE(ifstream &in, int &vsize);
 extern string readString(ifstream &in);
-extern float readFloat(ifstream &in);
+
+extern float readFloatLE(ifstream &in);
+extern float readFloatBE(ifstream &in);
 
 #endif

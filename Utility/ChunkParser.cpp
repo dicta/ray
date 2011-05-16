@@ -15,46 +15,74 @@ string readChunkID(ifstream &in, int size) {
    return s;
 }
 
-int read4ByteInt(ifstream &in) {
+int readIntLE(ifstream &in) {
    int ret;
    in.read((char *) &ret, 4);
    LE_TO_CPU_INT32(ret, ret);
    return ret;
 }
 
-unsigned int readUInt(ifstream &in) {
+int readIntBE(ifstream &in) {
+   int ret;
+   in.read((char *) &ret, 4);
+   BE_TO_CPU_INT32(ret, ret);
+   return ret;
+}
+
+unsigned int readUIntLE(ifstream &in) {
    unsigned int ret;
    in.read((char *) &ret, 4);
    LE_TO_CPU_INT32(ret, ret);
    return ret;
 }
 
-short read2ByteInt(ifstream &in) {
+unsigned int readUIntBE(ifstream &in) {
+   unsigned int ret;
+   in.read((char *) &ret, 4);
+   BE_TO_CPU_INT32(ret, ret);
+   return ret;
+}
+
+short readShortLE(ifstream &in) {
    short ret;
    in.read((char *) &ret, 2);
    LE_TO_CPU_INT16(ret, ret);
    return ret;
 }
 
-uint16 readUshort(ifstream &in) {
+short readShortBE(ifstream &in) {
+   short ret;
+   in.read((char *) &ret, 2);
+   BE_TO_CPU_INT16(ret, ret);
+   return ret;
+}
+
+uint16 readUshortLE(ifstream &in) {
    uint16 ret;
    in.read((char *) &ret, sizeof(uint16));
    LE_TO_CPU_INT16(ret, ret);
    return ret;
 }
 
-int readVariableInt(ifstream &in, int & vsize) {
+uint16 readUshortBE(ifstream &in) {
+   uint16 ret;
+   in.read((char *) &ret, sizeof(uint16));
+   BE_TO_CPU_INT16(ret, ret);
+   return ret;
+}
+
+int readVariableIntBE(ifstream &in, int & vsize) {
    streampos pos = in.tellg();
    unsigned char c = readChar(in);
    in.seekg(pos);
    
    if(c == 0xFF) {
       vsize = 4;
-      return read4ByteInt(in);
+      return readIntBE(in);
    }
    
    vsize = 2;
-   return read2ByteInt(in);
+   return readShortBE(in);
 }
 
 string readString(ifstream &in) {
@@ -70,9 +98,16 @@ string readString(ifstream &in) {
    return string(s);
 }
 
-float readFloat(ifstream &in) {
+float readFloatLE(ifstream &in) {
    float f;
    in.read((char*) &f, sizeof(float));
    LE_TO_CPU_FLOAT(f, f);
+   return f;
+}
+
+float readFloatBE(ifstream &in) {
+   float f;
+   in.read((char*) &f, sizeof(float));
+   BE_TO_CPU_FLOAT(f, f);
    return f;
 }

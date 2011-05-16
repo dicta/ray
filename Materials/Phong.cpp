@@ -15,6 +15,7 @@
 #include "BRDFs/GlossySpecular.h"
 #include "Textures/Texture.h"
 #include "Parser/Hash.h"
+#include "Textures/ImageTexture.h"
 
 Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()) {
 }
@@ -86,6 +87,16 @@ void Phong::setColor(float r, float g, float b) {
 
 void Phong::setDiffuse(float d) {
    diffuseBRDF->setKd(d);
+}
+
+void Phong::setTexture(string texture) {
+   ImageTexture* tex = new ImageTexture();
+   tex->setTextureFile(texture);
+   ambientBRDF->setTexture(tex);
+
+   tex = new ImageTexture();
+   tex->setTextureFile(texture);
+   diffuseBRDF->setTexture(tex);
 }
 
 void Phong::setAmbientColor(Color* c) {

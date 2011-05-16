@@ -3,6 +3,7 @@
 #include "Lights/LightManager.h"
 #include "BRDFs/Lambertian.h"
 #include "Textures/Texture.h"
+#include "Textures/ImageTexture.h"
 #include "Parser/Hash.h"
 #include "Lights/Light.h"
 
@@ -96,6 +97,16 @@ void Matte::setColor(float r, float g, float b) {
 void Matte::setDiffuse(float d) {
    ambientBRDF->setKd(d);
    diffuseBRDF->setKd(d);
+}
+
+void Matte::setTexture(string texture) {
+   ImageTexture* tex = new ImageTexture();
+   tex->setTextureFile(texture);
+   ambientBRDF->setTexture(tex);
+
+   tex = new ImageTexture();
+   tex->setTextureFile(texture);
+   diffuseBRDF->setTexture(tex);
 }
 
 void Matte::setAmbientColor(Color* c) {

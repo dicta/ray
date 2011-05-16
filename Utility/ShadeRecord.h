@@ -35,6 +35,8 @@ public:
    Vector3D* lightNormal;
    Vector3D* wi;
    Tracer* tracer;
+   
+   double tu, tv;
 };
 
 #endif

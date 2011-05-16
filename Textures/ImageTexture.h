@@ -22,15 +22,16 @@ enum MappingEnum {
 class ImageTexture : public Texture {
 
 public:
+   ImageTexture();
    virtual ~ImageTexture();
 
-   virtual Color getColor(const ShadeRecord& sr) const { return getColor(sr.localHitPoint); }
+   virtual Color getColor(const ShadeRecord& sr) const;
+   void setTextureFile(string fname);
    virtual void setHash(Hash* hash);
-   virtual float getAlpha(const Point3D& p) const { return getColor(p).alpha; }
+   virtual float getAlpha(const Point3D& p) const;
 
 private:
    Uint32 getpixel(SDL_Surface *surface, int x, int y) const;
-   Color getColor(const Point3D& p) const;
 
    SDL_Surface* surf;
    MappingEnum mapping;

@@ -28,6 +28,7 @@ public:
    
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
+   void setTexture(string texture);
    
    void setAmbientColor(Color* c);
    void setDiffuseColor(Color* c);

@@ -10,6 +10,7 @@
 
 using namespace std;
 
+class Hash;
 class Mesh;
 class Material;
 
@@ -20,6 +21,7 @@ struct MaterialProps {
    Color* specular;
    float specHighlight;
    float highlightPercent;
+   string texMap;
 
    MaterialProps();
 };
@@ -27,10 +29,11 @@ struct MaterialProps {
 class M3DSParser {
 
 public:
-   M3DSParser() {}
+   M3DSParser();
    ~M3DSParser() {}
    
    bool load(const string& filename);
+   void setHash(Hash* h);
    vector<Mesh*> getMeshs() { return meshs; }
 
 private:
@@ -42,6 +45,7 @@ private:
    Color* processColorChunk(int nBytes);
    void processPercentageChunk(int nBytes, float& percent);
    void processFaceArrayChunk(int nBytes, Mesh* mesh);
+   string processTexmapChunk(int nBytes);
    
    void readPointArray(Mesh* mesh);
    void readFaceArray(Mesh* mesh, int contentSize);
@@ -50,6 +54,8 @@ private:
    
    void skipBytes(int count);
 
+   double scale;
+   string textureDir;
    ifstream in;
    vector<Mesh*> meshs;
    map<string, Material*> materials;

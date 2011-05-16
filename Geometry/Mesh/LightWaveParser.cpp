@@ -13,7 +13,7 @@ void LightWaveParser::loadModel(string fname) {
    }
    
    string chunkID = readChunkID(in, 4);
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 0;
 
    readChunkID(in, 4); // read LWO2
@@ -50,7 +50,7 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
 }
 
 int LightWaveParser::parseTags() {
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 4;
    
    int idx = 0;
@@ -69,14 +69,14 @@ int LightWaveParser::parseTags() {
 }
 
 int LightWaveParser::parsePTag() {
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 4;
    string subtag = readChunkID(in, 4);
    
    if(subtag == "SURF") {
       while(count < size) {
-         short fidx = read2ByteInt(in);
-         short tidx = read2ByteInt(in);
+         short fidx = readShortBE(in);
+         short tidx = readShortBE(in);
          printf("face %d uses %d\n", fidx, tidx);
 //         faces[fidx]->materialName = tags[tidx];
          count += 4;
@@ -94,13 +94,13 @@ int LightWaveParser::parsePTag() {
 }
 
 int LightWaveParser::parsePoints() {
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 4;
    
    while(count < size) {
-      float x = readFloat(in);
-      float y = readFloat(in);
-      float z = readFloat(in);
+      float x = readFloatBE(in);
+      float y = readFloatBE(in);
+      float z = readFloatBE(in);
       addPoint(new Point3D(x, y, z));
       count += 12;
    }
@@ -109,7 +109,7 @@ int LightWaveParser::parsePoints() {
 }
 
 int LightWaveParser::parsePolygons() {
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 4;
    
    string type = readChunkID(in, 4);
@@ -117,17 +117,17 @@ int LightWaveParser::parsePolygons() {
    int vsize;
    
    while(count < size) {
-      short pointCnt = read2ByteInt(in);
+      short pointCnt = readShortBE(in);
       count += 2;
       
       if(pointCnt == 3) {
-         int i1 = readVariableInt(in, vsize);
+         int i1 = readVariableIntBE(in, vsize);
          count += vsize;
          
-         int i2 = readVariableInt(in, vsize);
+         int i2 = readVariableIntBE(in, vsize);
          count += vsize;
 
-         int i3 = readVariableInt(in, vsize);
+         int i3 = readVariableIntBE(in, vsize);
          count += vsize;
 
          addFace(new Face(i1, i2, i3));
@@ -141,7 +141,7 @@ int LightWaveParser::parsePolygons() {
 }
 
 int LightWaveParser::parseSurface() {
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    int count = 4;
    
    string sname = readString(in);
@@ -160,21 +160,21 @@ int LightWaveParser::parseSurface() {
    
    while(count < size) {
       string subName = readChunkID(in, 4);
-      short subSize = read2ByteInt(in);
+      short subSize = readShortBE(in);
       count += 6;
       
       if(subName == "COLR") {
-         float r = readFloat(in);
-         float b = readFloat(in);
-         float g = readFloat(in);
-         read2ByteInt(in);
+         float r = readFloatBE(in);
+         float b = readFloatBE(in);
+         float g = readFloatBE(in);
+         readShortBE(in);
          printf("Color = %f, %f, %f\n", r, g, b);
          materialMap[sname]->setColor(r, g, b);
          materialMap[sname]->setDiffuse(1.0);
       }
       else if(subName == "DIFF") {
-         float value = readFloat(in);
-         read2ByteInt(in);
+         float value = readFloatBE(in);
+         readShortBE(in);
          printf("DIFF = %f\n", value);
          materialMap[sname]->setDiffuse(value);
       }
@@ -192,7 +192,7 @@ int LightWaveParser::parseSurface() {
 
 int LightWaveParser::skipChunk() {
    int count = 0;
-   int size = read4ByteInt(in);
+   int size = readIntBE(in);
    char c;
    
    while(count++ < size) {

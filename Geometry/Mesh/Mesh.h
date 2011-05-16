@@ -2,6 +2,7 @@
 #define _MESH_H_
 
 #include "Math/Point3D.h"
+#include "Math/Point2D.h"
 #include "Math/Vector3D.h"
 #include "Geometry/GeometryObject.h"
 #include "Geometry/BBox.h"
@@ -55,6 +56,10 @@ public:
 
    void facesReserve(int size) { faces.reserve(size); }
    void addFace(Face* f);
+   
+   void textureCoordsReserve(int size) { textureCoords.reserve(size); }
+   void addTextureCoord(float u, float v) { textureCoords.push_back(new Point2D(u, v)); }
+   
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
 
@@ -77,6 +82,7 @@ protected:
    vector<Point3D*> points;
    vector<Vector3D*> normals;
    vector<Face*> faces;
+   vector<Point2D*> textureCoords;
    Voxel** voxels;
    BBox bbox;
    
@@ -85,6 +91,7 @@ protected:
 private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
+   void calculateDerivitives(Face* face, ShadeRecord& sr);
 };
 
 #endif

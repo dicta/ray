@@ -4,6 +4,7 @@
 #include "utility/3dschunk.h"
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
+#include "Parser/Hash.h"
 
 MaterialProps::MaterialProps() :
    name(""),
@@ -11,8 +12,21 @@ MaterialProps::MaterialProps() :
    diffuse(NULL),
    specular(NULL),
    specHighlight(100.f),
-   highlightPercent(0.f)
+   highlightPercent(0.f),
+   texMap("")
 {
+}
+
+M3DSParser::M3DSParser() : scale(1.0), textureDir("") {
+}
+
+void M3DSParser::setHash(Hash* h) {
+   if(h->contains("scale")) {
+      scale = h->getDouble("scale");
+   }
+   if(h->contains("textureDir")) {
+      textureDir = h->getString("textureDir");
+   }
 }
 
 bool M3DSParser::load(const string& filename) {
@@ -22,13 +36,13 @@ bool M3DSParser::load(const string& filename) {
       return false;
    }
    else {
-      uint16 chunkType = readUshort(in);
+      uint16 chunkType = readUshortLE(in);
       if (chunkType != M3DCHUNK_MAGIC) {
          fprintf(stderr, "Read3DSFile: Wrong magic number in header\n");
          return false;
       }
 
-      int chunkSize = read4ByteInt(in);
+      int chunkSize = readIntLE(in);
       if (in.bad()) {
          fprintf(stderr, "Read3DSFile: Error reading 3DS file.\n");
          return false;
@@ -46,8 +60,8 @@ void M3DSParser::processTopLevelChunk(int nBytes) {
    int bytesRead = 0;
 
    while (bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -69,8 +83,8 @@ void M3DSParser::processSceneChunk(int nBytes) {
    int bytesRead = 0;
 
    while (bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -96,8 +110,8 @@ void M3DSParser::processModelChunk(int nBytes, string name) {
    int bytesRead = 0;
 
    while(bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -122,8 +136,8 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    meshs.push_back(mesh);
 
    while(bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -132,6 +146,16 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
       }
       else if (chunkType == M3DCHUNK_FACE_ARRAY) {
          readFaceArray(mesh, contentSize);
+      }
+      else if (chunkType == M3DCHUNK_MESH_TEXTURE_COORDS) {
+         int numPoints = readShortLE(in);
+         mesh->textureCoordsReserve(numPoints);
+
+         for(int i = 0; i < numPoints; i++) {
+            float u = readFloatLE(in);
+            float v = readFloatLE(in);
+            mesh->addTextureCoord(u, v);
+         }
       }
       else {
          printf("processTriMeshChunk %X %d\n", chunkType, chunkSize);
@@ -152,8 +176,8 @@ void M3DSParser::processMaterialChunk(int nBytes) {
    MaterialProps props;
 
    while(bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -176,8 +200,11 @@ void M3DSParser::processMaterialChunk(int nBytes) {
          processPercentageChunk(contentSize, props.highlightPercent);
       }
       else if (chunkType == M3DCHUNK_MATERIAL_SHADING) {
-         short shade = readUshort(in);
+         short shade = readUshortLE(in);
          printf("SHADING = %d\n", shade);
+      }
+      else if (chunkType == M3DCHUNK_MATERIAL_TEXMAP) {
+         props.texMap = processTexmapChunk(contentSize);
       }
 //      else if (chunkType == M3DCHUNK_MATERIAL_TRANSPARENCY) {
 //         float p;
@@ -196,12 +223,20 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularColor(props.specular);
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
+      
+      if(props.texMap.length() > 0) {
+         material->setTexture(props.texMap);
+      }
       materials[props.name] = material;
    }
    else {
       Matte* material = new Matte();
       material->setAmbientColor(props.ambient);
       material->setDiffuseColor(props.diffuse);
+      
+      if(props.texMap.length() > 0) {
+         material->setTexture(props.texMap);
+      }
       materials[props.name] = material;
    }
 
@@ -215,8 +250,8 @@ Color* M3DSParser::processColorChunk(int nBytes) {
    Color* color = new Color;
 
    while (bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
@@ -242,17 +277,17 @@ Color* M3DSParser::processColorChunk(int nBytes) {
 void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
    int bytesRead = 0;
    while (bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
 
       if (chunkType == M3DCHUNK_INT_PERCENTAGE) {
-         int p = read2ByteInt(in);
+         int p = readShortLE(in);
          percent = p / 100.0;
       }
       else if (chunkType == M3DCHUNK_FLOAT_PERCENTAGE) {
-         percent = readFloat(in);
+         percent = readFloatLE(in);
       }
       else {
          printf("processPercentageChunk %X %d\n", chunkType, chunkSize);
@@ -265,26 +300,49 @@ void M3DSParser::processPercentageChunk(int nBytes, float& percent) {
    }
 }
 
+string M3DSParser::processTexmapChunk(int nBytes) {
+   int bytesRead = 0;
+   string texName;
+
+   while (bytesRead < nBytes) {
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
+      int contentSize = chunkSize - 6;
+      bytesRead += chunkSize;
+
+      if (chunkType == M3DCHUNK_MATERIAL_MAPNAME) {
+         texName = textureDir + readString(in);
+      }
+      else {
+         printf("processTexmapChunk %X %d\n", chunkType, chunkSize);
+         skipBytes(contentSize);
+      }
+   }
+   
+   return texName;
+}
+
 
 void M3DSParser::readPointArray(Mesh* mesh) {
-   uint16 nPoints = readUshort(in);
+   uint16 nPoints = readUshortLE(in);
+   mesh->pointsReserve(nPoints);
 
    for (int i = 0; i < (int) nPoints; i++) {
-      float x = readFloat(in);
-      float y = readFloat(in);
-      float z = readFloat(in);
+      float x = readFloatLE(in) * scale;
+      float y = readFloatLE(in) * scale;
+      float z = readFloatLE(in) * scale;
       mesh->addPoint(new Point3D(x, y, z));
    }
 }
 
 void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
-   uint16 nFaces = readUshort(in);
+   uint16 nFaces = readUshortLE(in);
 
    for (int i = 0; i < (int) nFaces; i++) {
-      uint16 v0 = readUshort(in);
-      uint16 v1 = readUshort(in);
-      uint16 v2 = readUshort(in);
-      readUshort(in);
+      uint16 v0 = readUshortLE(in);
+      uint16 v1 = readUshortLE(in);
+      uint16 v2 = readUshortLE(in);
+      readUshortLE(in);
       mesh->addFace(new Face(v0, v1, v2));
    }
 
@@ -302,8 +360,8 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
    int bytesRead = 0;
    
    while(bytesRead < nBytes) {
-      uint16 chunkType = readUshort(in);
-      int chunkSize = read4ByteInt(in);
+      uint16 chunkType = readUshortLE(in);
+      int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
       
@@ -312,17 +370,17 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
          // per triangle mesh, and that the material applies to all faces in
          // the mesh.
          string materialName = readString(in);
-         uint16 nFaces = readUshort(in);
+         uint16 nFaces = readUshortLE(in);
          
          for (uint16 i = 0; i < nFaces; i++) {
-            readUshort(in);
+            readUshortLE(in);
          }
          
          mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
-            unsigned int group = readUInt(in);
+            unsigned int group = readUIntLE(in);
             for(int i = 0; i < 32; i++) {
                int mask = (int) pow(2, i);
                if(mask & group) {
@@ -351,7 +409,7 @@ void M3DSParser::readColor(Color* color) {
 }
 
 void M3DSParser::readFloatColor(Color* color) {
-   color->set(readFloat(in) / 255.0f, readFloat(in) / 255.0f, readFloat(in) / 255.0f);
+   color->set(readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f, readFloatLE(in) / 255.0f);
 }
 
 

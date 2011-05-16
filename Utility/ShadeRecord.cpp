@@ -20,7 +20,9 @@ ShadeRecord::ShadeRecord() :
    samplePoint(NULL),
    lightNormal(NULL),
    wi(NULL),
-   tracer(NULL)
+   tracer(NULL),
+   tu(0),
+   tv(0)
 {
 }
 

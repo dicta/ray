@@ -5,18 +5,24 @@
 
 using namespace std;
 
+ImageTexture::ImageTexture() : Texture(), surf(NULL), mapping(UV) {
+}
+
 ImageTexture::~ImageTexture() {
    SDL_FreeSurface(surf);
 }
 
-void ImageTexture::setHash(Hash* hash) {
-   string fname = hash->getString("filename");
+void ImageTexture::setTextureFile(string fname) {
    surf = IMG_Load(fname.c_str());
    if(!surf) {
       printf("IMG_Load: %s\n", IMG_GetError());
       exit(1);
    }
-   
+}
+
+void ImageTexture::setHash(Hash* hash) {
+   setTextureFile(hash->getString("filename"));
+
    string mappingName = hash->getString("mapping");
    if(mappingName == "sphere") {
       mapping = SPHERE;
@@ -32,8 +38,40 @@ void ImageTexture::setHash(Hash* hash) {
    }
 }
 
-Color ImageTexture::getColor(const Point3D& p) const {
+Color ImageTexture::getColor(const ShadeRecord& sr) const {
    double u, v, d;
+   Point3D p = sr.localHitPoint;
+
+   switch(mapping) {
+      case SPHERE:
+         u = (atan2(p.x, p.z) + M_PI) / (2.0 * M_PI);
+         v = acos(p.y) / M_PI;
+         break;
+
+      case DISK:
+         d = sqrt(p.x * p.x + p.z * p.z);
+         u = (d - 1.236) / (2.326 - 1.236);
+         v = 0;
+         break;
+
+      case UV:
+         u = sr.tu - (int)sr.tu; // (p.x + surf->w/2.0) / surf->w;
+         v = sr.tv - (int)sr.tv; // (p.y + surf->h/2.0) / surf->h;
+         break;
+   }
+
+   int x = (int)(u * (surf->w - 1));
+   int y = (int)(v * (surf->h - 1));
+
+   Uint32 pixel = getpixel(surf, x, y);
+
+   Uint8 r, g, b, a;
+   SDL_GetRGBA(pixel, surf->format, &r, &g, &b, &a);
+   return Color(r/255.0, g/255.0, b/255.0, a/255.0);
+}
+
+float ImageTexture::getAlpha(const Point3D& p) const {
+/*   double u, v, d;
 
    switch(mapping) {
       case SPHERE:
@@ -59,7 +97,8 @@ Color ImageTexture::getColor(const Point3D& p) const {
 
    Uint8 r, g, b, a;
    SDL_GetRGBA(pixel, surf->format, &r, &g, &b, &a);
-   return Color(r/255.0, g/255.0, b/255.0, a/255.0);
+   return a;*/
+   return 1.0;
 }
 
 Uint32 ImageTexture::getpixel(SDL_Surface *surface, int x, int y) const {

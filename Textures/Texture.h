@@ -16,6 +16,7 @@ class Hash;
 class Texture {
 
 public:
+   Texture() {}
    virtual ~Texture() {}
 
    virtual Color getColor(const ShadeRecord& sr) const = 0;
