@@ -160,7 +160,7 @@ void Camera::computeUVW(Hash* h) {
 
       m.rotateX(-rotate->at(0)->getDouble());
       m.rotateY(-rotate->at(1)->getDouble());
-      m.rotateZ(rotate->at(2)->getDouble());
+      m.rotateZ(-rotate->at(2)->getDouble());
 
       u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
       v.set(m.m[1][0], m.m[1][1], m.m[1][2]);

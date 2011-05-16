@@ -50,13 +50,13 @@ void BBox::expand(const BBox& b) {
 }
 
 void BBox::expand(const Point3D& b) {
-   x0 = min(x0, b.x); // - GeometryObject::epsilon);
-   y0 = min(y0, b.y); // - GeometryObject::epsilon);
-   z0 = min(z0, b.z); // - GeometryObject::epsilon);
+   x0 = min(x0, b.x - GeometryObject::epsilon);
+   y0 = min(y0, b.y - GeometryObject::epsilon);
+   z0 = min(z0, b.z - GeometryObject::epsilon);
    
-   x1 = max(x1, b.x); // + GeometryObject::epsilon);
-   y1 = max(y1, b.y); // + GeometryObject::epsilon);
-   z1 = max(z1, b.z); // + GeometryObject::epsilon);
+   x1 = max(x1, b.x + GeometryObject::epsilon);
+   y1 = max(y1, b.y + GeometryObject::epsilon);
+   z1 = max(z1, b.z + GeometryObject::epsilon);
    
    wx = x1 - x0;
    wy = y1 - y0;
