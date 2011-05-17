@@ -9,6 +9,17 @@
 
 #include "Maths.h"
 
+float normalize(const float f) {
+   float g = f;
+   while(g < 0.0) {
+      g += 1.0;
+   }
+   while(g > 1.0) {
+      g -= 1.0;
+   }
+   return g;
+}
+
 double smoothStep(double a, double b, double x) {
    if(x < a) {
       return 0.0;

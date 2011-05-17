@@ -154,7 +154,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
          for(int i = 0; i < numPoints; i++) {
             float u = readFloatLE(in);
             float v = readFloatLE(in);
-            mesh->addTextureCoord(u, 1.f - v);
+            mesh->addTextureCoord(u, v);
          }
       }
       else {
@@ -312,10 +312,6 @@ string M3DSParser::processTexmapChunk(int nBytes) {
 
       if (chunkType == M3DCHUNK_MATERIAL_MAPNAME) {
          texName = textureDir + readString(in);
-      }
-      else if (chunkType == M3DCHUNK_MATERIAL_OPTIONS) {
-         unsigned short options = readUshortLE(in);
-         printf("options = %u\n", options);
       }
       else {
          printf("processTexmapChunk %X %d\n", chunkType, chunkSize);

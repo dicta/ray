@@ -29,6 +29,8 @@ inline float clamp(const float x, const float min, const float max) {
    return x < min ? min : x > max ? max : x;
 }
 
+float normalize(const float f);
+
 template<class T>
 inline T lerp(const float f, const T a, const T b) {
    return a + (b - a) * f;
