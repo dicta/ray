@@ -10,6 +10,7 @@
 #include "LightManager.h"
 #include "PositionLight.h"
 #include "Direction.h"
+#include "SpotLight.h"
 #include "AmbientOccluder.h"
 #include "AreaLight.h"
 #include "Environment.h"
@@ -64,6 +65,9 @@ void LightManager::loadLights(string fname) {
       }
       else if(type == "direction") {
          light = new Direction();
+      }
+      else if(type == "spot") {
+         light = new SpotLight();
       }
       else if(type == "areaLight") {
          light = new AreaLight();
