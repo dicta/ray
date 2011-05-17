@@ -54,8 +54,7 @@ instance {
          texture {
             type     "image"
             filename "config/saturn/rings.png"
-            mapping  "disk"
-            diskRange [ 1.2361 2.3266 ]
+            mapping  "uv"
          }
       }
    }
