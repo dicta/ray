@@ -62,7 +62,7 @@ bool Annulus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    }
    
    // Calculate the hit point
-   Point3D p = ray.origin + ray.direction * t;
+   Point3D p = ray(t);
    // Calculate distance from object center to hit point
    double dist = center.distanceSquared(p);
    
@@ -71,6 +71,8 @@ bool Annulus::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       tmin = t;
       sr.normal = normal;
       sr.localHitPoint = p;
+      sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
+      sr.tv = 0;
       return true;
    }
    return false;
@@ -106,7 +108,12 @@ bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
 
    // If distance is between outer and inner radius, it hits the annulus
    if(innerSquared <= dist && dist < outerSquared && partCheck(p)) {
-      float alpha = material->getAlpha(p);
+      ShadeRecord sr;
+      sr.localHitPoint = p;
+      sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
+      sr.tv = 0;
+      float alpha = material->getAlpha(sr);
+
       if(alpha > 0.2) {
          tmin = t;
          return true;

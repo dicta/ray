@@ -54,7 +54,7 @@ bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       return false;
    }
    
-   Point3D p = ray.origin + ray.direction * t;
+   Point3D p = ray(t);
    Vector3D d = p - origin;
    
    float ddota = d.dot(a);
@@ -70,6 +70,8 @@ bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    tmin = t;
    sr.normal = normal;
    sr.localHitPoint = p;
+   sr.tu = ddota / lengthASquared;
+   sr.tv = ddotb / lengthBSquared;
    
    return true;
 }
