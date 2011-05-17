@@ -329,11 +329,17 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
    }
    sr.localHitPoint = ray(t);
-   
-   double b0 = 1 - b1 - b2;
-   sr.tu = b0 * textureCoords[face->vertIdxs[0]]->x + b1 * textureCoords[face->vertIdxs[1]]->x + b2 * textureCoords[face->vertIdxs[2]]->x;
-   sr.tv = b0 * textureCoords[face->vertIdxs[0]]->y + b1 * textureCoords[face->vertIdxs[1]]->y + b2 * textureCoords[face->vertIdxs[2]]->y;
-
+   if(textureCoords.size() != points.size()) {
+      if(textureCoords.size() > 0) {
+         printf("%d %d\n", textureCoords.size(), points.size());
+         exit(1);
+      }
+   }
+   else {
+      double b0 = 1.0 - b1 - b2;
+      sr.tu = b0 * textureCoords[face->vertIdxs[0]]->x + b1 * textureCoords[face->vertIdxs[1]]->x + b2 * textureCoords[face->vertIdxs[2]]->x;
+      sr.tv = b0 * textureCoords[face->vertIdxs[0]]->y + b1 * textureCoords[face->vertIdxs[1]]->y + b2 * textureCoords[face->vertIdxs[2]]->y;
+   }
    return true;
 }
 
