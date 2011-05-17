@@ -34,9 +34,9 @@ Color Lambertian::rho(const ShadeRecord& sr, const Vector3D& wo) const {
    return BLACK;
 }
 
-float Lambertian::getAlpha(const Point3D& p) const {
+float Lambertian::getAlpha(const ShadeRecord& sr) const {
    if(texture != NULL) {
-      return texture->getAlpha(p);
+      return texture->getAlpha(sr);
    }
    return 1.0;
 }

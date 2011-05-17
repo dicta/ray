@@ -6,8 +6,7 @@
 
 enum MappingEnum {
    UV,
-   SPHERE,
-   DISK
+   SPHERE
 };
 
 /**
@@ -28,9 +27,10 @@ public:
    virtual Color getColor(const ShadeRecord& sr) const;
    void setTextureFile(string fname);
    virtual void setHash(Hash* hash);
-   virtual float getAlpha(const Point3D& p) const;
+   virtual float getAlpha(const ShadeRecord& sr) const;
 
 private:
+   Uint32 getPixel(const ShadeRecord& sr) const;
    Uint32 getpixel(SDL_Surface *surface, int x, int y) const;
 
    SDL_Surface* surf;

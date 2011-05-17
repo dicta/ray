@@ -37,7 +37,7 @@ public:
     */
    virtual void setHash(Hash* hash);
    virtual Color getColor(const ShadeRecord& sr) const;
-   virtual float getAlpha(const Point3D& p) const { return texture->getAlpha(p); }
+   virtual float getAlpha(const ShadeRecord& sr) const { return texture->getAlpha(sr); }
 
 private:
    Texture* texture;
