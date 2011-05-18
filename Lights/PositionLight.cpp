@@ -33,7 +33,7 @@ bool PositionLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double d = location.distance(ray.origin);
    
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
-      if((*it)->shadowHit(ray, t) && (t < d)) {
+      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, t) && (t < d)) {
          return true;
       }
    }
