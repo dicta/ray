@@ -1,0 +1,4 @@
+m3ds {
+   filename   "config/voyager/voyager.3ds"
+   name       "voyager"
+}

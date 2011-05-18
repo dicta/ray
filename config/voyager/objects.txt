@@ -1,0 +1,4 @@
+mesh {
+   type   "3ds"
+   name   "voyager"
+}
