@@ -17,7 +17,7 @@
 #include "Parser/Hash.h"
 #include "Textures/ImageTexture.h"
 
-Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()) {
+Phong::Phong() : ambientBRDF(new Lambertian()), diffuseBRDF(new Lambertian()), specularBRDF(new GlossySpecular()), specularTexture(NULL) {
 }
 
 Phong::~Phong() {
@@ -53,6 +53,11 @@ void Phong::setHash(Hash* hash) {
    diffuseBRDF->setKd(hash->getDouble("kd"));
    specularBRDF->setKs(hash->getDouble("ks"));
    specularBRDF->setExp(hash->getDouble("exp"));
+   
+   if(hash->contains("specularTexture")) {
+      specularTexture = new ImageTexture();
+      specularTexture->setTextureFile(hash->getString("specularTexture"));
+   }
 }
     
 Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
@@ -68,7 +73,11 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
          bool inShadow = (*it)->inShadow(shadowRay, sr);
          
          if(!inShadow) {
-            L += (diffuseBRDF->f(sr, wo, wi) + specularBRDF->f(sr, wo, wi)) * (*it)->L(sr) * ndotwi;
+            float spec = 1.0;
+            if(specularTexture != NULL) {
+               spec = specularTexture->getColor(sr).red;
+            }
+            L += (diffuseBRDF->f(sr, wo, wi) + specularBRDF->f(sr, wo, wi) * spec) * (*it)->L(sr) * ndotwi;
          }
       }
    }
@@ -87,6 +96,10 @@ void Phong::setColor(float r, float g, float b) {
 
 void Phong::setDiffuse(float d) {
    diffuseBRDF->setKd(d);
+}
+
+float Phong::getAlpha(const ShadeRecord& sr) const {
+   return diffuseBRDF->getAlpha(sr);
 }
 
 void Phong::setTexture(string texture) {
