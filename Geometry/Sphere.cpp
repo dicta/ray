@@ -74,11 +74,18 @@ bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          sr.normal *= -1;
       }
 
-      sr.localHitPoint = ray.origin + ray.direction * t;
+      sr.localHitPoint = ray(t);
       return true;
    }
    
    return false;
+}
+
+void calculateNormal(Vector3D norm) {
+   Vector3D tangent(norm.z, 0, -norm.x);
+   Vector3D binormal(norm.cross(tangent));
+   
+   
 }
 
 bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
@@ -103,8 +110,14 @@ bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
    
    t = (-b + e) / denom;
    if(t > epsilon && partCheck(ray, t)) {
-      tmin = t;
-      return true;
+      ShadeRecord sr;
+      sr.localHitPoint = ray(t);
+      float alpha = material->getAlpha(sr);
+      
+      if(alpha >= 0.5) {
+         tmin = t;
+         return true;
+      }
    }
    
    return false;
