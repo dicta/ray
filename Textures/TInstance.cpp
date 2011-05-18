@@ -47,3 +47,9 @@ Color TInstance::getColor(const ShadeRecord& sr) const {
    lsr.localHitPoint = invMatrix * sr.localHitPoint;
    return texture->getColor(lsr);
 }
+
+float TInstance::getAlpha(const ShadeRecord& sr) const {
+   ShadeRecord lsr(sr);
+   lsr.localHitPoint = invMatrix * sr.localHitPoint;
+   return texture->getAlpha(lsr);
+}
