@@ -13,6 +13,8 @@
 #include "Parser/Hash.h"
 #include "Materials/Matte.h"
 #include "Math/Maths.h"
+#include "Math/Matrix.h"
+#include "Textures/Texture.h"
 
 Sphere::Sphere() :
    center(0, 0, 0),
@@ -62,6 +64,7 @@ bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       }
       
       sr.localHitPoint = ray.origin + ray.direction * t;
+      if(normalMap != NULL) getNormalFromMap(sr);
       return true;
    }
    
@@ -75,17 +78,32 @@ bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       }
 
       sr.localHitPoint = ray(t);
+      if(normalMap != NULL) getNormalFromMap(sr);
       return true;
    }
    
    return false;
 }
 
-void calculateNormal(Vector3D norm) {
-   Vector3D tangent(norm.z, 0, -norm.x);
-   Vector3D binormal(norm.cross(tangent));
+void Sphere::getNormalFromMap(ShadeRecord& sr) const {
+   Vector3D tangent(sr.normal.z, 0, -sr.normal.x);
+   Vector3D binormal(sr.normal.cross(tangent));
+
+   if(sr.normal.x == 0 && sr.normal.y == 1 && sr.normal.z == 0) {
+      tangent.set(1, 0, 0);
+      binormal.set(0, 0, -1);
+   }
+   else if(sr.normal.x == 0 && sr.normal.y == -1 && sr.normal.z == 0) {
+      tangent.set(-1, 0, 0);
+      binormal.set(0, 0, 1);
+   }
    
-   
+   Matrix tangentMatrix(tangent, binormal, sr.normal);
+   tangentMatrix.invert();
+
+   Color color = normalMap->getColor(sr);
+   Vector3D mapNormal(2.0 * color.red - 1.0, 2.0 * color.green - 1.0, 2.0 * color.blue - 1.0);
+   sr.normal = tangentMatrix * mapNormal;
 }
 
 bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
@@ -114,7 +132,7 @@ bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
       sr.localHitPoint = ray(t);
       float alpha = material->getAlpha(sr);
       
-      if(alpha >= 0.5) {
+      if(alpha > 0.5) {
          tmin = t;
          return true;
       }

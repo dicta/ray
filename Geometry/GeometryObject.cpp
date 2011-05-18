@@ -12,12 +12,13 @@
 #include "Materials/Phong.h"
 #include "Materials/Reflective.h"
 #include "Parser/Hash.h"
+#include "Textures/Texture.h"
 #include <math.h>
 #include <string>
 
 const double GeometryObject::epsilon = 1.0 * pow(10, -6);
 
-GeometryObject::GeometryObject() : doDelete(true), material(NULL), ignoreShadow(false) {
+GeometryObject::GeometryObject() : doDelete(true), material(NULL), ignoreShadow(false), normalMap(NULL) {
 }
 
 GeometryObject::~GeometryObject() {
@@ -31,6 +32,10 @@ void GeometryObject::setupMaterial(Hash* hash) {
    
    if(hash->contains("ignoreShadow")) {
       ignoreShadow = true;
+   }
+   
+   if(hash->contains("normalMap")) {
+      normalMap = Texture::createTexture(hash->getValue("normalMap")->getHash());
    }
    
    if(type == "phong") {

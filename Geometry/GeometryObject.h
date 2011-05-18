@@ -17,7 +17,7 @@
 
 class Hash;
 class Material;
-class Hash;
+class Texture;
 
 class GeometryObject {
    
@@ -40,6 +40,7 @@ public:
 
 protected:
    Material* material;
+   Texture* normalMap;
 };
 
 #endif

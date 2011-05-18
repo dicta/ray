@@ -19,6 +19,7 @@ public:
    double m[3][4];
    
    Matrix();
+   Matrix(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3);
    void setIdentity();
 
    void translate(double x, double y, double z);

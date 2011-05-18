@@ -18,7 +18,7 @@ SDLApp::SDLApp() :stopApp(false) {
 		exit(1);
 	}
 	
-	IMG_Init(IMG_INIT_JPG);
+	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
    loadConfiguration();
 }
