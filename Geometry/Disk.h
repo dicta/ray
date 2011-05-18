@@ -1,28 +1,15 @@
-/*
- *  Disk.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/26/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _DISK_H_
 #define _DISK_H_
 
-class Sampler;
-
 #include "LightObject.h"
 
+class Sampler;
+
 /**
- * Created a disk object.
- *
  * Hash values:
- * <ul>
- * <li>center - Center of the disk. Array of doubles of the form [ x y z ]
- * <li>normal - Normal of the disk. Array of doubles of the form [ x y z ]
- * <li>radius - Radius of the disk. Double.
- * </ul>
+ *    - center [ x y z ] - Center of the disk
+ *    - normal [ x y z ] - Normal of the disk
+ *    - radius <i>value</i> - Radius of the disk
  */
 class Disk : public LightObject {
    
