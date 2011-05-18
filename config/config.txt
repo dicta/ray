@@ -1,10 +1,10 @@
 config {
-   width       1024
-   height      768
+   width       960
+   height      540
    threads     1
-   boxWidth    100
-   boxHeight   100
-   camera      "config/test/camera.txt"
-   lights      "config/test/lights.txt"
-   objects     "config/test/objects.txt"
+   boxWidth    160
+   boxHeight   90
+   camera      "config/earth/camera.txt"
+   lights      "config/earth/lights.txt"
+   objects     "config/earth/objects.txt"
 }

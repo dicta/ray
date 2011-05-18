@@ -1,0 +1,65 @@
+sphere {
+   center [ 0.0 0.0 0.0 ]
+   radius 100.0
+   
+   material {
+      type  "phong"
+      ka 0.25
+      kd 1.0
+      ks 0.1
+      exp 20.0
+      specularTexture "resources/earth/8081_earthspec4k-2.jpg"
+
+      texture {
+         type "tinstance"
+         transforms [ "scale" [ 100.00 100.00 100.0 ] ]
+
+         texture {
+            type     "image"
+            filename "resources/earth/8081_earthmap4k.jpg"
+            mapping  "sphere"
+         }
+      }
+   }
+}
+
+sphere {
+   center [ 0.0 0.0 0.0 ]
+   radius 100.5
+   
+   material {
+      type  "phong"
+      ka 0.25
+      kd 1.0
+      ks 0.2
+      exp 5.0
+
+      texture {
+         type "tinstance"
+         transforms [ "scale" [ 100.5 100.5 100.5 ] ]
+
+      texture {
+         type     "image"
+         filename "resources/earth/8081_earthhiresclouds4K.jpg"
+         mapping  "sphere"
+         colorAsAlpha "true"
+      }
+}
+   }
+}
+
+
+sphere {
+   center [ 0.0 0.0 0.0 ]
+   radius 101.0
+   
+   material {
+      type  "phong"
+      ignoreShadow ""
+      ka 1.0
+      kd 0.6
+      ks 0.2
+      exp 5.0
+      color [ 0.161 0.384 0.498 0.2 ]
+   }
+}

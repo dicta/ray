@@ -1,0 +1,6 @@
+position {
+   location       [ 6100.0 0.0 6100.0 ]
+   color          [ 1.0 1.0 1.0 ]
+   radiance       3.0
+}
+
