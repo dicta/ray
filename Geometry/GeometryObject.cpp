@@ -17,7 +17,7 @@
 
 const double GeometryObject::epsilon = 1.0 * pow(10, -6);
 
-GeometryObject::GeometryObject() : doDelete(true), material(NULL) {
+GeometryObject::GeometryObject() : doDelete(true), material(NULL), ignoreShadow(false) {
 }
 
 GeometryObject::~GeometryObject() {
@@ -28,6 +28,10 @@ GeometryObject::~GeometryObject() {
 
 void GeometryObject::setupMaterial(Hash* hash) {
    string type = hash->getString("type");
+   
+   if(hash->contains("ignoreShadow")) {
+      ignoreShadow = true;
+   }
    
    if(type == "phong") {
       material = new Phong();

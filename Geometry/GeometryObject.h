@@ -36,6 +36,7 @@ public:
    bool doDelete;
 
    static const double epsilon;
+   bool ignoreShadow;
 
 protected:
    Material* material;
