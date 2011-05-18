@@ -38,5 +38,5 @@ float Lambertian::getAlpha(const ShadeRecord& sr) const {
    if(texture != NULL) {
       return texture->getAlpha(sr);
    }
-   return 1.0;
+   return color->alpha;
 }
