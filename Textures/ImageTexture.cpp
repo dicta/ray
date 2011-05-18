@@ -5,7 +5,7 @@
 
 using namespace std;
 
-ImageTexture::ImageTexture() : Texture(), surf(NULL), mapping(UV) {
+ImageTexture::ImageTexture() : Texture(), surf(NULL), mapping(UV), colorAsAlpha(false) {
 }
 
 ImageTexture::~ImageTexture() {
@@ -33,10 +33,14 @@ void ImageTexture::setHash(Hash* hash) {
    else {
       assert(false);
    }
+   
+   if(hash->contains("colorAsAlpha")) {
+      colorAsAlpha = true;
+   }
 }
 
 Uint32 ImageTexture::getPixel(const ShadeRecord& sr) const {
-   double u, v, d;
+   double u, v;
    Point3D p = sr.localHitPoint;
 
    switch(mapping) {
@@ -61,6 +65,9 @@ Color ImageTexture::getColor(const ShadeRecord& sr) const {
    Uint32 pixel = getPixel(sr);
    Uint8 r, g, b, a;
    SDL_GetRGBA(pixel, surf->format, &r, &g, &b, &a);
+   if(colorAsAlpha) {
+      a = r;
+   }
    return Color(r/255.0, g/255.0, b/255.0, a/255.0);
 }
 
@@ -68,6 +75,9 @@ float ImageTexture::getAlpha(const ShadeRecord& sr) const {
    Uint32 pixel = getPixel(sr);
    Uint8 r, g, b, a;
    SDL_GetRGBA(pixel, surf->format, &r, &g, &b, &a);
+   if(colorAsAlpha) {
+      a = r;
+   }
    return a / 255.0;
 }
 

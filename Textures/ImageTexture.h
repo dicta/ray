@@ -35,6 +35,7 @@ private:
 
    SDL_Surface* surf;
    MappingEnum mapping;
+   bool colorAsAlpha;
 };
 
 #endif
