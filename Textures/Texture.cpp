@@ -7,6 +7,7 @@
 #include "GraniteTexture.h"
 #include "MarbleTexture.h"
 #include "ImageTexture.h"
+#include "StarsTexture.h"
 #include "TInstance.h"
 
 Texture* Texture::createTexture(Hash* hash) {
@@ -33,6 +34,9 @@ Texture* Texture::createTexture(Hash* hash) {
    }
    else if(type == "image") {
       texture = new ImageTexture();
+   }
+   else if(type == "stars") {
+      texture = new StarsTexture();
    }
    else if(type == "tinstance") {
        texture = new TInstance();
