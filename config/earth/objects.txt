@@ -1,6 +1,6 @@
 sphere {
    center [ 0.0 0.0 0.0 ]
-   radius 100.0
+   radius 6.37814 
    
    material {
       type  "phong"
@@ -12,11 +12,22 @@ sphere {
 
       texture {
          type "tinstance"
-         transforms [ "scale" [ 100.00 100.00 100.0 ] ]
+         transforms [ "scale" [ 6.37814 6.37814 6.37814 ] ]
 
          texture {
             type     "image"
             filename "resources/earth/8081_earthmap4k.jpg"
+            mapping  "sphere"
+         }
+      }
+
+      normalMap {
+         type "tinstance"
+         transforms [ "scale" [ 6.37814 6.37814 6.37814 ] ]
+
+         texture {
+            type     "image"
+            filename "resources/earth/earthNormalMap_2048.png"
             mapping  "sphere"
          }
       }
@@ -25,41 +36,23 @@ sphere {
 
 sphere {
    center [ 0.0 0.0 0.0 ]
-   radius 100.5
+   radius 6.42
    
    material {
-      type  "phong"
+      type  "matte"
       ka 0.25
-      kd 1.0
-      ks 0.2
-      exp 5.0
+      kd 1.2
 
       texture {
          type "tinstance"
-         transforms [ "scale" [ 100.5 100.5 100.5 ] ]
+         transforms [ "scale" [ 6.42 6.42 6.42 ] ]
 
-      texture {
-         type     "image"
-         filename "resources/earth/8081_earthhiresclouds4K.jpg"
-         mapping  "sphere"
-         colorAsAlpha "true"
+         texture {
+            type     "image"
+            filename "resources/earth/clouds.png"
+            mapping  "sphere"
+#            colorAsAlpha "true"
+         }
       }
-}
    }
-}
-
-
-sphere {
-   center [ 0.0 0.0 0.0 ]
-   radius 101.0
-   
-   material {
-      type  "phong"
-      ignoreShadow ""
-      ka 1.0
-      kd 0.6
-      ks 0.2
-      exp 5.0
-      color [ 0.161 0.384 0.498 0.2 ]
-   }
-}
+} 
