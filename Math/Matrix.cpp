@@ -204,3 +204,11 @@ Vector3D Matrix::transformNormal(const Vector3D& p) const {
                    m[0][1] * p.x + m[1][1] * p.y + m[2][1] * p.z,
                    m[0][2] * p.x + m[1][2] * p.y + m[2][2] * p.z);
 }
+
+void Matrix::invert() {
+   double A = m[1][1] * m[2][2] - m[1][2] * m[2][1];
+   double B = m[1][2] * m[2][0] - m[2][2] * m[1][0];
+   double C = m[1][0] * m[2][1] - m[1][1] * m[2][0];
+   
+   double det = m[0][0] * A + m[0][1] * B + m[0][2] * C;
+}

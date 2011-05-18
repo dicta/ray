@@ -36,6 +36,8 @@ public:
    void rotateZ(double angle);
    void invRotateZ(double angle);
    
+   void invert();
+   
    Point3D operator*(const Point3D& p) const;
    Vector3D operator*(const Vector3D& p) const;
    Vector3D transformNormal(const Vector3D& p) const;
