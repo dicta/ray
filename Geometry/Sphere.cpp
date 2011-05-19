@@ -26,6 +26,8 @@ Sphere::Sphere() :
    phiMin(0),
    phiMax(0)
 {
+   bbox.expand(Point3D(-1, -1, -1));
+   bbox.expand(Point3D(1, 1, 1));
 }
 
 Sphere::Sphere(const Point3D& c, double r) :
@@ -38,9 +40,13 @@ Sphere::Sphere(const Point3D& c, double r) :
    phiMin(0),
    phiMax(0)
 {
+   bbox.expand(center - radius);
+   bbox.expand(center + radius);
 }
 
 bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+   if(!bbox.hit(ray)) return false;
+
    Vector3D temp(ray.origin - center);
    double a = ray.direction.dot(ray.direction);
    double b = 2.0 * temp.dot(ray.direction);
@@ -107,6 +113,8 @@ void Sphere::getNormalFromMap(ShadeRecord& sr) const {
 }
 
 bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
+   if(!bbox.hit(ray)) return false;
+
    Vector3D temp(ray.origin - center);
    double a = ray.direction.dot(ray.direction);
    double b = 2.0 * temp.dot(ray.direction);
@@ -130,7 +138,7 @@ bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
    if(t > epsilon && partCheck(ray, t)) {
       ShadeRecord sr;
       sr.localHitPoint = ray(t);
-      float alpha = material->getAlpha(sr);
+      float alpha = material->getAlpha(sr, ray);
       
       if(alpha > 0.5) {
          tmin = t;
@@ -186,6 +194,9 @@ void Sphere::setHash(Hash* hash) {
       phiMin = a->at(0)->getDouble() * DEG_TO_RAD;
       phiMax = a->at(1)->getDouble() * DEG_TO_RAD;
    }
-   
+
+   bbox.expand(center - radius);
+   bbox.expand(center + radius);
+
    setupMaterial(hash->getValue("material")->getHash());
 }
