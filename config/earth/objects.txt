@@ -56,3 +56,13 @@ sphere {
       }
    }
 } 
+
+sphere {
+   center [ 0.0 0.0 0.0 ]
+   radius 6.7
+   
+   material {
+      type  "atmosphere"
+      color [ 0.161 0.384 0.498 ]
+   }
+} 
