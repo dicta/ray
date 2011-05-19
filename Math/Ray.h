@@ -12,6 +12,7 @@
 
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
+#include "Math/Matrix.h"
 
 class Ray {
    
@@ -21,6 +22,10 @@ public:
    Ray(const Ray& ray);
    
    Point3D operator()(double t) const { return origin + direction * t; }
+   /**
+    * Calculates a matrix that can be used to convert a normal from model spsace to eye space.
+    */
+   Matrix calculateNormalMatrix() const;
 
    Point3D origin;
    Vector3D direction;

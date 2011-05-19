@@ -14,6 +14,7 @@
 #include "Utility/Color.h"
 #include "Utility/ShadeRecord.h"
 #include "Math/Point3D.h"
+#include "BBox.h"
 
 class Hash;
 class Material;
@@ -37,6 +38,7 @@ public:
 
    static const double epsilon;
    bool ignoreShadow;
+   BBox bbox;
 
 protected:
    Material* material;

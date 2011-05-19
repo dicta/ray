@@ -20,7 +20,10 @@ public:
    
    Matrix();
    Matrix(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3);
+
    void setIdentity();
+   void set(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3);
+   void set(const Matrix& matrix);
 
    void translate(double x, double y, double z);
    void invTranslate(double x, double y, double z);
@@ -38,6 +41,7 @@ public:
    void invRotateZ(double angle);
    
    void invert();
+   void transpose();
    
    Point3D operator*(const Point3D& p) const;
    Vector3D operator*(const Vector3D& p) const;

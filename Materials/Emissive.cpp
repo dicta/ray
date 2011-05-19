@@ -10,6 +10,10 @@
 #include "Emissive.h"
 #include "Parser/Hash.h"
 
+Emissive::Emissive() {
+   ls = 1.0;
+}
+
 void Emissive::setHash(Hash* hash) {
    ls = hash->getDouble("radiance");
    color.set(hash->getValue("color")->getArray());

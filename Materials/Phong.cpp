@@ -98,7 +98,7 @@ void Phong::setDiffuse(float d) {
    diffuseBRDF->setKd(d);
 }
 
-float Phong::getAlpha(const ShadeRecord& sr) const {
+float Phong::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
    return diffuseBRDF->getAlpha(sr);
 }
 

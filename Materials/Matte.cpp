@@ -85,7 +85,7 @@ Color Matte::areaLightShade(ShadeRecord& sr, const Ray& ray) {
    return L;
 }
 
-float Matte::getAlpha(const ShadeRecord& sr) const {
+float Matte::getAlpha(const ShadeRecord& sr, const Ray& ray) const {
    return diffuseBRDF->getAlpha(sr);
 }
 

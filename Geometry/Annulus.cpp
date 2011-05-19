@@ -112,7 +112,7 @@ bool Annulus::shadowHit(const Ray& ray, double& tmin) const {
       sr.localHitPoint = p;
       sr.tu = (dist-innerSquared) / (outerSquared-innerSquared);
       sr.tv = 0;
-      float alpha = material->getAlpha(sr);
+      float alpha = material->getAlpha(sr, ray);
 
       if(alpha > 0.2) {
          tmin = t;

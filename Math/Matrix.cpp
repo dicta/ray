@@ -15,15 +15,27 @@ Matrix::Matrix() {
 }
 
 Matrix::Matrix(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3) {
-   m[0][0] = row1.x;   m[0][1] = row1.y;   m[0][2] = row1.z;   m[0][3] = 0.0;
-   m[1][0] = row2.x;   m[1][1] = row2.y;   m[1][2] = row2.z;   m[1][3] = 0.0;
-   m[2][0] = row3.x;   m[2][1] = row3.y;   m[2][2] = row3.z;   m[2][3] = 0.0;
+   set(row1, row2, row3);
 }
 
 void Matrix::setIdentity() {
    for(int y = 0; y < 4; y++) {
       for(int x = 0; x < 3; x++) {
          m[x][y] = (x == y) ? 1.0 : 0.0;
+      }
+   }
+}
+
+void Matrix::set(const Vector3D& row1, const Vector3D& row2, const Vector3D& row3) {
+   m[0][0] = row1.x;   m[0][1] = row1.y;   m[0][2] = row1.z;   m[0][3] = 0.0;
+   m[1][0] = row2.x;   m[1][1] = row2.y;   m[1][2] = row2.z;   m[1][3] = 0.0;
+   m[2][0] = row3.x;   m[2][1] = row3.y;   m[2][2] = row3.z;   m[2][3] = 0.0;
+}
+
+void Matrix::set(const Matrix& matrix) {
+   for(int y = 0; y < 4; y++) {
+      for(int x = 0; x < 3; x++) {
+         m[x][y] = matrix.m[x][y];
       }
    }
 }
@@ -231,4 +243,20 @@ void Matrix::invert() {
    m[0][0] = A / det;   m[0][1] = D / det;   m[0][2] = G / det;
    m[1][0] = B / det;   m[1][1] = E / det;   m[1][2] = H / det;
    m[2][0] = C / det;   m[2][1] = F / det;   m[2][2] = K / det;
+}
+
+void Matrix::transpose() {
+   double m01 = m[0][1];
+   double m02 = m[0][2];
+   double m10 = m[1][0];
+   double m12 = m[1][2];
+   double m20 = m[2][0];
+   double m21 = m[2][1];
+   
+   m[0][1] = m10;
+   m[0][2] = m20;
+   m[1][0] = m01;
+   m[1][2] = m21;
+   m[2][0] = m02;
+   m[2][1] = m21;
 }

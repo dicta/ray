@@ -11,6 +11,7 @@
 #include "Materials/Matte.h"
 #include "Materials/Phong.h"
 #include "Materials/Reflective.h"
+#include "Materials/Atmosphere.h"
 #include "Parser/Hash.h"
 #include "Textures/Texture.h"
 #include <math.h>
@@ -43,6 +44,9 @@ void GeometryObject::setupMaterial(Hash* hash) {
    }
    else if(type == "reflective") {
       material = new Reflective();
+   }
+   else if(type == "atmosphere") {
+      material = new Atmosphere();
    }
    else {
       // Matte is the default type
