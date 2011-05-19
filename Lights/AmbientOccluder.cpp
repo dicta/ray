@@ -20,7 +20,7 @@ AmbientOccluder::~AmbientOccluder() {
    delete sampler;
 }
 
-Vector3D AmbientOccluder::getLightDirection(const Point3D& hitPoint) {
+Vector3D AmbientOccluder::getLightDirection(ShadeRecord& sr) {
    Point3D* sp = sampler->sampleHemisphere();
    return u * sp->x + v * sp->y + w * sp->z;
 }
