@@ -346,26 +346,6 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    return true;
 }
 
-void Mesh::calculateDerivitives(Face* face, ShadeRecord& sr) {
-   // Compute deltas
-   float du1 = textureCoords[face->vertIdxs[0]]->x - textureCoords[face->vertIdxs[2]]->x;
-   float du2 = textureCoords[face->vertIdxs[1]]->x - textureCoords[face->vertIdxs[2]]->x;
-   float dv1 = textureCoords[face->vertIdxs[0]]->y - textureCoords[face->vertIdxs[2]]->y;
-   float dv2 = textureCoords[face->vertIdxs[1]]->y - textureCoords[face->vertIdxs[2]]->y;
-   Vector3D dp1 = points[face->vertIdxs[0]] - points[face->vertIdxs[2]];
-   Vector3D dp2 = points[face->vertIdxs[1]] - points[face->vertIdxs[2]];
-   
-   float det = du1 * dv2 - dv1 - du2;
-   Vector3D dpdu, dpdv;
-
-   if(det == 0.f) {
-   }
-   else {
-      dpdu = (dp1 * dv2 - dp2 * dv1) / det;
-      dpdv = (dp1 * -du2 + dp2 * du1) / det;
-   }
-}
-
 bool Mesh::shadowHit(const Ray& ray, double& tmin) const {
    ShadeRecord sr;
    return hit(ray, tmin, sr);

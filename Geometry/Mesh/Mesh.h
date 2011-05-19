@@ -91,7 +91,6 @@ protected:
 private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
-   void calculateDerivitives(Face* face, ShadeRecord& sr);
 };
 
 #endif
