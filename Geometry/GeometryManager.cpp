@@ -64,6 +64,7 @@ void GeometryManager::loadObjects(string fname) {
    }
 
    fp.close();
+   grid.setupCells();
 }
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
@@ -114,6 +115,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
       for(VecIter it = m.begin(); it != m.end(); it++) {
          (*it)->setHash(hash);
          objects.push_back(*it);
+         grid.addObject(*it);
       }
       return NULL;
    }
@@ -125,6 +127,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
 
    if(addToList) {
       objects.push_back(obj);
+      grid.addObject(obj);
    }
 
    return obj;

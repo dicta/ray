@@ -10,6 +10,7 @@
 #ifndef _GEOMETRY_MANAGER_H_
 #define _GEOMETRY_MANAGER_H_
 
+#include "Storage/Grid.h"
 #include <vector>
 #include <memory>
 #include <string>
@@ -33,12 +34,14 @@ public:
    GeometryIter end() const { return objects.end(); }
    
    GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
+   Grid getGrid() const { return grid; }
    
 private:
    GeometryManager();
    
    static auto_ptr<GeometryManager> s_instance;
    vector<GeometryObject*> objects;
+   Grid grid;
 };
 
 #endif

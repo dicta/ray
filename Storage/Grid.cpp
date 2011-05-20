@@ -92,24 +92,24 @@ bool Grid::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
 
       if (tx_next < ty_next && tx_next < tz_next) {
-         tmin = tx_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+//         tmin = tx_next;
+         if(checkCell(ray, cell, tmin, tx_next, sr)) return true;
 
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
-         tmin = ty_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+//         tmin = ty_next;
+         if(checkCell(ray, cell, tmin, ty_next, sr)) return true;
 
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
-         tmin = tz_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+//         tmin = tz_next;
+         if(checkCell(ray, cell, tmin, tz_next, sr)) return true;
 
          tz_next += dtz;
          iz += iz_step;
@@ -126,12 +126,7 @@ bool Grid::shadowHit(const Ray& ray, double& tmin) const {
 double Grid::calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const {
    double next;
 
-   if (fabs(rd) < GeometryObject::epsilon) {
-      next = HUGE_VALUE;
-      step = -1;
-      stop = -1;
-   }
-   else if (rd > 0) {
+   if (rd > 0) {
       next = min + (i + 1) * dt;
       step = 1;
       stop = n;
@@ -141,23 +136,37 @@ double Grid::calculateNext(double rd, double min, double i, double dt, int n, in
       step = -1;
       stop = -1;
    }
+   
+   if (rd == 0.0) {
+      next = HUGE_VALUE;
+      step = -1;
+      stop = -1;
+   }
 
    return next;
 }
 
-bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord& sr) const {
+bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next, ShadeRecord& sr) const {
    if(cell == NULL) return false;
 
-   double t;
    bool hit = false;
+   Vector3D normal;
+   Point3D localHitPoint;
+   Material* mat;
 
    for(GeomIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if((*it)->hit(ray, t, sr) && t < tmin) {
-         tmin = t;
-         sr.material = (*it)->getMaterial();
+      if((*it)->hit(ray, tmin, sr) && tmin < next) {
+         mat = (*it)->getMaterial();
+         localHitPoint = sr.localHitPoint;
+         normal = sr.normal;
          hit = true;
       }
    }
 
+   if(hit) {
+      sr.localHitPoint = localHitPoint;
+      sr.normal = normal;
+      sr.material = mat;
+   }
    return hit;
 }

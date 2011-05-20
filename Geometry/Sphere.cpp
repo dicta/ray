@@ -130,8 +130,14 @@ bool Sphere::shadowHit(const Ray& ray, double& tmin) const {
    double t = (-b - e) / denom;
    
    if(t > epsilon && partCheck(ray, t)) {
-      tmin = t;
-      return true;
+      ShadeRecord sr;
+      sr.localHitPoint = ray(t);
+      float alpha = material->getAlpha(sr, ray);
+
+      if(alpha > 0.5) {
+         tmin = t;
+         return true;
+      }
    }
    
    t = (-b + e) / denom;
