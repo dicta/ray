@@ -18,6 +18,7 @@
 #include "Torus.h"
 #include "Box.h"
 #include "Annulus.h"
+#include "Stars.h"
 #include "Compound/Wedge.h"
 #include "Compound/WedgeRing.h"
 #include "Instance.h"
@@ -108,6 +109,10 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    }
    else if(type == "triangles") {
       obj = new Mesh();
+   }
+   else if(type == "stars") {
+      new Stars();
+      return NULL;
    }
    else if(type == "mesh") {
       string name = hash->getString("name");
