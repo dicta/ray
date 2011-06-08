@@ -18,7 +18,7 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
    ShadeRecord sr;
    Vector3D normal;
    Point3D localHitPoint;
-
+/*
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
          tmin = t;
@@ -36,13 +36,12 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
       sr.localHitPoint = localHitPoint;
       sr.tracer = this;
    }
-/*
+*/
+
    if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {
-      sr.t = t;
       sr.hit = true;
-      sr.hitPoint = ray(t);
       sr.tracer = this;
    }
-*/
+
    return sr;
 }

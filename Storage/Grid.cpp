@@ -3,21 +3,23 @@
 
 typedef vector<GeometryObject*>::const_iterator GeomIter;
 
-Grid::Grid() : numCells(0) {
+Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0) {
 }
 
 Grid::~Grid() {
-   cleanup();
-   objs.clear();
+//   cleanup();
+//   objs.clear();
 }
 
 void Grid::cleanup() {
-   for(int i = 0; i < numCells; i++) {
-      if(voxels[i] != NULL) {
-         delete voxels[i];
+   if(numCells > 0) {
+      for(int i = 0; i < numCells; i++) {
+         if(voxels[i] != NULL) {
+            delete voxels[i];
+         }
       }
+      delete[] voxels;
    }
-   delete[] voxels;
 }
 
 void Grid::addObject(GeometryObject* obj) {
@@ -26,8 +28,6 @@ void Grid::addObject(GeometryObject* obj) {
 }
 
 void Grid::setupCells() {
-   cleanup();
-
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
    nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;
@@ -35,7 +35,7 @@ void Grid::setupCells() {
    nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 64) + 1;
 
    numCells = nx * ny * nz;
-   voxels = new GridVoxel*[numCells];
+   voxels = new GridVoxel *[numCells];
    memset(voxels, 0, sizeof(GridVoxel*) * numCells);
 
    for(GeomIter it = objs.begin(); it != objs.end(); it++) {
