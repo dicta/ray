@@ -40,7 +40,7 @@ Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const 
 }
 
 
-Mesh::Mesh() : GeometryObject(), bbox() {
+Mesh::Mesh() : GeometryObject() {
    doDelete = false;
    name = "";
 }

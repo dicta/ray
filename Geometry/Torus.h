@@ -2,7 +2,6 @@
 #define _TORUS_H_
 
 #include "GeometryObject.h"
-#include "BBox.h"
 
 /**
  * Hash values:
@@ -30,7 +29,6 @@ private:
 
    double a;
    double b;
-   BBox bbox;
    bool thetaRange, phiRange;
    double minTheta, maxTheta;
    double cosThetaMin, cosThetaMax;

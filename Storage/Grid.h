@@ -3,7 +3,6 @@
 
 #include "Math/Ray.h"
 #include "Geometry/GeometryObject.h"
-#include "Geometry/BBox.h"
 
 struct GridVoxel {
    ~GridVoxel() { objs.clear(); }
@@ -15,7 +14,7 @@ struct GridVoxel {
 class Grid : public GeometryObject {
 
 public:
-   Grid() {}
+   Grid();
    ~Grid();
 
    void addObject(GeometryObject* obj);
@@ -26,11 +25,13 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
 private:
+   void cleanup();
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next, ShadeRecord& sr) const;
+   bool checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double next) const;
    
+   int numCells;
    vector<GeometryObject*> objs;
-   BBox bbox;
    GridVoxel** voxels;
    int nx, ny, nz;
 };

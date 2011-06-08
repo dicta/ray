@@ -21,7 +21,7 @@ void WedgeRing::setHash(Hash* hash) {
    
    for(int i = 0;i < count; i++) {
       Wedge* w = new Wedge(innerR, outerR, bevelR, angle1, angle2, minY, maxY);
-      bbox.expand(w->getBBox());
+      bbox.expand(w->bbox);
 
       objects.push_back(w);
       angle1 += angleSize;

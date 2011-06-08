@@ -1,7 +1,7 @@
 #include "Compound.h"
 #include <math.h>
 
-Compound::Compound() : GeometryObject(), bbox() {
+Compound::Compound() : GeometryObject() {
 }
 
 Compound::~Compound() {
@@ -9,6 +9,17 @@ Compound::~Compound() {
       delete objects[i];
    }
    objects.clear();
+}
+
+void Compound::setHash(Hash* hash) {
+   for(GeometryIter it = begin(); it != end(); it++) {
+      (*it)->setHash(hash);
+   }
+}
+
+void Compound::addObject(GeometryObject* obj) {
+   objects.push_back(obj);
+   bbox.expand(obj->bbox);
 }
 
 bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
@@ -21,6 +32,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    bool hit = false;
    Vector3D normal;
    Point3D localHitPoint;
+   Material* mat = material;
    
    for(GeometryIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
@@ -28,6 +40,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          tmin = t;
          normal = sr.normal;
          localHitPoint = sr.localHitPoint;
+         mat = (*it)->getMaterial();
       }
    }
    
@@ -35,6 +48,9 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
+
+      Compound* self = const_cast<Compound*>(this);
+      self->material = mat;
    }
 
    return hit;

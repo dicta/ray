@@ -5,7 +5,6 @@
 #include "Math/Point2D.h"
 #include "Math/Vector3D.h"
 #include "Geometry/GeometryObject.h"
-#include "Geometry/BBox.h"
 #include <vector>
 #include <string>
 #include <map>
@@ -84,8 +83,7 @@ protected:
    vector<Face*> faces;
    vector<Point2D*> textureCoords;
    Voxel** voxels;
-   BBox bbox;
-   
+
    int nx, ny, nz;
    
 private:
