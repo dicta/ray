@@ -3,7 +3,21 @@
 
 typedef vector<GeometryObject*>::const_iterator GeomIter;
 
+Grid::Grid() : numCells(0) {
+}
+
 Grid::~Grid() {
+   cleanup();
+   objs.clear();
+}
+
+void Grid::cleanup() {
+   for(int i = 0; i < numCells; i++) {
+      if(voxels[i] != NULL) {
+         delete voxels[i];
+      }
+   }
+   delete[] voxels;
 }
 
 void Grid::addObject(GeometryObject* obj) {
@@ -12,13 +26,15 @@ void Grid::addObject(GeometryObject* obj) {
 }
 
 void Grid::setupCells() {
+   cleanup();
+
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
    nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;
    ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 64) + 1;
    nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 64) + 1;
 
-   int numCells = nx * ny * nz;
+   numCells = nx * ny * nz;
    voxels = new GridVoxel*[numCells];
    memset(voxels, 0, sizeof(GridVoxel*) * numCells);
 
@@ -119,8 +135,71 @@ bool Grid::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 }
 
 bool Grid::shadowHit(const Ray& ray, double& tmin) const {
-   ShadeRecord sr;
-   return hit(ray, tmin, sr);
+   double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
+   double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
+   if(ray.direction.x < 0) swap(tx_min, tx_max);
+
+   double ty_min = (bbox.y0 - ray.origin.y) / ray.direction.y;
+   double ty_max = (bbox.y1 - ray.origin.y) / ray.direction.y;
+   if(ray.direction.y < 0) swap(ty_min, ty_max);
+
+   double tz_min = (bbox.z0 - ray.origin.z) / ray.direction.z;
+   double tz_max = (bbox.z1 - ray.origin.z) / ray.direction.z;
+   if(ray.direction.z < 0) swap(tz_min, tz_max);
+
+	double t0 = max(max(tx_min, ty_min), tz_min);
+	double t1 = min(min(tx_max, ty_max), tz_max);
+
+	if (t0 > t1) return(false);
+
+   Point3D p = ray.origin;
+   if(!bbox.contains(ray.origin)) {
+      p = ray(t0);
+   }
+
+   int ix = (int) clamp((p.x - bbox.x0) * nx / (bbox.wx), 0, nx - 1);
+   int iy = (int) clamp((p.y - bbox.y0) * ny / (bbox.wy), 0, ny - 1);
+   int iz = (int) clamp((p.z - bbox.z0) * nz / (bbox.wz), 0, nz - 1);
+
+   // ray parameter increments per cell in the x, y, and z directions
+
+   double dtx = (tx_max - tx_min) / nx;
+   double dty = (ty_max - ty_min) / ny;
+   double dtz = (tz_max - tz_min) / nz;
+
+   int ix_step, iy_step, iz_step;
+   int ix_stop, iy_stop, iz_stop;
+
+   double tx_next = calculateNext(ray.direction.x, tx_min, ix, dtx, nx, ix_step, ix_stop);
+   double ty_next = calculateNext(ray.direction.y, ty_min, iy, dty, ny, iy_step, iy_stop);
+   double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
+
+   // Traverse the grid
+   while(true) {
+      GridVoxel* cell = voxels[ix + nx * iy + nx * ny * iz];
+
+      if (tx_next < ty_next && tx_next < tz_next) {
+         if(checkCellShadow(ray, cell, tmin, tx_next)) return true;
+
+         tx_next += dtx;
+         ix += ix_step;
+         if (ix == ix_stop) return false;
+      }
+      else if (ty_next < tz_next) {
+         if(checkCellShadow(ray, cell, tmin, ty_next)) return true;
+
+         ty_next += dty;
+         iy += iy_step;
+         if (iy == iy_stop) return false;
+      }
+      else {
+         if(checkCellShadow(ray, cell, tmin, tz_next)) return true;
+
+         tz_next += dtz;
+         iz += iz_step;
+         if (iz == iz_stop) return false;
+      }
+   }
 }
 
 double Grid::calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const {
@@ -159,6 +238,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
          mat = (*it)->getMaterial();
          localHitPoint = sr.localHitPoint;
          normal = sr.normal;
+         sr.hitPoint = ray(tmin);
          hit = true;
       }
    }
@@ -167,6 +247,20 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
       sr.localHitPoint = localHitPoint;
       sr.normal = normal;
       sr.material = mat;
+      sr.t = tmin;
+   }
+   return hit;
+}
+
+bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double next) const {
+   if(cell == NULL) return false;
+
+   bool hit = false;
+
+   for(GeomIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
+      if((*it)->shadowHit(ray, tmin) && tmin < next) {
+         hit = true;
+      }
    }
    return hit;
 }
