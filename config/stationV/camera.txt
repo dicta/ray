@@ -1,0 +1,10 @@
+camera {
+   type                 "pinhole"
+   numSamples           1
+   angle                49.0
+   eye                  [ 0.0 5.0 0.0 ]
+   rotate               [ 90.0 0.0 180.0 ]
+#   lookat               [ 0.0 0.0 0.0 ]
+   tracer               "rayCast"
+   bgColor              [ 0.1 0.1 0.1 ]
+}
