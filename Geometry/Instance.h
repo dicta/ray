@@ -27,6 +27,7 @@ public:
    void rotateX(double angle);
    void rotateY(double angle);
    void rotateZ(double angle);
+   void computeBBox();
 
    /**
     * Hash values:
@@ -42,25 +43,31 @@ public:
 private:
    GeometryObject* object;
    Matrix invMatrix;
+   Matrix fwdMatrix;
 };
 
 inline void Instance::translate(double x, double y, double z) {
+   fwdMatrix.translate(x, y, z);
    invMatrix.invTranslate(x, y, z);
 }
 
 inline void Instance::scale(double x, double y, double z) {
+   fwdMatrix.scale(x, y, z);
    invMatrix.invScale(x, y, z);
 }
 
 inline void Instance::rotateX(double angle) {
+   fwdMatrix.rotateX(angle);
    invMatrix.invRotateX(angle);
 }
 
 inline void Instance::rotateY(double angle) {
+   fwdMatrix.rotateY(angle);
    invMatrix.invRotateY(angle);
 }
 
 inline void Instance::rotateZ(double angle) {
+   fwdMatrix.rotateZ(angle);
    invMatrix.invRotateZ(angle);
 }
 

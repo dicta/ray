@@ -8,6 +8,7 @@ class BBox {
 public:
    BBox();
    
+   void reset();
    bool hit(const Ray& ray) const;
    bool hit(const Ray& ray, double& hitt0, double& hitt1) const;
    void expand(const BBox& b);

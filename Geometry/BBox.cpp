@@ -4,6 +4,11 @@
 BBox::BBox() : x0(1e6), y0(1e6), z0(1e6), x1(-1e6), y1(-1e6), z1(-1e6) {
 }
 
+void BBox::reset() {
+   x0 = y0 = z0 = 1.0e6;
+   x1 = y1 = z1 = -1.0e6;
+}
+
 bool BBox::hit(const Ray& ray) const {
    double t0, t1;
    return hit(ray, t0, t1);
