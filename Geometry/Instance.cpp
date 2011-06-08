@@ -2,10 +2,10 @@
 #include "Parser/Hash.h"
 #include "GeometryManager.h"
 
-Instance::Instance() : object(NULL), invMatrix(), fwdMatrix() {
+Instance::Instance() : object(NULL), invMatrix() {
 }
 
-Instance::Instance(GeometryObject* obj) : object(obj), invMatrix(), fwdMatrix() {
+Instance::Instance(GeometryObject* obj) : object(obj), invMatrix() {
 }
 
 Instance::~Instance() {
@@ -19,6 +19,7 @@ void Instance::setHash(Hash* hash) {
    string type = objHash->getString("type");
 
    object = GeometryManager::instance().createObject(type, objHash, false);
+   bbox.expand(object->bbox);
    
    if(hash->contains("material")) {
       setupMaterial(hash->getValue("material")->getHash());
@@ -37,7 +38,6 @@ void Instance::setHash(Hash* hash) {
          if(type == "translate") {
             Array* a = transforms->at(idx)->getArray();
             invMatrix.invTranslate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
-            fwdMatrix.translate(a->at(0)->getDouble(), a->at(1)->getDouble(), a->at(2)->getDouble());
          }
          else if(type == "scale") {
             Array* a = transforms->at(idx)->getArray();
@@ -45,7 +45,6 @@ void Instance::setHash(Hash* hash) {
          }
          else if(type == "rotateX") {
             invMatrix.invRotateX(transforms->at(idx)->getDouble());
-            fwdMatrix.rotateX(transforms->at(idx)->getDouble());
          }
          else if(type == "rotateY") {
             invMatrix.invRotateY(transforms->at(idx)->getDouble());
@@ -67,6 +66,10 @@ bool Instance::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.normal = invMatrix.transformNormal(sr.normal);
       sr.normal.normalize();
       sr.localHitPoint = ray.origin + ray.direction * tmin;
+      
+      Instance* self = const_cast<Instance*>(this);
+      self->material = object->getMaterial();
+
       return true;
    }
    

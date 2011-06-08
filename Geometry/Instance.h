@@ -42,32 +42,26 @@ public:
 private:
    GeometryObject* object;
    Matrix invMatrix;
-   Matrix fwdMatrix;
 };
 
 inline void Instance::translate(double x, double y, double z) {
    invMatrix.invTranslate(x, y, z);
-   fwdMatrix.translate(x, y, z);
 }
 
 inline void Instance::scale(double x, double y, double z) {
    invMatrix.invScale(x, y, z);
-   fwdMatrix.scale(x, y, z);
 }
 
 inline void Instance::rotateX(double angle) {
    invMatrix.invRotateX(angle);
-   fwdMatrix.rotateX(angle);
 }
 
 inline void Instance::rotateY(double angle) {
    invMatrix.invRotateY(angle);
-   fwdMatrix.rotateY(angle);
 }
 
 inline void Instance::rotateZ(double angle) {
    invMatrix.invRotateZ(angle);
-   fwdMatrix.rotateZ(angle);
 }
 
 #endif
