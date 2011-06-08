@@ -2,13 +2,17 @@
 #include "Sphere.h"
 #include "Materials/Emissive.h"
 #include "Geometry/GeometryManager.h"
+#include "Parser/Hash.h"
 
-Stars::Stars() {
-   createStars();
+Stars::Stars() : count(0) {
+}
+
+void Stars::setHash(Hash* h) {
+   count = h->getInteger("count");
 }
 
 void Stars::createStars() {
-   for(int i = 0; i < 10000; i++) {
+   for(int i = 0; i < count; i++) {
       createStars(1, 1, 1);
       createStars(1, 1, -1);
       createStars(1, -1, 1);

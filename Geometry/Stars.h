@@ -3,14 +3,20 @@
 
 #include "GeometryObject.h"
 
+class Hash;
+
 class Stars {
 
 public:
    Stars();
 
-private:
+   void setHash(Hash* h);
    void createStars();
+
+private:
    void createStars(int a, int b, int c);
+   
+   int count;
 };
 
 #endif
