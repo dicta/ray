@@ -111,18 +111,14 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
       obj = new Mesh();
    }
    else if(type == "stars") {
-      new Stars();
+      Stars s;
+      s.setHash(hash);
+      s.createStars();
       return NULL;
    }
    else if(type == "mesh") {
       string name = hash->getString("name");
-      vector<Mesh*> m = MeshManager::instance().getMesh(name);
-      for(VecIter it = m.begin(); it != m.end(); it++) {
-         (*it)->setHash(hash);
-         objects.push_back(*it);
-         grid.addObject(*it);
-      }
-      return NULL;
+      obj = MeshManager::instance().getMesh(name);
    }
    else {
       return NULL;

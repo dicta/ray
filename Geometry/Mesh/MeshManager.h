@@ -10,9 +10,9 @@ using namespace std;
 
 class Mesh;
 class Hash;
+class GeometryObject;
 
-typedef map<string, vector<Mesh*> >::const_iterator MeshIter;
-typedef vector<Mesh*>::const_iterator VecIter;
+typedef map<string, GeometryObject*>::const_iterator MeshIter;
 
 class MeshManager {
 
@@ -21,14 +21,14 @@ public:
    ~MeshManager();
    
    void loadMeshes(string fname);
-   vector<Mesh*> getMesh(string name) { return objects[name]; }
+   GeometryObject* getMesh(string name) { return objects[name]; }
    
 private:
    MeshManager();
    void loadMesh(string type, Hash* hash);
    
    static auto_ptr<MeshManager> s_instance;
-   map<string, vector<Mesh*> > objects;
+   map<string, GeometryObject*> objects;
 };
 
 #endif

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include "Utility/Color.h"
+#include "Geometry/Compound/Compound.h"
 
 using namespace std;
 
@@ -34,7 +35,7 @@ public:
    
    bool load(const string& filename);
    void setHash(Hash* h);
-   vector<Mesh*> getMeshs() { return meshs; }
+   GeometryObject* getMesh() { return meshs; }
 
 private:
    void processTopLevelChunk(int nBytes);
@@ -57,7 +58,7 @@ private:
    double scale;
    string textureDir;
    ifstream in;
-   vector<Mesh*> meshs;
+   Compound* meshs;
    map<string, Material*> materials;
 };
 

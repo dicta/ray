@@ -17,7 +17,7 @@ MaterialProps::MaterialProps() :
 {
 }
 
-M3DSParser::M3DSParser() : scale(1.0), textureDir("") {
+M3DSParser::M3DSParser() : scale(1.0), textureDir(""), meshs(NULL) {
 }
 
 void M3DSParser::setHash(Hash* h) {
@@ -35,25 +35,25 @@ bool M3DSParser::load(const string& filename) {
       fprintf(stderr, "Read3DSFile: Error opening %s\n", filename.c_str());
       return false;
    }
-   else {
-      uint16 chunkType = readUshortLE(in);
-      if (chunkType != M3DCHUNK_MAGIC) {
-         fprintf(stderr, "Read3DSFile: Wrong magic number in header\n");
-         return false;
-      }
-
-      int chunkSize = readIntLE(in);
-      if (in.bad()) {
-         fprintf(stderr, "Read3DSFile: Error reading 3DS file.\n");
-         return false;
-      }
-
-      int contentSize = chunkSize - 6;
-      processTopLevelChunk(contentSize);
-
-      in.close();
-      return true;
+   
+   meshs = new Compound();
+   uint16 chunkType = readUshortLE(in);
+   if (chunkType != M3DCHUNK_MAGIC) {
+      fprintf(stderr, "Read3DSFile: Wrong magic number in header\n");
+      return false;
    }
+
+   int chunkSize = readIntLE(in);
+   if (in.bad()) {
+      fprintf(stderr, "Read3DSFile: Error reading 3DS file.\n");
+      return false;
+   }
+
+   int contentSize = chunkSize - 6;
+   processTopLevelChunk(contentSize);
+
+   in.close();
+   return true;
 }
 
 void M3DSParser::processTopLevelChunk(int nBytes) {
@@ -133,7 +133,6 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    int bytesRead = 0;
    Mesh* mesh = new Mesh();
    mesh->name = name;
-   meshs.push_back(mesh);
 
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
@@ -168,6 +167,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    }
    mesh->calculateNormals();
    mesh->setupCells();
+   meshs->addObject(mesh);
 }
 
 void M3DSParser::processMaterialChunk(int nBytes) {
