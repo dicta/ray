@@ -3,12 +3,13 @@
 
 #include "Math/Ray.h"
 #include "Geometry/GeometryObject.h"
+#include <list>
 
 struct GridVoxel {
    ~GridVoxel() { objs.clear(); }
    void add(GeometryObject* o) { objs.push_back(o); }
    
-   vector<GeometryObject*> objs;
+   list<GeometryObject*> objs;
 };
 
 class Grid : public GeometryObject {
@@ -18,8 +19,9 @@ public:
    ~Grid();
 
    void addObject(GeometryObject* obj);
+   void Grid::removeObject(GeometryObject* obj) { objs.remove(obj); }
    void setupCells();
-   
+
    virtual void setHash(Hash* hash) {}
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
@@ -31,7 +33,7 @@ private:
    bool checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double next) const;
    
    int numCells;
-   vector<GeometryObject*> objs;
+   list<GeometryObject*> objs;
    GridVoxel** voxels;
    int nx, ny, nz;
 };

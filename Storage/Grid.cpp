@@ -1,7 +1,7 @@
 #include "Grid.h"
 #include "Math/Maths.h"
 
-typedef vector<GeometryObject*>::const_iterator GeomIter;
+typedef list<GeometryObject*>::const_iterator GeomIter;
 
 Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0) {
 }

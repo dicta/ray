@@ -6,11 +6,22 @@
 #include "Lights/LightManager.h"
 #include "Geometry/GeometryManager.h"
 #include "Geometry/Mesh/MeshManager.h"
+#include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
+#include <SDL/SDL.h>
 #include <SDL_image.h>
 
 const int bpp = 0;
+
+auto_ptr<SDLApp> SDLApp::s_instance;
+
+SDLApp& SDLApp::instance() {
+   if(s_instance.get() == 0) {
+      s_instance.reset(new SDLApp());
+   }
+   return *s_instance;
+}
 
 SDLApp::SDLApp() :stopApp(false) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -54,12 +65,16 @@ void SDLApp::loadConfiguration() {
    camera->setSurface(surface);
    camera->setThreadParameters(threadCount, boxw, boxh);
    
+   LightManager::instance().loadLights(h->getString("lights"));
+   GeometryManager::instance().loadObjects(h->getString("objects"));
+
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
    }
-
-   LightManager::instance().loadLights(h->getString("lights"));
-   GeometryManager::instance().loadObjects(h->getString("objects"));
+   if(h->contains("animation")) {
+      Animation anim;
+      anim.setup(h->getString("animation"));
+   }
 }
 
 void SDLApp::setupCamera(string fname, int width, int height) {
@@ -110,3 +125,6 @@ void SDLApp::run() {
    }
 }
 
+void SDLApp::saveBMP(const char* fname) {
+   SDL_SaveBMP(surface, fname);
+}

@@ -133,3 +133,11 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
 
    return obj;
 }
+
+GeometryObject* GeometryManager::removeObject(string name) {
+   // Get object by name
+   // Remove object from grid
+   // Remove object from list
+   // Return object
+   return NULL;
+}
