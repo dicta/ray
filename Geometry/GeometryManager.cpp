@@ -42,9 +42,9 @@ GeometryManager::GeometryManager() {
 }
 
 GeometryManager::~GeometryManager() {
-   for(unsigned int i = 0; i < objects.size(); i++) {
-      if(objects[i]->doDelete) {
-         delete objects[i];
+   for(GeometryIter it = objects.begin(); it != objects.end(); ++it) {
+      if((*it).second->doDelete) {
+         delete (*it).second;
       }
    }
    objects.clear();
@@ -70,6 +70,7 @@ void GeometryManager::loadObjects(string fname) {
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
    GeometryObject* obj;
+   string name = "";
 
    if(type == "sphere") {
       obj = new Sphere();
@@ -117,7 +118,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
       return NULL;
    }
    else if(type == "mesh") {
-      string name = hash->getString("name");
+      name = hash->getString("name");
       obj = MeshManager::instance().getMesh(name);
    }
    else {
@@ -127,7 +128,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    obj->setHash(hash);
 
    if(addToList) {
-      objects.push_back(obj);
+      objects[name] = obj;
       grid.addObject(obj);
    }
 
@@ -135,9 +136,8 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
 }
 
 GeometryObject* GeometryManager::removeObject(string name) {
-   // Get object by name
-   // Remove object from grid
-   // Remove object from list
-   // Return object
-   return NULL;
+   GeometryObject* obj = objects[name];
+   objects.erase(name);
+   grid.removeObject(obj);
+   return obj;
 }

@@ -28,6 +28,7 @@ public:
    void rotateY(double angle);
    void rotateZ(double angle);
    void computeBBox();
+   void reset();
 
    /**
     * Hash values:
@@ -69,6 +70,11 @@ inline void Instance::rotateY(double angle) {
 inline void Instance::rotateZ(double angle) {
    fwdMatrix.rotateZ(angle);
    invMatrix.invRotateZ(angle);
+}
+
+inline void Instance::reset() {
+   fwdMatrix.setIdentity();
+   invMatrix.setIdentity();
 }
 
 #endif

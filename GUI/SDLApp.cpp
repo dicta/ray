@@ -23,7 +23,7 @@ SDLApp& SDLApp::instance() {
    return *s_instance;
 }
 
-SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL) {
+SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -36,6 +36,12 @@ SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL) {
 
 SDLApp::~SDLApp() {
    delete camera;
+   SDL_FreeSurface(surface);
+   
+   if(animation != NULL) {
+      delete animation;
+   }
+   
    IMG_Quit();
    SDL_Quit();
 }
@@ -68,13 +74,14 @@ void SDLApp::loadConfiguration() {
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
    }
-   if(h->contains("animation")) {
-      Animation anim;
-      anim.setup(h->getString("animation"));
-   }
    
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
+   
+   if(h->contains("animation")) {
+      animation = new Animation();
+      animation->setup(h->getString("animation"));
+   }
 }
 
 void SDLApp::setupCamera(string fname, int width, int height) {
@@ -104,7 +111,13 @@ void SDLApp::setupCamera(string fname, int width, int height) {
 
 void SDLApp::run() {
    SDL_Event event;
-   camera->render();
+   
+   if(animation != NULL) {
+      animation->play();
+   }
+   else {
+      camera->render();
+   }
 
    while(!stopApp) {
       SDL_WaitEvent(&event);

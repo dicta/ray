@@ -28,6 +28,7 @@ void Grid::addObject(GeometryObject* obj) {
 }
 
 void Grid::setupCells() {
+   cleanup();
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
    nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;

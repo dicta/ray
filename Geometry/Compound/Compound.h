@@ -6,8 +6,6 @@
 
 using namespace std;
 
-typedef vector<GeometryObject*>::const_iterator GeometryIter;
-
 class Compound : public GeometryObject {
    
 public:
@@ -21,9 +19,6 @@ public:
    
 protected:
    vector<GeometryObject*> objects;
-
-   GeometryIter begin() const { return objects.begin(); }
-   GeometryIter end() const { return objects.end(); }
 };
 
 #endif

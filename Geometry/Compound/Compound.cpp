@@ -1,6 +1,8 @@
 #include "Compound.h"
 #include <math.h>
 
+typedef vector<GeometryObject*>::const_iterator CompoundIter;
+
 Compound::Compound() : GeometryObject() {
 }
 
@@ -12,7 +14,7 @@ Compound::~Compound() {
 }
 
 void Compound::setHash(Hash* hash) {
-   for(GeometryIter it = begin(); it != end(); it++) {
+   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       (*it)->setHash(hash);
    }
 }
@@ -34,7 +36,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Point3D localHitPoint;
    Material* mat = material;
    
-   for(GeometryIter it = objects.begin(); it != objects.end(); it++) {
+   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
          hit = true;
          tmin = t;
@@ -63,7 +65,7 @@ bool Compound::shadowHit(const Ray& ray, double& tmin) const {
    
    tmin = 1.7 * pow(10.0, 308.0);
    
-   for(GeometryIter it = objects.begin(); it != objects.end(); it++) {
+   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->shadowHit(ray, tmin)) {
          return true;
       }

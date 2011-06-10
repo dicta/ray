@@ -15,12 +15,16 @@ bool SpotLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
    double d = location.distance(ray.origin);
 
+   if(GeometryManager::instance().getGrid().shadowHit(ray, t) && (t < d)) {
+      return true;
+   }
+/*
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
       if((*it)->shadowHit(ray, t) && (t < d)) {
          return true;
       }
    }
-
+*/
    return false;
 }
 

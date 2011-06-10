@@ -11,7 +11,7 @@
 #define _GEOMETRY_MANAGER_H_
 
 #include "Storage/Grid.h"
-#include <vector>
+#include <map>
 #include <memory>
 #include <string>
 
@@ -20,7 +20,7 @@ using namespace std;
 class GeometryObject;
 class Hash;
 
-typedef vector<GeometryObject*>::const_iterator GeometryIter;
+typedef map<string, GeometryObject*>::const_iterator GeometryIter;
 
 class GeometryManager {
    
@@ -43,7 +43,7 @@ private:
    GeometryManager();
    
    static auto_ptr<GeometryManager> s_instance;
-   vector<GeometryObject*> objects;
+   map<string, GeometryObject*> objects;
    Grid grid;
 };
 

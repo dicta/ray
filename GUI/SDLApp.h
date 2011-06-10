@@ -8,6 +8,7 @@ using namespace std;
 
 class Camera;
 class SDL_Surface;
+class Animation;
 
 class SDLApp {
    
@@ -28,6 +29,7 @@ private:
    bool stopApp;
    SDL_Surface* surface;
    Camera* camera;
+   Animation* animation;
 };
 
 #endif

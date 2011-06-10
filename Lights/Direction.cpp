@@ -23,12 +23,16 @@ Vector3D Direction::getLightDirection(ShadeRecord& sr) {
 bool Direction::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
 
+   if(GeometryManager::instance().getGrid().shadowHit(ray, t)) {
+      return true;
+   }
+/*
    for(GeometryIter it = GeometryManager::instance().begin(); it != GeometryManager::instance().end(); it++) {
       if((*it)->shadowHit(ray, t)) {
          return true;
       }
    }
-
+*/
    return false;
 }
 

@@ -15,6 +15,9 @@ FrameObject::FrameObject(Instance* i) : instance(i), rx(0), ry(0), rz(0) {
 }
 
 void FrameObject::setup() {
+   instance->reset();
+   instance->rotateY(ry);
+   instance->computeBBox();
 }
 
 Animation::Animation() : frames(NULL), frameCount(0) {
@@ -52,7 +55,7 @@ void Animation::setup(const string& fname) {
 
    for(int i = 0; i < frameCount; i++) {
       FrameObject* fo = new FrameObject(instances["stationV"]);
-      fo->ry = lerp<double>(i, 0, 20);
+      fo->ry = ((double)i / (double)frameCount) * 20.0;
       frames[i].addFrameObject(fo);
    }
    

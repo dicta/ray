@@ -19,7 +19,7 @@ public:
    ~Grid();
 
    void addObject(GeometryObject* obj);
-   void Grid::removeObject(GeometryObject* obj) { objs.remove(obj); }
+   void removeObject(GeometryObject* obj) { objs.remove(obj); }
    void setupCells();
 
    virtual void setHash(Hash* hash) {}
