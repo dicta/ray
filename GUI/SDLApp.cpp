@@ -23,7 +23,7 @@ SDLApp& SDLApp::instance() {
    return *s_instance;
 }
 
-SDLApp::SDLApp() :stopApp(false) {
+SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
 		exit(1);
@@ -64,9 +64,6 @@ void SDLApp::loadConfiguration() {
    setupCamera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->setThreadParameters(threadCount, boxw, boxh);
-   
-   LightManager::instance().loadLights(h->getString("lights"));
-   GeometryManager::instance().loadObjects(h->getString("objects"));
 
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
@@ -75,6 +72,9 @@ void SDLApp::loadConfiguration() {
       Animation anim;
       anim.setup(h->getString("animation"));
    }
+   
+   LightManager::instance().loadLights(h->getString("lights"));
+   GeometryManager::instance().loadObjects(h->getString("objects"));
 }
 
 void SDLApp::setupCamera(string fname, int width, int height) {
