@@ -21,7 +21,7 @@ class Material;
 class Texture;
 
 class GeometryObject {
-   
+
 public:
    GeometryObject();
    virtual ~GeometryObject();
@@ -31,9 +31,9 @@ public:
    virtual bool shadowHit(const Ray& ray, double& tmin) const = 0;
 
    void setupMaterial(Hash* hash);
-   virtual Material* getMaterial() const { return material; }
+   Material* getMaterial() const { return material; }
    void setMaterial(Material *m);
-   
+
    bool doDelete;
 
    static const double epsilon;

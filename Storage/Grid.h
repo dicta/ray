@@ -5,10 +5,19 @@
 #include "Geometry/GeometryObject.h"
 #include <list>
 
-struct GridVoxel {
-   ~GridVoxel() { objs.clear(); }
-   void add(GeometryObject* o) { objs.push_back(o); }
-   
+typedef list<GeometryObject*>::const_iterator GeomIter;
+
+class GridVoxel {
+
+public:
+   GridVoxel();
+   ~GridVoxel();
+
+   void add(GeometryObject* o);
+   GeomIter begin();
+   GeomIter end();
+
+private:
    list<GeometryObject*> objs;
 };
 
@@ -31,7 +40,7 @@ private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next, ShadeRecord& sr) const;
    bool checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double next) const;
-   
+
    int numCells;
    list<GeometryObject*> objs;
    GridVoxel** voxels;

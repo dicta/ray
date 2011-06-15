@@ -10,6 +10,7 @@ class Hash;
 class Value;
 
 typedef vector<Value*> Array;
+typedef vector<Value*>::const_iterator ValueIter;
 
 class Value {
 

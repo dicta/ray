@@ -30,15 +30,15 @@ GeometryObject::~GeometryObject() {
 
 void GeometryObject::setupMaterial(Hash* hash) {
    string type = hash->getString("type");
-   
+
    if(hash->contains("ignoreShadow")) {
       ignoreShadow = true;
    }
-   
+
    if(hash->contains("normalMap")) {
       normalMap = Texture::createTexture(hash->getValue("normalMap")->getHash());
    }
-   
+
    if(type == "phong") {
       material = new Phong();
    }
@@ -56,6 +56,6 @@ void GeometryObject::setupMaterial(Hash* hash) {
    material->setHash(hash);
 }
 
-void GeometryObject::setMaterial(Material *m) { 
-   material = m; 
+void GeometryObject::setMaterial(Material *m) {
+   material = m;
 }

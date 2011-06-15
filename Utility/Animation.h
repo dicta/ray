@@ -12,10 +12,11 @@ class Instance;
 class FrameObject {
 
 public:
-   FrameObject(Instance* i);
+   FrameObject(Instance* i, int num);
    void setup();
 
    Instance* instance;
+   int frameNum;
    double rx, ry, rz;
 };
 
@@ -35,9 +36,12 @@ public:
 
 private:
    void loadConfiguration(Hash* hash);
+   void loadAnimation(Hash* hash);
+   FrameObject* loadAnimationFrame(Hash* hash, Instance* instance, FrameObject* startFO);
 
    Frame* frames;
    int frameCount;
+   string outputDir;
 };
 
 #endif

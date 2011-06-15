@@ -22,14 +22,12 @@ using namespace std;
 
 queue<SDL_Rect> rects;
 pthread_mutex_t rectLock;
-pthread_mutex_t renderLock;
-pthread_cond_t renderCond;
 int threadCount;
 
 void* renderThread(void* arg) {
    Camera* c = (Camera*) arg;
    SDL_Rect r;
-   
+
    while(true) {
       pthread_mutex_lock(&rectLock);
       if(rects.empty()) {
@@ -39,7 +37,7 @@ void* renderThread(void* arg) {
       r = rects.front();
       rects.pop();
       pthread_mutex_unlock(&rectLock);
-      
+
       c->renderScene(r);
    }
    pthread_exit(NULL);
@@ -49,33 +47,29 @@ void* timerThread(void* arg) {
    pthread_attr_t attr;
    pthread_attr_init(&attr);
    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
-   
-   pthread_mutex_lock(&renderLock);
-   
+
    Uint32 start = SDL_GetTicks();
-   
-   pthread_t tid;
+
+   pthread_t tid[threadCount];
    for(int i = 0; i < threadCount; i++) {
-      pthread_create(&tid, &attr, renderThread, arg);
-      pthread_join(tid, NULL);
+      pthread_create(&tid[i], &attr, renderThread, arg);
    }
-   
+
+   for(int i = 0; i < threadCount; i++) {
+      pthread_join(tid[i], NULL);
+   }
+
    pthread_attr_destroy(&attr);
-   
+
    Uint32 end = SDL_GetTicks();
    printf("Runtime = %f seconds\n", (end - start) / 1000.0);
-   
-   pthread_cond_signal(&renderCond);
-   pthread_mutex_unlock(&renderLock);
-   
+
    pthread_exit(NULL);
 }
 
 Camera::Camera(int w, int h) : eye(), width(w), height(h), boxw(0), boxh(0) {
    pthread_mutex_init(&surfLock, NULL);
    pthread_mutex_init(&rectLock, NULL);
-   pthread_mutex_init(&renderLock, NULL);
-   pthread_cond_init(&renderCond, NULL);
    threadCount = 1;
 }
 
@@ -84,8 +78,6 @@ Camera::~Camera() {
    delete tracer;
    pthread_mutex_destroy(&surfLock);
    pthread_mutex_destroy(&rectLock);
-   pthread_mutex_destroy(&renderLock);
-   pthread_cond_destroy(&renderCond);
 }
 
 void Camera::setThreadParameters(int tc, int w, int h) {
@@ -94,12 +86,12 @@ void Camera::setThreadParameters(int tc, int w, int h) {
    boxh = h;
 }
 
-void Camera::setHash(Hash* h) {   
+void Camera::setHash(Hash* h) {
    eye.set(h->getValue("eye")->getArray());
 
    float angle = h->getDouble("angle") / 2.0;
    viewPlaneDistance = width * 0.5 / tan(angle * DEG_TO_RAD);
-   
+
    int numSamples = h->getInteger("numSamples");
    if(numSamples == 1) {
       sampler = new Regular();
@@ -107,7 +99,7 @@ void Camera::setHash(Hash* h) {
    else {
       sampler = new MultiJittered(numSamples);
    }
-   
+
    string t = h->getString("tracer");
    if(t == "area") {
       tracer = new AreaLighting();
@@ -115,7 +107,7 @@ void Camera::setHash(Hash* h) {
    else if(t == "rayCast") {
       tracer = new RayCast();
    }
-   
+
    if(h->contains("bgTexture")) {
       Texture* tex = Texture::createTexture(h->getValue("bgTexture")->getHash());
       tracer->setBackgroundTexture(tex);
@@ -123,7 +115,7 @@ void Camera::setHash(Hash* h) {
    else if(h->contains("bgColor")) {
       tracer->setBackgroundColor(h->getValue("bgColor")->getArray());
    }
-   
+
    computeUVW(h);
 }
 
@@ -139,13 +131,15 @@ void Camera::render() {
       }
    }
 
-   pthread_mutex_lock(&renderLock);
+   pthread_attr_t attr;
+   pthread_attr_init(&attr);
+   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
    pthread_t tid;
-   pthread_create(&tid, NULL, timerThread, (void *) this);
+   pthread_create(&tid, &attr, timerThread, (void *) this);
+   pthread_join(tid, NULL);
 
-   pthread_cond_wait(&renderCond, &renderLock);
-   pthread_mutex_unlock(&renderLock);
+   pthread_attr_destroy(&attr);
 }
 
 void Camera::computeUVW(Hash* h) {
@@ -181,7 +175,7 @@ void Camera::computeUVW(Hash* h) {
       u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
       v.set(m.m[1][0], m.m[1][1], m.m[1][2]);
       w.set(m.m[2][0], m.m[2][1], m.m[2][2]);
-   
+
       u.normalize();
       v.normalize();
       w.normalize();
@@ -192,7 +186,7 @@ void Camera::computeUVW(Hash* h) {
    }
 }
 
-void Camera::setPixel(SDL_Surface* s, int x, int y, const Color& color) {   
+void Camera::setPixel(SDL_Surface* s, int x, int y, const Color& color) {
    int bpp = s->format->BytesPerPixel;
    /* Here p is the address to the pixel we want to set */
    Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
@@ -203,7 +197,7 @@ void Camera::setPixel(SDL_Surface* s, int x, int y, const Color& color) {
 SDL_Surface* Camera::createSurface(const SDL_Rect& rect) {
    SDL_Surface *surface;
    Uint32 rmask, gmask, bmask, amask;
-   
+
    /* SDL interprets each pixel as a 32-bit number, so our masks must depend
     on the endianness (byte order) of the machine */
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
@@ -217,12 +211,12 @@ SDL_Surface* Camera::createSurface(const SDL_Rect& rect) {
    bmask = 0x00ff0000;
    amask = 0xff000000;
 #endif
-   
+
    surface = SDL_CreateRGBSurface(SDL_HWSURFACE, width, height, 32, rmask, gmask, bmask, amask);
    if(surface == NULL) {
       fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
       exit(1);
    }
-   
+
    return surface;
 }

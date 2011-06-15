@@ -11,14 +11,14 @@ void LightWaveParser::loadModel(string fname) {
       fprintf(stderr, "Lightwave Parser: Error opening %s\n", fname.c_str());
       return ;
    }
-   
+
    string chunkID = readChunkID(in, 4);
    int size = readIntBE(in);
    int count = 0;
 
    readChunkID(in, 4); // read LWO2
    count += 4;
-   
+
    while(count < size) {
       chunkID = readChunkID(in, 4);
       count += 4;
@@ -42,9 +42,9 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
          count += skipChunk();
       }
    }
-   
+
    in.close();
-   
+
    calculateNormals();
    setupCells();
 }
@@ -52,7 +52,7 @@ fprintf(stderr, "ID = %s\n", chunkID.c_str());
 int LightWaveParser::parseTags() {
    int size = readIntBE(in);
    int count = 4;
-   
+
    int idx = 0;
 
    while(count < size) {
@@ -64,7 +64,7 @@ int LightWaveParser::parseTags() {
       }
       count += tagName.size() + 1;
    }
-   
+
    return count;
 }
 
@@ -72,7 +72,7 @@ int LightWaveParser::parsePTag() {
    int size = readIntBE(in);
    int count = 4;
    string subtag = readChunkID(in, 4);
-   
+
    if(subtag == "SURF") {
       while(count < size) {
          short fidx = readShortBE(in);
@@ -89,14 +89,14 @@ int LightWaveParser::parsePTag() {
          count++;
       }
    }
-   
+
    return size + 4;
 }
 
 int LightWaveParser::parsePoints() {
    int size = readIntBE(in);
    int count = 4;
-   
+
    while(count < size) {
       float x = readFloatBE(in);
       float y = readFloatBE(in);
@@ -111,19 +111,19 @@ int LightWaveParser::parsePoints() {
 int LightWaveParser::parsePolygons() {
    int size = readIntBE(in);
    int count = 4;
-   
+
    string type = readChunkID(in, 4);
    count += 4;
    int vsize;
-   
+
    while(count < size) {
       short pointCnt = readShortBE(in);
       count += 2;
-      
+
       if(pointCnt == 3) {
          int i1 = readVariableIntBE(in, vsize);
          count += vsize;
-         
+
          int i2 = readVariableIntBE(in, vsize);
          count += vsize;
 
@@ -143,7 +143,7 @@ int LightWaveParser::parsePolygons() {
 int LightWaveParser::parseSurface() {
    int size = readIntBE(in);
    int count = 4;
-   
+
    string sname = readString(in);
    count += sname.size() + 1;
    if(sname.size() % 2 == 0) {
@@ -157,12 +157,12 @@ int LightWaveParser::parseSurface() {
       count++;
       readChar(in);
    }
-   
+
    while(count < size) {
       string subName = readChunkID(in, 4);
       short subSize = readShortBE(in);
       count += 6;
-      
+
       if(subName == "COLR") {
          float r = readFloatBE(in);
          float b = readFloatBE(in);
@@ -194,18 +194,12 @@ int LightWaveParser::skipChunk() {
    int count = 0;
    int size = readIntBE(in);
    char c;
-   
+
    while(count++ < size) {
       c = readChar(in);
    }
-   
-   return size + 4;
-}
 
-Material* LightWaveParser::getMaterial() const {
-//   map<string, Material*>::const_iterator it =  materialMap.find(currentMaterial);
-//   return (*it).second;
-   return NULL;
+   return size + 4;
 }
 
 bool LightWaveParser::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {

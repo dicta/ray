@@ -15,24 +15,22 @@ class LightWaveParser : public Mesh {
 
 public:
    LightWaveParser();
-   
+
    void loadModel(string fname);
-   
-   virtual Material* getMaterial() const;
-   
+
 protected:
    virtual bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
-   
+
 private:
    ifstream in;
-   
+
    int parseTags();
    int parsePTag();
    int parsePoints();
    int parsePolygons();
    int parseSurface();
    int skipChunk();
-   
+
    vector<string> tags;
    mutable map<string, Material*> materialMap;
 };
