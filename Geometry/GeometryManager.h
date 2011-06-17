@@ -34,10 +34,9 @@ public:
    GeometryIter end() const { return objects.end(); }
 
    GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
-   void addObject(GeometryObject* obj) { grid.addObject(obj); }
    GeometryObject* removeObject(string name);
    
-   Grid getGrid() const { return grid; }
+   Grid& getGrid() { return grid; }
    
 private:
    GeometryManager();

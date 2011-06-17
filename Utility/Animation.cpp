@@ -79,7 +79,7 @@ void Animation::loadAnimation(Hash* hash) {
 
    GeometryObject* obj = GeometryManager::instance().removeObject(objName);
    Instance* instance = new Instance(obj);
-   GeometryManager::instance().addObject(instance);
+   GeometryManager::instance().getGrid().addObject(instance);
    
    FrameObject* startFO = NULL;
    Array* frames = hash->getValue("frames")->getArray();

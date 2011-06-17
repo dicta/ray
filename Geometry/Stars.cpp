@@ -43,5 +43,5 @@ void Stars::createStars(int a, int b, int c) {
    em->setDiffuse(1.0);
    star->setMaterial(em);
    
-   GeometryManager::instance().addObject(star);
+   GeometryManager::instance().getGrid().addObject(star);
 }

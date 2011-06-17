@@ -4,6 +4,7 @@
 #include "Math/Ray.h"
 #include "Geometry/GeometryObject.h"
 #include <list>
+#include <vector>
 
 typedef list<GeometryObject*>::const_iterator GeomIter;
 
@@ -14,11 +15,7 @@ public:
    ~GridVoxel();
 
    void add(GeometryObject* o);
-   GeomIter begin();
-   GeomIter end();
-
-private:
-   list<GeometryObject*> objs;
+   vector<GeometryObject*> objs;
 };
 
 class Grid : public GeometryObject {

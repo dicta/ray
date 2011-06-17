@@ -70,7 +70,7 @@ void GeometryManager::loadObjects(string fname) {
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
    GeometryObject* obj;
-   string name = "";
+   string name = hash->getString("name");
 
    if(type == "sphere") {
       obj = new Sphere();

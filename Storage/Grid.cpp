@@ -1,6 +1,8 @@
 #include "Grid.h"
 #include "Math/Maths.h"
 
+typedef vector<GeometryObject*>::const_iterator CellIter;
+
 GridVoxel::GridVoxel() : objs() {
 }
 
@@ -10,14 +12,6 @@ GridVoxel::~GridVoxel() {
 
 void GridVoxel::add(GeometryObject* o) {
    objs.push_back(o);
-}
-
-GeomIter GridVoxel::begin() {
-   return objs.begin();
-}
-
-GeomIter GridVoxel::end() {
-   return objs.end();
 }
 
 Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0) {
@@ -46,7 +40,7 @@ void Grid::addObject(GeometryObject* obj) {
 }
 
 void Grid::setupCells() {
-   cleanup();
+//   cleanup();
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
    nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;
@@ -252,7 +246,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
    Point3D localHitPoint;
    Material* mat;
 
-   for(GeomIter it = cell->begin(); it != cell->end(); it++) {
+   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && tmin < next) {
          mat = (*it)->getMaterial();
          localHitPoint = sr.localHitPoint;
@@ -276,7 +270,7 @@ bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double
 
    bool hit = false;
 
-   for(GeomIter it = cell->begin(); it != cell->end(); it++) {
+   for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->shadowHit(ray, tmin) && tmin < next) {
          hit = true;
       }
