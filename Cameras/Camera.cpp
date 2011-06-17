@@ -62,12 +62,12 @@ void* timerThread(void* arg) {
    pthread_attr_destroy(&attr);
 
    Uint32 end = SDL_GetTicks();
-   printf("Runtime = %f seconds\n", (end - start) / 1000.0);
+   printf("Render time = %f seconds\n", (end - start) / 1000.0);
 
    pthread_exit(NULL);
 }
 
-Camera::Camera(int w, int h) : eye(), width(w), height(h), boxw(0), boxh(0) {
+Camera::Camera(int w, int h) : eye(), u(), v(), w(), tracer(NULL), sampler(NULL), surface(NULL), width(w), height(h), boxw(0), boxh(0) {
    pthread_mutex_init(&surfLock, NULL);
    pthread_mutex_init(&rectLock, NULL);
    threadCount = 1;
@@ -165,12 +165,14 @@ void Camera::computeUVW(Hash* h) {
       }
    }
    else if(h->contains("rotate")) {
-      Array* rotate = h->getValue("rotate")->getArray();
+      Array* r = h->getValue("rotate")->getArray();
+//      rotate(r->at(0)->getDouble(), r->at(1)->getDouble(), r->at(2)->getDouble());
+
       Matrix m;
 
-      m.rotateX(-rotate->at(0)->getDouble());
-      m.rotateY(-rotate->at(1)->getDouble());
-      m.rotateZ(-rotate->at(2)->getDouble());
+      m.rotateX(-r->at(0)->getDouble());
+      m.rotateY(-r->at(1)->getDouble());
+      m.rotateZ(-r->at(2)->getDouble());
 
       u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
       v.set(m.m[1][0], m.m[1][1], m.m[1][2]);
@@ -184,6 +186,22 @@ void Camera::computeUVW(Hash* h) {
       fprintf(stderr, "Must specify either lookat or rotate in camera configuration.\n");
       exit(1);
    }
+}
+
+void Camera::rotate(double x, double y, double z) {
+   Matrix m;
+
+   m.rotateX(-x);
+   m.rotateY(-y);
+   m.rotateZ(-z);
+
+   u.set(m.m[0][0], m.m[0][1], m.m[0][2]);
+   v.set(m.m[1][0], m.m[1][1], m.m[1][2]);
+   w.set(m.m[2][0], m.m[2][1], m.m[2][2]);
+
+   u.normalize();
+   v.normalize();
+   w.normalize();
 }
 
 void Camera::setPixel(SDL_Surface* s, int x, int y, const Color& color) {

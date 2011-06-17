@@ -37,6 +37,7 @@ public:
    
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
+   void rotate(double x, double y, double z);
    
 protected:
    void setPixel(SDL_Surface* s, int x, int y, const Color& color);

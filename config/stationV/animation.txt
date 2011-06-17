@@ -1,3 +1,26 @@
 config {
-   frameCount  48
+   frameCount  4
+   outputDir   "output"
+}
+
+animation {
+   name     "stationV"
+   
+   frames [
+      {
+         number   3
+         ry       10.0
+      }
+   ]
+}
+
+animation {
+   name     "camera"
+   
+   frames [
+      {
+         number   3
+         ry       10.0
+      }
+   ]
 }

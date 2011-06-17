@@ -21,8 +21,17 @@ public:
 };
 
 struct Frame {
-   void addFrameObject(FrameObject* fo) { objects.push_back(fo); }
    vector<FrameObject*> objects;
+};
+
+class CameraFrame {
+
+public:
+   CameraFrame();
+   void setup();
+   
+   int frameNum;
+   double rx, ry;
 };
 
 class Animation {
@@ -38,8 +47,10 @@ private:
    void loadConfiguration(Hash* hash);
    void loadAnimation(Hash* hash);
    FrameObject* loadAnimationFrame(Hash* hash, Instance* instance, FrameObject* startFO);
+   int loadCameraFrame(Hash* hash, const CameraFrame& startFO);
 
    Frame* frames;
+   CameraFrame* cameraFrames;
    int frameCount;
    string outputDir;
 };

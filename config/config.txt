@@ -4,8 +4,9 @@ config {
    threads     4
    boxWidth    192
    boxHeight   108
-   camera      "config/earth/camera.txt"
-   lights      "config/earth/lights.txt"
-   objects     "config/earth/objects.txt"
-   mesh        "config/earth/mesh.txt"
+   camera      "config/stationV/camera.txt"
+   lights      "config/stationV/lights.txt"
+   objects     "config/stationV/objects.txt"
+   mesh        "config/stationV/mesh.txt"
+   animation   "config/stationV/animation.txt"
 }
