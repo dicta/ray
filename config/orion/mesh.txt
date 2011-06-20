@@ -1,0 +1,6 @@
+m3ds {
+   name     "stationV"
+   filename "resources/OrionIII/Orion.3ds"
+   textureDir  "resources/OrionIII/"
+   scale 0.01
+}
