@@ -20,6 +20,7 @@ public:
    Instance* instance;
    int frameNum;
    double rx, ry, rz;
+   double tx, ty, tz;
 };
 
 struct Frame {
@@ -33,6 +34,7 @@ public:
    
    int frameNum;
    double rx, ry, rz;
+   double tx, ty, tz;
 };
 
 class Animation {

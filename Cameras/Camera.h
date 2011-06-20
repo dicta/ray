@@ -31,10 +31,7 @@ public:
    void render();
    virtual void renderScene(SDL_Rect& rect) = 0;
    
-//   void setEye(Array* a) { eye.set(a); }
-//   void setLookat(Array* a) { lookat.set(a); }
-//   void setUp(Array* a) { up.set(a); }
-   
+   void setPosition(double x, double y, double z);
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
    void rotate(double x, double y, double z);
