@@ -1,6 +1,6 @@
 m3ds {
    name     "stationV"
-   filename "config/stationV/StationV/models/stationV_new.3ds"
+   filename "resources/StationV/models/stationV_new.3ds"
    scale    0.001
-   textureDir  "config/stationV/StationV/textures/medres/"
+   textureDir  "resources/StationV/textures/medres/"
 }

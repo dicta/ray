@@ -1,5 +1,5 @@
 config {
-   frameCount  4
+   frameCount  300
    outputDir   "output"
 }
 
@@ -8,19 +8,28 @@ animation {
    
    frames [
       {
-         number   3
-         ry       10.0
+         number   299
+         ry       360.0
       }
    ]
 }
 
 animation {
    name     "camera"
-   
+
    frames [
       {
-         number   3
-         ry       10.0
+         number   0
+         rx       90.0
+         ry       0.0
+         rz       180.0
+      }
+
+      {
+         number   299
+         rx       90.0
+         ry       -360.0
+         rz       180.0
       }
    ]
 }
