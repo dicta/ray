@@ -9,6 +9,12 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
+Face::Face(int idx1, int idx2, int idx3) : normal(), bbox(), smoothGroup(0), material(NULL) {
+   vertIdxs[0] = idx1;
+   vertIdxs[1] = idx2;
+   vertIdxs[2] = idx3;
+}
+
 SmoothingGroup::~SmoothingGroup() {
    for(SGNormalIter it = normals.begin(), end = normals.end(); it != end; it++) {
       delete (*it).second;
@@ -308,6 +314,10 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       return false;
    }
 
+//   Mesh* self = const_cast<Mesh*>(this);
+//   self->material = face->material;
+sr.material = face->material;
+
    tmin = t;
    if(!smoothingGroups.empty()) {
       if(face->smoothGroup == 0) {
@@ -329,6 +339,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
    }
    sr.localHitPoint = ray(t);
+
    if(textureCoords.size() != points.size()) {
       if(textureCoords.size() > 0) {
          printf("%d %d\n", textureCoords.size(), points.size());
@@ -392,3 +403,8 @@ void Mesh::setupCells() {
       }
    }
 }
+
+void Mesh::setFaceMaterial(int idx, Material* material) {
+   faces[idx]->material = material;
+}
+

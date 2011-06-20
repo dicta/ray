@@ -11,18 +11,16 @@
 
 using namespace std;
 
-struct Face {
-   Face(int idx1, int idx2, int idx3) {
-      vertIdxs[0] = idx1;
-      vertIdxs[1] = idx2;
-      vertIdxs[2] = idx3;
-      smoothGroup = 0;
-   }
+class Face {
 
-   int vertIdxs[3];
+public:
+   Face(int idx1, int idx2, int idx3);
+
    Vector3D normal;
    BBox bbox;
    int smoothGroup;
+   Material* material;
+   int vertIdxs[3];
 };
 
 struct Voxel {
@@ -61,6 +59,7 @@ public:
    
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
+   void setFaceMaterial(int idx, Material* material);
 
    void calculateNormals();
    

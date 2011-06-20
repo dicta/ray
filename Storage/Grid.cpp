@@ -243,6 +243,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
 
    bool hit = false;
    Vector3D normal;
+   Point3D hitPoint;
    Point3D localHitPoint;
    Material* mat;
 
@@ -251,15 +252,18 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
          mat = (*it)->getMaterial();
          localHitPoint = sr.localHitPoint;
          normal = sr.normal;
-         sr.hitPoint = ray(tmin);
+         hitPoint = ray(tmin);
          hit = true;
       }
    }
 
    if(hit) {
       sr.localHitPoint = localHitPoint;
+      sr.hitPoint = hitPoint;
       sr.normal = normal;
-      sr.material = mat;
+      if(sr.material == NULL) {
+         sr.material = mat;
+      }
       sr.t = tmin;
    }
    return hit;

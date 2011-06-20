@@ -50,10 +50,16 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
-
-      Compound* self = const_cast<Compound*>(this);
-      self->material = mat;
    }
+   else {
+      mat = material;
+   }
+   
+//   Compound* self = const_cast<Compound*>(this);
+//   self->material = mat;
+if(sr.material == NULL && hit) {
+   sr.material = mat;
+}
 
    return hit;
 }

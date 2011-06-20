@@ -343,7 +343,7 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v1 = readUshortLE(in);
       uint16 v2 = readUshortLE(in);
       readUshortLE(in);
-      mesh->addFace(new Face(v0, v1, v2));
+      mesh->addFace(new Face(v1, v0, v2));
    }
 
    int bytesLeft = contentSize - (8 * nFaces + 2);
@@ -373,10 +373,11 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
          uint16 nFaces = readUshortLE(in);
          
          for (uint16 i = 0; i < nFaces; i++) {
-            readUshortLE(in);
+            uint16 fidx = readUshortLE(in);
+            mesh->setFaceMaterial(fidx, materials[materialName]);
          }
          
-         mesh->setMaterial(materials[materialName]);
+//         mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
