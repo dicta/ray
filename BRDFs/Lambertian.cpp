@@ -16,7 +16,11 @@ Lambertian::~Lambertian() {
 
 Color Lambertian::f(const ShadeRecord& sr, const Vector3D& wo, const Vector3D& wi) const {
    if(texture != NULL) {
-      return texture->getColor(sr) * kd * INV_PI;
+      Color tc = texture->getColor(sr);
+      if(color != NULL) {
+         tc = tc * (*color);
+      }
+      return tc * kd * INV_PI;
    }
    if(color != NULL) {
       return (*color * kd * INV_PI);
