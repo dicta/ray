@@ -6,7 +6,6 @@
 #include "Geometry/GeometryObject.h"
 #include "Geometry/Instance.h"
 #include "Math/Maths.h"
-#include "GUI/SDLApp.h"
 #include "Cameras/Camera.h"
 
 typedef vector<FrameObject*>::const_iterator FrameObjectIter;
@@ -22,14 +21,10 @@ void FrameObject::setup() {
    instance->computeBBox();
 }
 
-CameraFrame::CameraFrame() : frameNum(0), rx(0), ry(0) {
+CameraFrame::CameraFrame() : frameNum(0), rx(0), ry(0), rz(0) {
 }
 
-void CameraFrame::setup() {
-   SDLApp::instance().getCamera()->rotate(rx, ry, 0);
-}
-
-Animation::Animation() : frames(NULL), cameraFrames(NULL), frameCount(0), outputDir("") {
+Animation::Animation(Camera* c, SDL_Surface* s) : camera(c), surface(s), frames(NULL), cameraFrames(NULL), frameCount(0), outputDir("") {
 }
 
 Animation::~Animation() {
@@ -124,30 +119,35 @@ FrameObject* Animation::loadAnimationFrame(Hash* hash, Instance* instance, Frame
 
 int Animation::loadCameraFrame(Hash* hash, const CameraFrame& startFO) {
    int frameNum = hash->getInteger("number");
-   int startFrame = 0;
-   double srx = 0, sry = 0, srz = 0;
-   int loopStart = 0;
 
-   if(startFO.frameNum > 0) {
-      startFrame = startFO.frameNum;
-      loopStart = startFrame + 1;
-      srx = startFO.rx;
-      sry = startFO.ry;
+   if(frameNum == 0) {
+      if(hash->contains("rx")) cameraFrames[0].rx = hash->getDouble("rx");
+      if(hash->contains("ry")) cameraFrames[0].ry = hash->getDouble("ry");
+      if(hash->contains("rz")) cameraFrames[0].rz = hash->getDouble("rz");
+      return 0;
    }
+   
+   int loopStart = startFO.frameNum + 1;
+
+   double srx = startFO.rx;
+   double sry = startFO.ry;
+   double srz = startFO.rz;
 
    double drx = srx, dry = sry, drz = srz;
 
    if(hash->contains("rx")) drx = hash->getDouble("rx");
    if(hash->contains("ry")) dry = hash->getDouble("ry");
+   if(hash->contains("rz")) drz = hash->getDouble("rz");
 
-   int frameCount = frameNum - startFrame;
+   int frameCount = frameNum - startFO.frameNum;
 
    for(int i = loopStart; i <= frameNum; i++) {
-      double p = (double)(i-startFrame) / (double)frameCount;
+      double p = (double)(i-startFO.frameNum) / (double)frameCount;
       if(frameCount == 0) p = 0;
       cameraFrames[i].frameNum = i;
       cameraFrames[i].rx = lerp<double>(p, srx, drx);
       cameraFrames[i].ry = lerp<double>(p, sry, dry);
+      cameraFrames[i].rz = lerp<double>(p, srz, drz);
    }
 
    return frameNum;
@@ -156,14 +156,14 @@ int Animation::loadCameraFrame(Hash* hash, const CameraFrame& startFO) {
 void Animation::play() {
    char fname[512];
    for(int i = 0; i < frameCount; i++) {
-      cameraFrames[i].setup();
+      camera->rotate(cameraFrames[i].rx, cameraFrames[i].ry, cameraFrames[i].rz);
       for(FrameObjectIter it = frames[i].objects.begin(); it != frames[i].objects.end(); ++it) {
          (*it)->setup();
          GeometryManager::instance().getGrid().setupCells();
          printf("Frame %d\t", i);
-         SDLApp::instance().getCamera()->render();
+         camera->render();
          sprintf(fname, "%s/image%d.bmp", outputDir.c_str(), i);
-         SDLApp::instance().saveBMP(fname);
+         SDL_SaveBMP(surface, fname);
       }
    }
    

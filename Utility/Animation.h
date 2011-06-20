@@ -3,11 +3,13 @@
 
 #include <vector>
 #include <string>
+#include <SDL/SDL.h>
 
 using namespace std;
 
 class Hash;
 class Instance;
+class Camera;
 
 class FrameObject {
 
@@ -28,16 +30,15 @@ class CameraFrame {
 
 public:
    CameraFrame();
-   void setup();
    
    int frameNum;
-   double rx, ry;
+   double rx, ry, rz;
 };
 
 class Animation {
 
 public:
-   Animation();
+   Animation(Camera* c, SDL_Surface* s);
    ~Animation();
 
    void setup(const string& fname);
@@ -49,6 +50,8 @@ private:
    FrameObject* loadAnimationFrame(Hash* hash, Instance* instance, FrameObject* startFO);
    int loadCameraFrame(Hash* hash, const CameraFrame& startFO);
 
+   Camera* camera;
+   SDL_Surface* surface;
    Frame* frames;
    CameraFrame* cameraFrames;
    int frameCount;
