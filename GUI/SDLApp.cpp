@@ -10,26 +10,17 @@
 #include <math.h>
 #include <fstream>
 #include <SDL/SDL.h>
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 
 const int bpp = 0;
 
-auto_ptr<SDLApp> SDLApp::s_instance;
-
-SDLApp& SDLApp::instance() {
-   if(s_instance.get() == 0) {
-      s_instance.reset(new SDLApp());
-   }
-   return *s_instance;
-}
-
 SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
-		fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
-		exit(1);
-	}
-	
-	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+      fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+      exit(1);
+   }
+
+   IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
    loadConfiguration();
 }
@@ -37,11 +28,11 @@ SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
 SDLApp::~SDLApp() {
    delete camera;
    SDL_FreeSurface(surface);
-   
+
    if(animation != NULL) {
       delete animation;
    }
-   
+
    IMG_Quit();
    SDL_Quit();
 }
@@ -50,23 +41,23 @@ void SDLApp::loadConfiguration() {
    std::ifstream fin("config/config.txt", std::ios::in);
    Tokenizer tok(&fin);
    Parser parser(&tok);
-   
+
    tok.nextToken();
    Hash *h = parser.readValue()->getHash();
    int width = h->getInteger("width");
    int height = h->getInteger("height");
-   
+
    int threadCount = h->getInteger("threads");
    int boxw = h->getInteger("boxWidth");
    int boxh = h->getInteger("boxHeight");
-   
+
    surface = SDL_SetVideoMode(width, height, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
 		SDL_Quit();
 		exit(2);
 	}
-   
+
    setupCamera(h->getString("camera"), width, height);
    camera->setSurface(surface);
    camera->setThreadParameters(threadCount, boxw, boxh);
@@ -74,12 +65,12 @@ void SDLApp::loadConfiguration() {
    if(h->contains("mesh")) {
       MeshManager::instance().loadMeshes(h->getString("mesh"));
    }
-   
+
    LightManager::instance().loadLights(h->getString("lights"));
    GeometryManager::instance().loadObjects(h->getString("objects"));
-   
+
    if(h->contains("animation")) {
-      animation = new Animation();
+      animation = new Animation(camera, surface);
       animation->setup(h->getString("animation"));
    }
 }
@@ -111,7 +102,7 @@ void SDLApp::setupCamera(string fname, int width, int height) {
 
 void SDLApp::run() {
    SDL_Event event;
-   
+
    if(animation != NULL) {
       animation->play();
    }
@@ -136,8 +127,4 @@ void SDLApp::run() {
             break;
       }
    }
-}
-
-void SDLApp::saveBMP(const char* fname) {
-   SDL_SaveBMP(surface, fname);
 }

@@ -2,6 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-   SDLApp::instance().run();
+   SDLApp app;
+   app.run();
    return 0;
 }
