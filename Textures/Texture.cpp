@@ -38,7 +38,7 @@ Texture* Texture::createTexture(Hash* hash) {
        texture = new TInstance();
    }
    else {
-      assert(false);
+       exit(1);
    }
    texture->setHash(hash);
 

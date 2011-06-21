@@ -22,7 +22,7 @@ void NoiseTexture::setHash(Hash* hash) {
       noise = new CubicNoise();
    }
    else {
-      assert(false);
+       exit(1);
    }
 
    min = hash->getDouble("min");
@@ -45,7 +45,7 @@ Color NoiseTexture::getColor(const ShadeRecord& sr) const {
       value = noise->fbm(sr.localHitPoint);
    }
    else {
-      assert(false);
+       exit(1);
    }
    
    value = min + (max - min) * value;

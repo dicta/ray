@@ -10,7 +10,7 @@
 #ifndef _CAMERA_H_
 #define _CAMERA_H_
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
 #include "Utility/Color.h"

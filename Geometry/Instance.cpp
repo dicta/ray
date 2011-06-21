@@ -31,7 +31,7 @@ void Instance::setHash(Hash* hash) {
 
    if(hash->contains("transforms")) {
       Array* transforms = hash->getValue("transforms")->getArray();
-      int idx = 0;
+      unsigned int idx = 0;
       while(idx < transforms->size()) {
          type = transforms->at(idx)->getString();
          idx++;
@@ -64,18 +64,18 @@ bool Instance::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Ray invRay;
    invRay.origin = invMatrix * ray.origin;
    invRay.direction = invMatrix * ray.direction;
-   
+
    if(object->hit(invRay, tmin, sr)) {
       sr.normal = invMatrix.transformNormal(sr.normal);
       sr.normal.normalize();
       sr.localHitPoint = ray.origin + ray.direction * tmin;
-      
+
       Instance* self = const_cast<Instance*>(this);
       self->material = object->getMaterial();
 
       return true;
    }
-   
+
    return false;
 }
 
@@ -123,7 +123,7 @@ void Instance::computeBBox() {
       bbox.x0 = min(bbox.x0, v[j].x);
       bbox.y0 = min(bbox.y0, v[j].y);
       bbox.z0 = min(bbox.z0, v[j].z);
-      
+
       bbox.x1 = max(bbox.x1, v[j].x);
       bbox.y1 = max(bbox.y1, v[j].y);
       bbox.z1 = max(bbox.z1, v[j].z);

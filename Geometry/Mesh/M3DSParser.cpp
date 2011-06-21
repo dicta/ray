@@ -17,7 +17,7 @@ MaterialProps::MaterialProps() :
 {
 }
 
-M3DSParser::M3DSParser() : scale(1.0), textureDir(""), meshs(NULL) {
+M3DSParser::M3DSParser() : scale(1.0), textureDir(""), meshs(NULL), reverse(false) {
 }
 
 void M3DSParser::setHash(Hash* h) {
@@ -26,6 +26,9 @@ void M3DSParser::setHash(Hash* h) {
    }
    if(h->contains("textureDir")) {
       textureDir = h->getString("textureDir");
+   }
+   if(h->contains("reverse")) {
+      reverse = true;
    }
 }
 
@@ -344,7 +347,12 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v1 = readUshortLE(in);
       uint16 v2 = readUshortLE(in);
       readUshortLE(in);
-      mesh->addFace(new Face(v2, v1, v0));
+      if(reverse) {
+         mesh->addFace(new Face(v2, v1, v0));
+      }
+      else {
+         mesh->addFace(new Face(v0, v1, v2));
+      }
    }
 
    int bytesLeft = contentSize - (8 * nFaces + 2);
@@ -378,7 +386,7 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
             mesh->setFaceMaterial(fidx, materials[materialName]);
          }
          
-//         mesh->setMaterial(materials[materialName]);
+         mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {

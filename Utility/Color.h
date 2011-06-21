@@ -10,7 +10,7 @@
 #ifndef _COLOR_H_
 #define _COLOR_H_
 
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include "Parser/Value.h"
 
 class Color {

@@ -21,7 +21,7 @@ class Matte : public Material {
 
 public:
    Matte();
-   ~Matte();
+   virtual ~Matte();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
@@ -31,7 +31,7 @@ public:
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
    void setTexture(string texture);
-   
+
    void setAmbientColor(Color* c);
    void setDiffuseColor(Color* c);
 

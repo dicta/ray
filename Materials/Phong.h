@@ -17,20 +17,20 @@ class GlossySpecular;
 class ImageTexture;
 
 class Phong : public Material {
-   
+
 public:
    Phong();
-   ~Phong();
-   
+   virtual ~Phong();
+
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
-   
+
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
    void setTexture(string texture);
-   
+
    void setAmbientColor(Color* c);
    void setDiffuseColor(Color* c);
    void setSpecularColor(Color* c);

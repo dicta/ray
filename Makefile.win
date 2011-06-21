@@ -1,0 +1,273 @@
+# Project: RayTracer
+# Makefile created by Dev-C++ 4.9.9.2
+
+CPP  = g++.exe -D__DEBUG__
+CC   = gcc.exe -D__DEBUG__
+WINDRES = windres.exe
+RES  = 
+OBJ  = main.o GUI/SDLApp.o Math/Point2D.o Math/Point3D.o Math/Ray.o Math/Vector3D.o Parser/Hash.o Parser/Parser.o Parser/Tokenizer.o Parser/Value.o Cameras/Camera.o Cameras/Pinhole.o Cameras/ThinLens.o Geometry/GeometryManager.o Geometry/GeometryObject.o Geometry/Plane.o Geometry/Rectangle.o Geometry/Sphere.o BRDFs/BRDF.o BRDFs/GlossySpecular.o BRDFs/Lambertian.o BRDFs/PerfectSpecular.o Lights/Ambient.o Lights/AmbientOccluder.o Lights/AreaLight.o Lights/LightManager.o Lights/PositionLight.o Materials/Emissive.o Materials/Matte.o Materials/Phong.o Samplers/MultiJittered.o Samplers/Regular.o Samplers/Sampler.o Textures/PlaneChecker.o Textures/Texture.o Tracer/AreaLighting.o Tracer/RayCast.o Tracer/Tracer.o Utility/Color.o Lights/Direction.o Lights/Environment.o Noise/LatticeNoise.o Noise/LinearNoise.o Noise/CubicNoise.o Textures/NoiseTexture.o Textures/SkyTexture.o Geometry/Cylinder.o Geometry/Disk.o Geometry/Torus.o Math/Roots3And4.o Geometry/BBox.o Geometry/Box.o Textures/WoodTexture.o Geometry/Annulus.o Geometry/Compound/Compound.o Geometry/Instance.o Math/Matrix.o Utility/ShadeRecord.o Math/Maths.o Geometry/Compound/Wedge.o Textures/GraniteTexture.o Textures/MarbleTexture.o Geometry/Compound/WedgeRing.o Geometry/Mesh/Mesh.o Geometry/Mesh/Triangle.o Geometry/Mesh/MeditParser.o Geometry/Mesh/PlyParser.o Utility/ply.o Geometry/Mesh/MeshManager.o Materials/Reflective.o Geometry/Mesh/LightWaveParser.o Utility/ChunkParser.o Textures/ImageTexture.o Textures/TInstance.o Geometry/Mesh/M3DSParser.o Geometry/Mesh/GeoSphere.o Lights/SpotLight.o Textures/StarsTexture.o Materials/Atmosphere.o Storage/Grid.o Geometry/Stars.o Utility/Animation.o $(RES)
+LINKOBJ  = main.o GUI/SDLApp.o Math/Point2D.o Math/Point3D.o Math/Ray.o Math/Vector3D.o Parser/Hash.o Parser/Parser.o Parser/Tokenizer.o Parser/Value.o Cameras/Camera.o Cameras/Pinhole.o Cameras/ThinLens.o Geometry/GeometryManager.o Geometry/GeometryObject.o Geometry/Plane.o Geometry/Rectangle.o Geometry/Sphere.o BRDFs/BRDF.o BRDFs/GlossySpecular.o BRDFs/Lambertian.o BRDFs/PerfectSpecular.o Lights/Ambient.o Lights/AmbientOccluder.o Lights/AreaLight.o Lights/LightManager.o Lights/PositionLight.o Materials/Emissive.o Materials/Matte.o Materials/Phong.o Samplers/MultiJittered.o Samplers/Regular.o Samplers/Sampler.o Textures/PlaneChecker.o Textures/Texture.o Tracer/AreaLighting.o Tracer/RayCast.o Tracer/Tracer.o Utility/Color.o Lights/Direction.o Lights/Environment.o Noise/LatticeNoise.o Noise/LinearNoise.o Noise/CubicNoise.o Textures/NoiseTexture.o Textures/SkyTexture.o Geometry/Cylinder.o Geometry/Disk.o Geometry/Torus.o Math/Roots3And4.o Geometry/BBox.o Geometry/Box.o Textures/WoodTexture.o Geometry/Annulus.o Geometry/Compound/Compound.o Geometry/Instance.o Math/Matrix.o Utility/ShadeRecord.o Math/Maths.o Geometry/Compound/Wedge.o Textures/GraniteTexture.o Textures/MarbleTexture.o Geometry/Compound/WedgeRing.o Geometry/Mesh/Mesh.o Geometry/Mesh/Triangle.o Geometry/Mesh/MeditParser.o Geometry/Mesh/PlyParser.o Utility/ply.o Geometry/Mesh/MeshManager.o Materials/Reflective.o Geometry/Mesh/LightWaveParser.o Utility/ChunkParser.o Textures/ImageTexture.o Textures/TInstance.o Geometry/Mesh/M3DSParser.o Geometry/Mesh/GeoSphere.o Lights/SpotLight.o Textures/StarsTexture.o Materials/Atmosphere.o Storage/Grid.o Geometry/Stars.o Utility/Animation.o $(RES)
+LIBS =  -L"C:/MinGW/lib" -lmingw32 -lSDLmain -lSDL -lpthreadGC2 -lSDL_image  -g3 
+INCS =  -I"C:/MinGW/include"  -I"C:/Documents and Settings/saariew1/My Documents/workspace/RayTracer"  -I"C:/Dev-Cpp/include/SDL" 
+CXXINCS =  -I"C:/MinGW/include"  -I"C:/Documents and Settings/saariew1/My Documents/workspace/RayTracer"  -I"C:/Dev-Cpp/include/SDL" 
+BIN  = RayTracer.exe
+CXXFLAGS = $(CXXINCS)   -g3
+CFLAGS = $(INCS)   -g3
+RM = rm -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before RayTracer.exe all-after
+
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o "RayTracer.exe" $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)
+
+GUI/SDLApp.o: GUI/SDLApp.cpp
+	$(CPP) -c GUI/SDLApp.cpp -o GUI/SDLApp.o $(CXXFLAGS)
+
+Math/Point2D.o: Math/Point2D.cpp
+	$(CPP) -c Math/Point2D.cpp -o Math/Point2D.o $(CXXFLAGS)
+
+Math/Point3D.o: Math/Point3D.cpp
+	$(CPP) -c Math/Point3D.cpp -o Math/Point3D.o $(CXXFLAGS)
+
+Math/Ray.o: Math/Ray.cpp
+	$(CPP) -c Math/Ray.cpp -o Math/Ray.o $(CXXFLAGS)
+
+Math/Vector3D.o: Math/Vector3D.cpp
+	$(CPP) -c Math/Vector3D.cpp -o Math/Vector3D.o $(CXXFLAGS)
+
+Parser/Hash.o: Parser/Hash.cpp
+	$(CPP) -c Parser/Hash.cpp -o Parser/Hash.o $(CXXFLAGS)
+
+Parser/Parser.o: Parser/Parser.cpp
+	$(CPP) -c Parser/Parser.cpp -o Parser/Parser.o $(CXXFLAGS)
+
+Parser/Tokenizer.o: Parser/Tokenizer.cpp
+	$(CPP) -c Parser/Tokenizer.cpp -o Parser/Tokenizer.o $(CXXFLAGS)
+
+Parser/Value.o: Parser/Value.cpp
+	$(CPP) -c Parser/Value.cpp -o Parser/Value.o $(CXXFLAGS)
+
+Cameras/Camera.o: Cameras/Camera.cpp
+	$(CPP) -c Cameras/Camera.cpp -o Cameras/Camera.o $(CXXFLAGS)
+
+Cameras/Pinhole.o: Cameras/Pinhole.cpp
+	$(CPP) -c Cameras/Pinhole.cpp -o Cameras/Pinhole.o $(CXXFLAGS)
+
+Cameras/ThinLens.o: Cameras/ThinLens.cpp
+	$(CPP) -c Cameras/ThinLens.cpp -o Cameras/ThinLens.o $(CXXFLAGS)
+
+Geometry/GeometryManager.o: Geometry/GeometryManager.cpp
+	$(CPP) -c Geometry/GeometryManager.cpp -o Geometry/GeometryManager.o $(CXXFLAGS)
+
+Geometry/GeometryObject.o: Geometry/GeometryObject.cpp
+	$(CPP) -c Geometry/GeometryObject.cpp -o Geometry/GeometryObject.o $(CXXFLAGS)
+
+Geometry/Plane.o: Geometry/Plane.cpp
+	$(CPP) -c Geometry/Plane.cpp -o Geometry/Plane.o $(CXXFLAGS)
+
+Geometry/Rectangle.o: Geometry/Rectangle.cpp
+	$(CPP) -c Geometry/Rectangle.cpp -o Geometry/Rectangle.o $(CXXFLAGS)
+
+Geometry/Sphere.o: Geometry/Sphere.cpp
+	$(CPP) -c Geometry/Sphere.cpp -o Geometry/Sphere.o $(CXXFLAGS)
+
+BRDFs/BRDF.o: BRDFs/BRDF.cpp
+	$(CPP) -c BRDFs/BRDF.cpp -o BRDFs/BRDF.o $(CXXFLAGS)
+
+BRDFs/GlossySpecular.o: BRDFs/GlossySpecular.cpp
+	$(CPP) -c BRDFs/GlossySpecular.cpp -o BRDFs/GlossySpecular.o $(CXXFLAGS)
+
+BRDFs/Lambertian.o: BRDFs/Lambertian.cpp
+	$(CPP) -c BRDFs/Lambertian.cpp -o BRDFs/Lambertian.o $(CXXFLAGS)
+
+BRDFs/PerfectSpecular.o: BRDFs/PerfectSpecular.cpp
+	$(CPP) -c BRDFs/PerfectSpecular.cpp -o BRDFs/PerfectSpecular.o $(CXXFLAGS)
+
+Lights/Ambient.o: Lights/Ambient.cpp
+	$(CPP) -c Lights/Ambient.cpp -o Lights/Ambient.o $(CXXFLAGS)
+
+Lights/AmbientOccluder.o: Lights/AmbientOccluder.cpp
+	$(CPP) -c Lights/AmbientOccluder.cpp -o Lights/AmbientOccluder.o $(CXXFLAGS)
+
+Lights/AreaLight.o: Lights/AreaLight.cpp
+	$(CPP) -c Lights/AreaLight.cpp -o Lights/AreaLight.o $(CXXFLAGS)
+
+Lights/LightManager.o: Lights/LightManager.cpp
+	$(CPP) -c Lights/LightManager.cpp -o Lights/LightManager.o $(CXXFLAGS)
+
+Lights/PositionLight.o: Lights/PositionLight.cpp
+	$(CPP) -c Lights/PositionLight.cpp -o Lights/PositionLight.o $(CXXFLAGS)
+
+Materials/Emissive.o: Materials/Emissive.cpp
+	$(CPP) -c Materials/Emissive.cpp -o Materials/Emissive.o $(CXXFLAGS)
+
+Materials/Matte.o: Materials/Matte.cpp
+	$(CPP) -c Materials/Matte.cpp -o Materials/Matte.o $(CXXFLAGS)
+
+Materials/Phong.o: Materials/Phong.cpp
+	$(CPP) -c Materials/Phong.cpp -o Materials/Phong.o $(CXXFLAGS)
+
+Samplers/MultiJittered.o: Samplers/MultiJittered.cpp
+	$(CPP) -c Samplers/MultiJittered.cpp -o Samplers/MultiJittered.o $(CXXFLAGS)
+
+Samplers/Regular.o: Samplers/Regular.cpp
+	$(CPP) -c Samplers/Regular.cpp -o Samplers/Regular.o $(CXXFLAGS)
+
+Samplers/Sampler.o: Samplers/Sampler.cpp
+	$(CPP) -c Samplers/Sampler.cpp -o Samplers/Sampler.o $(CXXFLAGS)
+
+Textures/PlaneChecker.o: Textures/PlaneChecker.cpp
+	$(CPP) -c Textures/PlaneChecker.cpp -o Textures/PlaneChecker.o $(CXXFLAGS)
+
+Textures/Texture.o: Textures/Texture.cpp
+	$(CPP) -c Textures/Texture.cpp -o Textures/Texture.o $(CXXFLAGS)
+
+Tracer/AreaLighting.o: Tracer/AreaLighting.cpp
+	$(CPP) -c Tracer/AreaLighting.cpp -o Tracer/AreaLighting.o $(CXXFLAGS)
+
+Tracer/RayCast.o: Tracer/RayCast.cpp
+	$(CPP) -c Tracer/RayCast.cpp -o Tracer/RayCast.o $(CXXFLAGS)
+
+Tracer/Tracer.o: Tracer/Tracer.cpp
+	$(CPP) -c Tracer/Tracer.cpp -o Tracer/Tracer.o $(CXXFLAGS)
+
+Utility/Color.o: Utility/Color.cpp
+	$(CPP) -c Utility/Color.cpp -o Utility/Color.o $(CXXFLAGS)
+
+Lights/Direction.o: Lights/Direction.cpp
+	$(CPP) -c Lights/Direction.cpp -o Lights/Direction.o $(CXXFLAGS)
+
+Lights/Environment.o: Lights/Environment.cpp
+	$(CPP) -c Lights/Environment.cpp -o Lights/Environment.o $(CXXFLAGS)
+
+Noise/LatticeNoise.o: Noise/LatticeNoise.cpp
+	$(CPP) -c Noise/LatticeNoise.cpp -o Noise/LatticeNoise.o $(CXXFLAGS)
+
+Noise/LinearNoise.o: Noise/LinearNoise.cpp
+	$(CPP) -c Noise/LinearNoise.cpp -o Noise/LinearNoise.o $(CXXFLAGS)
+
+Noise/CubicNoise.o: Noise/CubicNoise.cpp
+	$(CPP) -c Noise/CubicNoise.cpp -o Noise/CubicNoise.o $(CXXFLAGS)
+
+Textures/NoiseTexture.o: Textures/NoiseTexture.cpp
+	$(CPP) -c Textures/NoiseTexture.cpp -o Textures/NoiseTexture.o $(CXXFLAGS)
+
+Textures/SkyTexture.o: Textures/SkyTexture.cpp
+	$(CPP) -c Textures/SkyTexture.cpp -o Textures/SkyTexture.o $(CXXFLAGS)
+
+Geometry/Cylinder.o: Geometry/Cylinder.cpp
+	$(CPP) -c Geometry/Cylinder.cpp -o Geometry/Cylinder.o $(CXXFLAGS)
+
+Geometry/Disk.o: Geometry/Disk.cpp
+	$(CPP) -c Geometry/Disk.cpp -o Geometry/Disk.o $(CXXFLAGS)
+
+Geometry/Torus.o: Geometry/Torus.cpp
+	$(CPP) -c Geometry/Torus.cpp -o Geometry/Torus.o $(CXXFLAGS)
+
+Math/Roots3And4.o: Math/Roots3And4.cpp
+	$(CPP) -c Math/Roots3And4.cpp -o Math/Roots3And4.o $(CXXFLAGS)
+
+Geometry/BBox.o: Geometry/BBox.cpp
+	$(CPP) -c Geometry/BBox.cpp -o Geometry/BBox.o $(CXXFLAGS)
+
+Geometry/Box.o: Geometry/Box.cpp
+	$(CPP) -c Geometry/Box.cpp -o Geometry/Box.o $(CXXFLAGS)
+
+Textures/WoodTexture.o: Textures/WoodTexture.cpp
+	$(CPP) -c Textures/WoodTexture.cpp -o Textures/WoodTexture.o $(CXXFLAGS)
+
+Geometry/Annulus.o: Geometry/Annulus.cpp
+	$(CPP) -c Geometry/Annulus.cpp -o Geometry/Annulus.o $(CXXFLAGS)
+
+Geometry/Compound/Compound.o: Geometry/Compound/Compound.cpp
+	$(CPP) -c Geometry/Compound/Compound.cpp -o Geometry/Compound/Compound.o $(CXXFLAGS)
+
+Geometry/Instance.o: Geometry/Instance.cpp
+	$(CPP) -c Geometry/Instance.cpp -o Geometry/Instance.o $(CXXFLAGS)
+
+Math/Matrix.o: Math/Matrix.cpp
+	$(CPP) -c Math/Matrix.cpp -o Math/Matrix.o $(CXXFLAGS)
+
+Utility/ShadeRecord.o: Utility/ShadeRecord.cpp
+	$(CPP) -c Utility/ShadeRecord.cpp -o Utility/ShadeRecord.o $(CXXFLAGS)
+
+Math/Maths.o: Math/Maths.cpp
+	$(CPP) -c Math/Maths.cpp -o Math/Maths.o $(CXXFLAGS)
+
+Geometry/Compound/Wedge.o: Geometry/Compound/Wedge.cpp
+	$(CPP) -c Geometry/Compound/Wedge.cpp -o Geometry/Compound/Wedge.o $(CXXFLAGS)
+
+Textures/GraniteTexture.o: Textures/GraniteTexture.cpp
+	$(CPP) -c Textures/GraniteTexture.cpp -o Textures/GraniteTexture.o $(CXXFLAGS)
+
+Textures/MarbleTexture.o: Textures/MarbleTexture.cpp
+	$(CPP) -c Textures/MarbleTexture.cpp -o Textures/MarbleTexture.o $(CXXFLAGS)
+
+Geometry/Compound/WedgeRing.o: Geometry/Compound/WedgeRing.cpp
+	$(CPP) -c Geometry/Compound/WedgeRing.cpp -o Geometry/Compound/WedgeRing.o $(CXXFLAGS)
+
+Geometry/Mesh/Mesh.o: Geometry/Mesh/Mesh.cpp
+	$(CPP) -c Geometry/Mesh/Mesh.cpp -o Geometry/Mesh/Mesh.o $(CXXFLAGS)
+
+Geometry/Mesh/Triangle.o: Geometry/Mesh/Triangle.cpp
+	$(CPP) -c Geometry/Mesh/Triangle.cpp -o Geometry/Mesh/Triangle.o $(CXXFLAGS)
+
+Geometry/Mesh/MeditParser.o: Geometry/Mesh/MeditParser.cpp
+	$(CPP) -c Geometry/Mesh/MeditParser.cpp -o Geometry/Mesh/MeditParser.o $(CXXFLAGS)
+
+Geometry/Mesh/PlyParser.o: Geometry/Mesh/PlyParser.cpp
+	$(CPP) -c Geometry/Mesh/PlyParser.cpp -o Geometry/Mesh/PlyParser.o $(CXXFLAGS)
+
+Utility/ply.o: Utility/ply.cpp
+	$(CPP) -c Utility/ply.cpp -o Utility/ply.o $(CXXFLAGS)
+
+Geometry/Mesh/MeshManager.o: Geometry/Mesh/MeshManager.cpp
+	$(CPP) -c Geometry/Mesh/MeshManager.cpp -o Geometry/Mesh/MeshManager.o $(CXXFLAGS)
+
+Materials/Reflective.o: Materials/Reflective.cpp
+	$(CPP) -c Materials/Reflective.cpp -o Materials/Reflective.o $(CXXFLAGS)
+
+Geometry/Mesh/LightWaveParser.o: Geometry/Mesh/LightWaveParser.cpp
+	$(CPP) -c Geometry/Mesh/LightWaveParser.cpp -o Geometry/Mesh/LightWaveParser.o $(CXXFLAGS)
+
+Utility/ChunkParser.o: Utility/ChunkParser.cpp
+	$(CPP) -c Utility/ChunkParser.cpp -o Utility/ChunkParser.o $(CXXFLAGS)
+
+Textures/ImageTexture.o: Textures/ImageTexture.cpp
+	$(CPP) -c Textures/ImageTexture.cpp -o Textures/ImageTexture.o $(CXXFLAGS)
+
+Textures/TInstance.o: Textures/TInstance.cpp
+	$(CPP) -c Textures/TInstance.cpp -o Textures/TInstance.o $(CXXFLAGS)
+
+Geometry/Mesh/M3DSParser.o: Geometry/Mesh/M3DSParser.cpp
+	$(CPP) -c Geometry/Mesh/M3DSParser.cpp -o Geometry/Mesh/M3DSParser.o $(CXXFLAGS)
+
+Geometry/Mesh/GeoSphere.o: Geometry/Mesh/GeoSphere.cpp
+	$(CPP) -c Geometry/Mesh/GeoSphere.cpp -o Geometry/Mesh/GeoSphere.o $(CXXFLAGS)
+
+Lights/SpotLight.o: Lights/SpotLight.cpp
+	$(CPP) -c Lights/SpotLight.cpp -o Lights/SpotLight.o $(CXXFLAGS)
+
+Textures/StarsTexture.o: Textures/StarsTexture.cpp
+	$(CPP) -c Textures/StarsTexture.cpp -o Textures/StarsTexture.o $(CXXFLAGS)
+
+Materials/Atmosphere.o: Materials/Atmosphere.cpp
+	$(CPP) -c Materials/Atmosphere.cpp -o Materials/Atmosphere.o $(CXXFLAGS)
+
+Storage/Grid.o: Storage/Grid.cpp
+	$(CPP) -c Storage/Grid.cpp -o Storage/Grid.o $(CXXFLAGS)
+
+Geometry/Stars.o: Geometry/Stars.cpp
+	$(CPP) -c Geometry/Stars.cpp -o Geometry/Stars.o $(CXXFLAGS)
+
+Utility/Animation.o: Utility/Animation.cpp
+	$(CPP) -c Utility/Animation.cpp -o Utility/Animation.o $(CXXFLAGS)

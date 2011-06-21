@@ -8,7 +8,7 @@
  */
 
 #include <math.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #include "Pinhole.h"
 #include "Utility/Color.h"
 #include "Math/Ray.h"

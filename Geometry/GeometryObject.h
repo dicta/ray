@@ -34,9 +34,8 @@ public:
    Material* getMaterial() const { return material; }
    void setMaterial(Material *m);
 
-   bool doDelete;
-
    static const double epsilon;
+   bool doDelete;
    bool ignoreShadow;
    BBox bbox;
 

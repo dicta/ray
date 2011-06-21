@@ -57,6 +57,7 @@ private:
 
    double scale;
    string textureDir;
+   bool reverse;
    ifstream in;
    Compound* meshs;
    map<string, Material*> materials;

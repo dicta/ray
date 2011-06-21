@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <SDL/SDL.h>
+#include <SDL.h>
 
 using namespace std;
 
