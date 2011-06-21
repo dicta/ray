@@ -160,10 +160,10 @@ bool Grid::shadowHit(const Ray& ray, double& tmin) const {
    double tz_max = (bbox.z1 - ray.origin.z) / ray.direction.z;
    if(ray.direction.z < 0) swap(tz_min, tz_max);
 
-	double t0 = max(max(tx_min, ty_min), tz_min);
-	double t1 = min(min(tx_max, ty_max), tz_max);
+   double t0 = max(max(tx_min, ty_min), tz_min);
+   double t1 = min(min(tx_max, ty_max), tz_max);
 
-	if (t0 > t1) return(false);
+   if (t0 > t1) return(false);
 
    Point3D p = ray.origin;
    if(!bbox.contains(ray.origin)) {
@@ -261,9 +261,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
       sr.localHitPoint = localHitPoint;
       sr.hitPoint = hitPoint;
       sr.normal = normal;
-      if(sr.material == NULL) {
-         sr.material = mat;
-      }
+      sr.material = mat;
       sr.t = tmin;
    }
    return hit;

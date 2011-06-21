@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
+#include "Materials/Matte.h"
 
 #define COUNTER 0
 #define CLOCKWISE 1
@@ -46,7 +47,7 @@ Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const 
 }
 
 
-Mesh::Mesh() : GeometryObject() {
+Mesh::Mesh() : GeometryObject(), numCells(0) {
    doDelete = false;
    name = "";
 }
@@ -174,7 +175,6 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 	// the following code includes modifications from Shirley and Morley (2003)
-
    double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
    double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
    if(ray.direction.x < 0) swap(tx_min, tx_max);
@@ -187,10 +187,10 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double tz_max = (bbox.z1 - ray.origin.z) / ray.direction.z;
    if(ray.direction.z < 0) swap(tz_min, tz_max);
 
-	double t0 = max(max(tx_min, ty_min), tz_min);
-	double t1 = min(min(tx_max, ty_max), tz_max);
+   double t0 = max(max(tx_min, ty_min), tz_min);
+   double t1 = min(min(tx_max, ty_max), tz_max);
    
-	if (t0 > t1) return(false);
+   if (t0 > t1) return(false);
    
    Point3D p = ray.origin;
    if(!bbox.contains(ray.origin)) {
@@ -214,29 +214,32 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    double ty_next = calculateNext(ray.direction.y, ty_min, iy, dty, ny, iy_step, iy_stop);
    double tz_next = calculateNext(ray.direction.z, tz_min, iz, dtz, nz, iz_step, iz_stop);
 
+   double t = 0;
    // Traverse the grid
    while(true) {
-      Voxel* cell = voxels[ix + nx * iy + nx * ny * iz];
+      int idx = ix + nx * iy + nx * ny * iz;
+      assert(idx < numCells);
+      Voxel* cell = voxels[idx];
 
       if (tx_next < ty_next && tx_next < tz_next) {
-         tmin = tx_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+         t = tx_next;
+         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
 
          tx_next += dtx;
          ix += ix_step;
          if (ix == ix_stop) return false;
       }
       else if (ty_next < tz_next) {
-         tmin = ty_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+         t = ty_next;
+         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
 
          ty_next += dty;
          iy += iy_step;
          if (iy == iy_stop) return false;
       }
       else {
-         tmin = tz_next;
-         if(checkCell(ray, cell, tmin, sr)) return true;
+         t = tz_next;
+         if(checkCell(ray, cell, t, sr)) { tmin = t; return true; }
 
          tz_next += dtz;
          iz += iz_step;
@@ -248,16 +251,21 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const {
    if(cell == NULL) return false;
 
-   double t;
+   double t = 0;
    bool hit = false;
+   Material* mat = NULL;
 
    for(FaceIter it = cell->faces.begin(); it != cell->faces.end(); it++) {
       if(hitFace(*it, ray, t, sr) && t < tmin) {
          tmin = t;
+         mat = (*it)->material;
          hit = true;
       }
    }
 
+   if(hit) {
+      material = mat;
+   }
    return hit;
 }
 
@@ -314,10 +322,6 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       return false;
    }
 
-//   Mesh* self = const_cast<Mesh*>(this);
-//   self->material = face->material;
-sr.material = face->material;
-
    tmin = t;
    if(!smoothingGroups.empty()) {
       if(face->smoothGroup == 0) {
@@ -367,7 +371,7 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
                  + *normals[face->vertIdxs[1]] * beta 
                  + *normals[face->vertIdxs[2]] * gamma);
    normal.normalize();
-	return normal;
+   return normal;
 }
 
 void Mesh::setupCells() {
@@ -377,7 +381,7 @@ void Mesh::setupCells() {
    ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 64) + 1;
    nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 64) + 1;
 
-   int numCells = nx * ny * nz;
+   numCells = nx * ny * nz;
    voxels = new Voxel*[numCells];
    memset(voxels, 0, sizeof(Voxel*) * numCells);
 

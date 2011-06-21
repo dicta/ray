@@ -29,12 +29,13 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       return false;
    }
    
-   double t;
+   double t = 0;
    tmin = 1.7 * pow(10.0, 308.0);
    bool hit = false;
    Vector3D normal;
    Point3D localHitPoint;
-   Material* mat = material;
+   Material* mat = NULL;
+   double tu, tv;
    
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
@@ -43,6 +44,8 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          normal = sr.normal;
          localHitPoint = sr.localHitPoint;
          mat = (*it)->getMaterial();
+         tu = sr.tu;
+         tv = sr.tv;
       }
    }
    
@@ -50,16 +53,10 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
+      sr.tu = tu;
+      sr.tv = tv;
+      material = mat;
    }
-   else {
-      mat = material;
-   }
-   
-//   Compound* self = const_cast<Compound*>(this);
-//   self->material = mat;
-if(sr.material == NULL && hit) {
-   sr.material = mat;
-}
 
    return hit;
 }

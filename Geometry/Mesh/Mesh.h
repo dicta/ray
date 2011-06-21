@@ -77,6 +77,7 @@ protected:
    int getPointCount() const { return points.size(); }
    Point3D* getPointAt(int idx) const { return points[idx]; }
 
+   int numCells;
    vector<Point3D*> points;
    vector<Vector3D*> normals;
    vector<Face*> faces;

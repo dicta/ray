@@ -41,7 +41,7 @@ public:
    BBox bbox;
 
 protected:
-   Material* material;
+   mutable Material* material;
    Texture* normalMap;
 };
 

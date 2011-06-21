@@ -167,6 +167,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    }
    mesh->calculateNormals();
    mesh->setupCells();
+//   if(name == "WingL")
    meshs->addObject(mesh);
 }
 
@@ -343,7 +344,7 @@ void M3DSParser::readFaceArray(Mesh* mesh, int contentSize) {
       uint16 v1 = readUshortLE(in);
       uint16 v2 = readUshortLE(in);
       readUshortLE(in);
-      mesh->addFace(new Face(v1, v0, v2));
+      mesh->addFace(new Face(v2, v1, v0));
    }
 
    int bytesLeft = contentSize - (8 * nFaces + 2);
