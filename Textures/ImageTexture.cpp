@@ -31,9 +31,9 @@ void ImageTexture::setHash(Hash* hash) {
       mapping = UV;
    }
    else {
-      assert(false);
+      exit(1);
    }
-   
+
    if(hash->contains("colorAsAlpha")) {
       colorAsAlpha = true;
    }

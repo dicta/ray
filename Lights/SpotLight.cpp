@@ -4,7 +4,7 @@
 #include "Geometry/GeometryObject.h"
 #include "Math/Maths.h"
 
-SpotLight::SpotLight() : Light(), ls(1.0), color(1, 1, 1), location(), direction(), cosWidth(0), cosFalloff(0) {
+SpotLight::SpotLight() : Light(), ls(1.0), color(1, 1, 1), cosWidth(0), cosFalloff(0), location(), direction() {
 }
 
 Vector3D SpotLight::getLightDirection(ShadeRecord& sr) {
@@ -36,10 +36,10 @@ void SpotLight::setHash(Hash* hash) {
 
    color.set(hash->getValue("color")->getArray());
    ls = hash->getDouble("radiance");
-   
+
    float width = hash->getDouble("width");
    cosWidth = cos(DEG_TO_RAD * width);
-   
+
    float falloff = hash->getDouble("falloff");
    cosFalloff = cos(DEG_TO_RAD * falloff);
 }
