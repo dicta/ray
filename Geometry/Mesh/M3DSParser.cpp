@@ -38,7 +38,7 @@ bool M3DSParser::load(const string& filename) {
       fprintf(stderr, "Read3DSFile: Error opening %s\n", filename.c_str());
       return false;
    }
-   
+
    meshs = new Compound();
    uint16 chunkType = readUshortLE(in);
    if (chunkType != M3DCHUNK_MAGIC) {
@@ -219,7 +219,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
          skipBytes(contentSize);
       }
    }
-   
+
    if(props.specular != NULL) {
       Phong* material = new Phong();
       material->setAmbientColor(props.ambient);
@@ -227,7 +227,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularColor(props.specular);
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
-      
+
       if(props.texMap.length() > 0) {
          material->setTexture(props.texMap);
       }
@@ -237,7 +237,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       Matte* material = new Matte();
       material->setAmbientColor(props.ambient);
       material->setDiffuseColor(props.diffuse);
-      
+
       if(props.texMap.length() > 0) {
          material->setTexture(props.texMap);
       }
@@ -274,7 +274,7 @@ Color* M3DSParser::processColorChunk(int nBytes) {
    if(bytesRead != nBytes) {
       cerr << "In processColorChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
    }
-   
+
    return color;
 }
 
@@ -322,7 +322,7 @@ string M3DSParser::processTexmapChunk(int nBytes) {
          skipBytes(contentSize);
       }
    }
-   
+
    return texName;
 }
 
@@ -367,25 +367,25 @@ bool isPowerOfTwo(int x) {
 
 void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
    int bytesRead = 0;
-   
+
    while(bytesRead < nBytes) {
       uint16 chunkType = readUshortLE(in);
       int chunkSize = readIntLE(in);
       int contentSize = chunkSize - 6;
       bytesRead += chunkSize;
-      
+
       if (chunkType == M3DCHUNK_MESH_MATERIAL_GROUP) {
          // For now, we just assume that there is only one material group
          // per triangle mesh, and that the material applies to all faces in
          // the mesh.
          string materialName = readString(in);
          uint16 nFaces = readUshortLE(in);
-         
+
          for (uint16 i = 0; i < nFaces; i++) {
             uint16 fidx = readUshortLE(in);
             mesh->setFaceMaterial(fidx, materials[materialName]);
          }
-         
+
          mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {

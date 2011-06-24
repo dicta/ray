@@ -6,6 +6,7 @@
 #include "Math/Ray.h"
 
 class Hash;
+class Texture;
 
 /**
  * Hash values:
@@ -27,6 +28,12 @@ public:
 
    virtual void setColor(float r, float g, float b) = 0;
    virtual void setDiffuse(float d) = 0;
+
+   void setNormalMap(Texture* texture) { normalMap = texture; }
+   void applyNormalMap(ShadeRecord& sr);
+
+private:
+   Texture* normalMap;
 };
 
 #endif

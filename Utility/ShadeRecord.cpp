@@ -9,20 +9,22 @@
 
 #include "ShadeRecord.h"
 
-ShadeRecord::ShadeRecord() : 
-   normal(), 
-   hitPoint(), 
-   localHitPoint(), 
-   material(NULL), 
-   hit(false), 
-   t(0), 
+ShadeRecord::ShadeRecord() :
+   normal(),
+   hitPoint(),
+   localHitPoint(),
+   material(NULL),
+   hit(false),
+   t(0),
    depth(0),
    samplePoint(NULL),
    lightNormal(NULL),
    wi(NULL),
    tracer(NULL),
    tu(0),
-   tv(0)
+   tv(0),
+   dpdu(),
+   dpdv()
 {
 }
 
