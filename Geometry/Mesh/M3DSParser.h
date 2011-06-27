@@ -32,7 +32,7 @@ class M3DSParser {
 public:
    M3DSParser();
    ~M3DSParser() {}
-   
+
    bool load(const string& filename);
    void setHash(Hash* h);
    GeometryObject* getMesh() { return meshs; }
@@ -47,13 +47,15 @@ private:
    void processPercentageChunk(int nBytes, float& percent);
    void processFaceArrayChunk(int nBytes, Mesh* mesh);
    string processTexmapChunk(int nBytes);
-   
+
    void readPointArray(Mesh* mesh);
    void readFaceArray(Mesh* mesh, int contentSize);
    void readColor(Color* color);
    void readFloatColor(Color* color);
-   
+
    void skipBytes(int count);
+
+   void setMaterialTextures(Material* material, const MaterialProps& props) const;
 
    double scale;
    string textureDir;

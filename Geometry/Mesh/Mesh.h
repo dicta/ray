@@ -89,7 +89,7 @@ protected:
 private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
-   void computePartialDerivitives(Face* face, ShadeRecord& sr) const;
+   void computePartialDerivitives(Face* face, ShadeRecord& sr, const Vector3D& e1, const Vector3D& e2) const;
    void getUVs(double uv[3][2], Face* face) const;
 };
 

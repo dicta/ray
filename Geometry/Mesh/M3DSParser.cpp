@@ -170,7 +170,7 @@ void M3DSParser::processTriMeshChunk(int nBytes, string name) {
    }
    mesh->calculateNormals();
    mesh->setupCells();
-//   if(name == "WingL")
+
    meshs->addObject(mesh);
 }
 
@@ -227,10 +227,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularColor(props.specular);
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
-
-      if(props.texMap.length() > 0) {
-         material->setTexture(props.texMap);
-      }
+      setMaterialTextures(material, props);
       materials[props.name] = material;
    }
    else {
@@ -246,6 +243,24 @@ void M3DSParser::processMaterialChunk(int nBytes) {
 
    if(bytesRead != nBytes) {
       cerr << "In processMaterialChunk expected " << nBytes << " bytes but read " << bytesRead << '\n';
+   }
+}
+
+void M3DSParser::setMaterialTextures(Material* material, const MaterialProps& props) const {
+   if(props.texMap.length() > 0) {
+      material->setTexture(props.texMap);
+
+      // Generate nornal map file name
+      string normalMap = props.texMap.substr(0, props.texMap.length() - 4) + "Normal.bmp";
+
+      // Check if normal map file exists
+      ifstream inp;
+      inp.open(normalMap.c_str(), ifstream::in);
+      if(!inp.fail()) {
+         inp.close();
+         material->setNormalMap(normalMap);
+      }
+      inp.clear(ios::failbit);
    }
 }
 

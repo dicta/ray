@@ -20,6 +20,9 @@ class Texture;
 class Material {
 
 public:
+   Material();
+   virtual ~Material();
+
    virtual Color shade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual void setHash(Hash* hash) = 0;
@@ -28,8 +31,9 @@ public:
 
    virtual void setColor(float r, float g, float b) = 0;
    virtual void setDiffuse(float d) = 0;
+   virtual void setTexture(string texture) {}
 
-   void setNormalMap(Texture* texture) { normalMap = texture; }
+   void setNormalMap(string texName);
    void applyNormalMap(ShadeRecord& sr);
 
 private:

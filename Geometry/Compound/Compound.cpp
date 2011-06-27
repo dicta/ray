@@ -28,7 +28,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(!bbox.hit(ray)) {
       return false;
    }
-   
+
    double t = 0;
    tmin = 1.7 * pow(10.0, 308.0);
    bool hit = false;
@@ -36,7 +36,9 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Point3D localHitPoint;
    Material* mat = NULL;
    double tu, tv;
-   
+   Vector3D dpdu;
+   Vector3D dpdv;
+
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
          hit = true;
@@ -46,15 +48,19 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          mat = (*it)->getMaterial();
          tu = sr.tu;
          tv = sr.tv;
+         dpdu = sr.dpdu;
+         dpdv = sr.dpdv;
       }
    }
-   
+
    if(hit) {
       sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
       sr.tu = tu;
       sr.tv = tv;
+      sr.dpdu = dpdu;
+      sr.dpdv = dpdv;
       material = mat;
    }
 
@@ -65,9 +71,9 @@ bool Compound::shadowHit(const Ray& ray, double& tmin) const {
    if(!bbox.hit(ray)) {
       return false;
    }
-   
+
    tmin = 1.7 * pow(10.0, 308.0);
-   
+
    for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
       if((*it)->shadowHit(ray, tmin)) {
          return true;

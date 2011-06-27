@@ -2,6 +2,7 @@
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include "Materials/Matte.h"
+#include <assert.h>
 
 #define COUNTER 0
 #define CLOCKWISE 1
@@ -358,7 +359,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.tu = normalize(sr.tu);
       sr.tv = 1.0 - normalize(sr.tv);
    }
-   computePartialDerivitives(face, sr);
+   computePartialDerivitives(face, sr, e1, e2);
    return true;
 }
 
@@ -375,12 +376,12 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
    return normal;
 }
 
-void Mesh::computePartialDerivitives(Face* face, ShadeRecord& sr) const {
+void Mesh::computePartialDerivitives(Face* face, ShadeRecord& sr, const Vector3D& e1, const Vector3D& e2) const {
    double uvs[3][2];
    getUVs(uvs, face);
 
-   Vector3D dp1 = points[face->vertIdxs[0]] - points[face->vertIdxs[2]];
-   Vector3D dp2 = points[face->vertIdxs[1]] - points[face->vertIdxs[2]];
+   Vector3D dp1 = *points[face->vertIdxs[0]] - *points[face->vertIdxs[2]];
+   Vector3D dp2 = *points[face->vertIdxs[1]] - *points[face->vertIdxs[2]];
 
    // Compute deltas
    double du1 = uvs[0][0] - uvs[2][0];
@@ -390,7 +391,7 @@ void Mesh::computePartialDerivitives(Face* face, ShadeRecord& sr) const {
 
    double determinant = du1 * dv2 - dv1 * du2;
    if(determinant == 0.0) {
-      // TODO
+      coordinateSystem(e2.cross(e1).normalize(), &sr.dpdu, &sr.dpdv);
    }
    else {
       sr.dpdu = (dp1 * dv2 - dp2 * dv1) / determinant;
@@ -410,6 +411,7 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
    else {
       for(int i = 0; i < 3; i++) {
          int idx = face->vertIdxs[i];
+         assert(idx < textureCoords.size());
          uv[i][0] = textureCoords[idx]->x;
          uv[i][1] = textureCoords[idx]->y;
       }

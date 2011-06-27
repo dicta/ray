@@ -25,6 +25,7 @@ GeometryObject::GeometryObject() : doDelete(true), ignoreShadow(false), bbox(), 
 GeometryObject::~GeometryObject() {
    if(material != NULL) {
       delete material;
+      material = NULL;
    }
 }
 
@@ -58,4 +59,16 @@ void GeometryObject::setupMaterial(Hash* hash) {
 
 void GeometryObject::setMaterial(Material *m) {
    material = m;
+}
+
+void GeometryObject::coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3) const {
+   if(abs(v1.x) > abs(v1.y)) {
+      double invLen = 1.0 / sqrt(v1.x * v1.x + v1.z * v1.z);
+      *v2 = Vector3D(-v1.z * invLen, 0.0, v1.x * invLen);
+   }
+   else {
+      double invLen = 1.0 / sqrt(v1.y * v1.y + v1.z * v1.z);
+      *v2 = Vector3D(0.0, v1.z * invLen, -v1.y * invLen);
+   }
+   *v3 = v1.cross(*v2);
 }
