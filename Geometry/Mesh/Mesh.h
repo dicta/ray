@@ -21,6 +21,8 @@ public:
    int smoothGroup;
    Material* material;
    int vertIdxs[3];
+   Vector3D dpdu;
+   Vector3D dpdv;
 };
 
 struct Voxel {
@@ -36,8 +38,12 @@ public:
    void addFace(Face* f);
    void normalize();
    Vector3D interpolateNormal(Face* face, const double beta, const double gamma);
+   Vector3D interpolateDPDU(Face* face, const double beta, const double gamma);
+   Vector3D interpolateDPDV(Face* face, const double beta, const double gamma);
 
    map<int, Vector3D*> normals;
+   map<int, Vector3D*> dpdu;
+   map<int, Vector3D*> dpdv;
 };
 
 typedef vector<Face*>::const_iterator FaceIter;
@@ -89,7 +95,7 @@ protected:
 private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
-   void computePartialDerivitives(Face* face, ShadeRecord& sr, const Vector3D& e1, const Vector3D& e2) const;
+   void computePartialDerivitives(Face* face, const Vector3D& e1, const Vector3D& e2) const;
    void getUVs(double uv[3][2], Face* face) const;
 };
 

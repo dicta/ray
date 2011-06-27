@@ -30,11 +30,27 @@ void SmoothingGroup::addFace(Face* f) {
          normals[f->vertIdxs[i]] = new Vector3D();
       }
       *normals[f->vertIdxs[i]] += f->normal;
+
+      if(dpdu.find(f->vertIdxs[i]) == dpdu.end()) {
+         dpdu[f->vertIdxs[i]] = new Vector3D();
+      }
+      *dpdu[f->vertIdxs[i]] += f->dpdu;
+
+      if(dpdv.find(f->vertIdxs[i]) == dpdv.end()) {
+         dpdv[f->vertIdxs[i]] = new Vector3D();
+      }
+      *dpdv[f->vertIdxs[i]] += f->dpdv;
    }
 }
 
 void SmoothingGroup::normalize() {
    for(SGNormalIter sit = normals.begin(), end = normals.end(); sit != end; sit++) {
+      (*sit).second->normalize();
+   }
+   for(SGNormalIter sit = dpdu.begin(), end = dpdu.end(); sit != end; sit++) {
+      (*sit).second->normalize();
+   }
+   for(SGNormalIter sit = dpdv.begin(), end = dpdv.end(); sit != end; sit++) {
       (*sit).second->normalize();
    }
 }
@@ -43,6 +59,22 @@ Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const 
    Vector3D normal(*normals[face->vertIdxs[0]] * (1.0 - beta - gamma)
                  + *normals[face->vertIdxs[1]] * beta
                  + *normals[face->vertIdxs[2]] * gamma);
+   normal.normalize();
+	return normal;
+}
+
+Vector3D SmoothingGroup::interpolateDPDU(Face* face, const double beta, const double gamma) {
+   Vector3D normal(*dpdu[face->vertIdxs[0]] * (1.0 - beta - gamma)
+                 + *dpdu[face->vertIdxs[1]] * beta
+                 + *dpdu[face->vertIdxs[2]] * gamma);
+   normal.normalize();
+	return normal;
+}
+
+Vector3D SmoothingGroup::interpolateDPDV(Face* face, const double beta, const double gamma) {
+   Vector3D normal(*dpdv[face->vertIdxs[0]] * (1.0 - beta - gamma)
+                 + *dpdv[face->vertIdxs[1]] * beta
+                 + *dpdv[face->vertIdxs[2]] * gamma);
    normal.normalize();
 	return normal;
 }
@@ -77,9 +109,9 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(Face* f) {
-//   Point3D* p1 = points[f->vertIdxs[0]];
-//   Point3D* p2 = points[f->vertIdxs[1]];
-//   Point3D* p3 = points[f->vertIdxs[2]];
+   Point3D* p1 = points[f->vertIdxs[0]];
+   Point3D* p2 = points[f->vertIdxs[1]];
+   Point3D* p3 = points[f->vertIdxs[2]];
 
 //   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
 //   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
@@ -100,6 +132,9 @@ void Mesh::addFace(Face* f) {
    f->bbox.expand(*points[f->vertIdxs[1]]);
    f->bbox.expand(*points[f->vertIdxs[2]]);
 
+   Vector3D e1 = *p2 - *p1;
+   Vector3D e2 = *p3 - *p1;
+   computePartialDerivitives(f, e1, e2);
    faces.push_back(f);
 }
 
@@ -153,26 +188,6 @@ void Mesh::setHash(Hash* hash) {
       calculateNormals();
    }
 }
-/*
-bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   if(!bbox.hit(ray)) {
-      return false;
-   }
-
-   bool hit = false;
-   double t;
-   tmin = 1.7 * pow(10.0, 308.0);
-
-   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
-      if(hitFace(*it, ray, t, sr) && (t < tmin)) {
-         hit = true;
-         tmin = t;
-      }
-   }
-
-   return hit;
-}
-*/
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 	// the following code includes modifications from Shirley and Morley (2003)
@@ -327,17 +342,29 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
    if(!smoothingGroups.empty()) {
       if(face->smoothGroup == 0) {
          sr.normal = face->normal;
+         sr.dpdu = face->dpdu;
+         sr.dpdv = face->dpdv;
       }
       else {
          Vector3D n;
+         Vector3D dpdu;
+         Vector3D dpdv;
          for(int i = 0; i < 32; i++) {
             int mask = (int) pow(2, i);
             if(mask & face->smoothGroup) {
                n += (*smoothingGroups.find(i)).second->interpolateNormal(face, b1, b2);
+               dpdu += (*smoothingGroups.find(i)).second->interpolateDPDU(face, b1, b2);
+               dpdv += (*smoothingGroups.find(i)).second->interpolateDPDV(face, b1, b2);
             }
          }
          n.normalize();
          sr.normal = n;
+
+         dpdu.normalize();
+         sr.dpdu = dpdu;
+
+         dpdv.normalize();
+         sr.dpdv = dpdv;
       }
    }
    else {
@@ -359,7 +386,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.tu = normalize(sr.tu);
       sr.tv = 1.0 - normalize(sr.tv);
    }
-   computePartialDerivitives(face, sr, e1, e2);
+//   computePartialDerivitives(face, sr, e1, e2);
    return true;
 }
 
@@ -376,7 +403,7 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
    return normal;
 }
 
-void Mesh::computePartialDerivitives(Face* face, ShadeRecord& sr, const Vector3D& e1, const Vector3D& e2) const {
+void Mesh::computePartialDerivitives(Face* face, const Vector3D& e1, const Vector3D& e2) const {
    double uvs[3][2];
    getUVs(uvs, face);
 
@@ -391,11 +418,13 @@ void Mesh::computePartialDerivitives(Face* face, ShadeRecord& sr, const Vector3D
 
    double determinant = du1 * dv2 - dv1 * du2;
    if(determinant == 0.0) {
-      coordinateSystem(e2.cross(e1).normalize(), &sr.dpdu, &sr.dpdv);
+      coordinateSystem(e2.cross(e1).normalize(), &face->dpdu, &face->dpdv);
    }
    else {
-      sr.dpdu = (dp1 * dv2 - dp2 * dv1) / determinant;
-      sr.dpdv = (dp1 * -du2 + dp2 * du1) / determinant;
+      face->dpdu = (dp1 * dv2 - dp2 * dv1) / determinant;
+      face->dpdu.normalize();
+      face->dpdv = (dp1 * -du2 + dp2 * du1) / determinant;
+      face->dpdv.normalize();
    }
 }
 
