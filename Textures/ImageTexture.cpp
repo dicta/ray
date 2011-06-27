@@ -1,7 +1,7 @@
 #include "ImageTexture.h"
 #include "Parser/Hash.h"
 #include <string>
-#include <SDL_Image.h>
+#include <SDL/SDL_Image.h>
 
 using namespace std;
 
@@ -31,7 +31,7 @@ void ImageTexture::setHash(Hash* hash) {
       mapping = UV;
    }
    else {
-      exit(1);
+       exit(1);
    }
 
    if(hash->contains("colorAsAlpha")) {

@@ -8,7 +8,7 @@
  */
 
 #include <math.h>
-#include <SDL.h>
+#include <SDL/SDL.h>
 #include "Pinhole.h"
 #include "Utility/Color.h"
 #include "Math/Ray.h"
@@ -24,9 +24,9 @@ void Pinhole::renderScene(SDL_Rect& rect) {
    Color pixelColor;
    Ray ray;
    double x, y;
-   
+
    ray.origin = eye;
-   
+
    SDL_Surface* s = createSurface(rect);
    SDL_LockSurface(s);
 
@@ -40,10 +40,10 @@ void Pinhole::renderScene(SDL_Rect& rect) {
             y = r - 0.5 * height + sp->y;
             ray.direction = u * x + v * y - w * viewPlaneDistance;
             ray.direction.normalize();
-            
+
             pixelColor += tracer->traceRay(ray, 0);
          }
-         
+
          pixelColor /= sampler->getNumSamples();
          pixelColor.normalize();
          setPixel(s, c - rect.x, o - rect.y, pixelColor);
@@ -52,11 +52,11 @@ void Pinhole::renderScene(SDL_Rect& rect) {
 
    SDL_UnlockSurface(s);
    rect.y = height - rect.h - rect.y;
-   
+
    pthread_mutex_lock(&surfLock);
    SDL_BlitSurface(s, NULL, surface, &rect);
    SDL_UpdateRect(surface, 0, 0, width, height);
    pthread_mutex_unlock(&surfLock);
-   
+
    SDL_FreeSurface(s);
 }

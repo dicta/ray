@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include <SDL.h>
+#include <SDL/SDL.h>
 
 using namespace std;
 
@@ -31,7 +31,7 @@ class CameraFrame {
 
 public:
    CameraFrame();
-   
+
    int frameNum;
    double rx, ry, rz;
    double tx, ty, tz;

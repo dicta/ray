@@ -29,49 +29,50 @@ Phong::~Phong() {
 void Phong::setHash(Hash* hash) {
    bool colorSet = false;
    bool textureSet = false;
-   
+
    if(hash->contains("texture")) {
       textureSet = true;
-      
+
       ambientBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
       diffuseBRDF->setTexture(Texture::createTexture(hash->getValue("texture")->getHash()));
    }
    else if(hash->contains("color")) {
       colorSet = true;
-      
+
       Array* a = hash->getValue("color")->getArray();
       ambientBRDF->setColor(new Color(a));
       diffuseBRDF->setColor(new Color(a));
    }
-   
+
    if(!colorSet && !textureSet) {
       ambientBRDF->setColor(new Color(BLACK));
       diffuseBRDF->setColor(new Color(BLACK));
    }
-   
+
    ambientBRDF->setKd(hash->getDouble("ka"));
    diffuseBRDF->setKd(hash->getDouble("kd"));
    specularBRDF->setKs(hash->getDouble("ks"));
    specularBRDF->setExp(hash->getDouble("exp"));
-   
+
    if(hash->contains("specularTexture")) {
       specularTexture = new ImageTexture();
       specularTexture->setTextureFile(hash->getString("specularTexture"));
    }
 }
-    
+
 Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
+   applyNormalMap(sr);
    Vector3D wo = ray.direction * -1;
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
-   
+
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
       Vector3D wi = (*it)->getLightDirection(sr);
       float ndotwi = sr.normal.dot(wi);
-      
+
       if(ndotwi > 0.0) {
          Ray shadowRay(sr.hitPoint, wi);
          bool inShadow = (*it)->inShadow(shadowRay, sr);
-         
+
          if(!inShadow) {
             float spec = 1.0;
             if(specularTexture != NULL) {
@@ -81,7 +82,7 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
          }
       }
    }
-   
+
    return L;
 }
 

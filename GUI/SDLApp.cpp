@@ -9,8 +9,8 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
 
 const int bpp = 0;
 
