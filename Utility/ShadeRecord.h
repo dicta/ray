@@ -12,6 +12,9 @@
 
 #include "Math/Vector3D.h"
 #include "Math/Point3D.h"
+#include <boost/shared_ptr.hpp>
+
+using namespace boost;
 
 class Material;
 class Tracer;
@@ -25,7 +28,7 @@ public:
    Vector3D normal;
    Point3D hitPoint;
    Point3D localHitPoint;
-   Material* material;
+   shared_ptr<Material> material;
    bool hit;
    double t;
    int depth;

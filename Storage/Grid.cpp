@@ -245,7 +245,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, double next,
    Vector3D normal;
    Point3D hitPoint;
    Point3D localHitPoint;
-   Material* mat;
+   shared_ptr<Material> mat;
 
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && tmin < next) {

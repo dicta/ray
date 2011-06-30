@@ -13,7 +13,7 @@ ShadeRecord::ShadeRecord() :
    normal(),
    hitPoint(),
    localHitPoint(),
-   material(NULL),
+   material(),
    hit(false),
    t(0),
    depth(0),

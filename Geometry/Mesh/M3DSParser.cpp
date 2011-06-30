@@ -20,6 +20,12 @@ MaterialProps::MaterialProps() :
 M3DSParser::M3DSParser() : scale(1.0), textureDir(""), meshs(NULL), reverse(false) {
 }
 
+M3DSParser::~M3DSParser() {
+   // Do not delete the material objects here. They are in use by the mesh class and need to be
+   // deleted by the mesh destructor.
+   materials.clear();
+}
+
 void M3DSParser::setHash(Hash* h) {
    if(h->contains("scale")) {
       scale = h->getDouble("scale");
@@ -228,7 +234,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
       setMaterialTextures(material, props);
-      materials[props.name] = material;
+      materials[props.name].reset(material);
    }
    else {
       Matte* material = new Matte();
@@ -238,7 +244,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       if(props.texMap.length() > 0) {
          material->setTexture(props.texMap);
       }
-      materials[props.name] = material;
+      materials[props.name].reset(material);
    }
 
    if(bytesRead != nBytes) {
@@ -401,7 +407,7 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
             mesh->setFaceMaterial(fidx, materials[materialName]);
          }
 
-         mesh->setMaterial(materials[materialName]);
+//         mesh->setMaterial(materials[materialName]);
       }
       else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {

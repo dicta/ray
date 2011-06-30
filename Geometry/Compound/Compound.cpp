@@ -34,7 +34,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    bool hit = false;
    Vector3D normal;
    Point3D localHitPoint;
-   Material* mat = NULL;
+   shared_ptr<Material> mat;
    double tu, tv;
    Vector3D dpdu;
    Vector3D dpdv;

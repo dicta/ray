@@ -19,7 +19,7 @@ public:
    Vector3D normal;
    BBox bbox;
    int smoothGroup;
-   Material* material;
+   shared_ptr<Material> material;
    int vertIdxs[3];
    Vector3D dpdu;
    Vector3D dpdv;
@@ -65,7 +65,7 @@ public:
 
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
-   void setFaceMaterial(int idx, Material* material);
+   void setFaceMaterial(int idx, shared_ptr<Material> material);
 
    void calculateNormals();
 

@@ -31,7 +31,7 @@ class M3DSParser {
 
 public:
    M3DSParser();
-   ~M3DSParser() {}
+   ~M3DSParser();
 
    bool load(const string& filename);
    void setHash(Hash* h);
@@ -59,10 +59,10 @@ private:
 
    double scale;
    string textureDir;
+   Compound* meshs;
    bool reverse;
    ifstream in;
-   Compound* meshs;
-   map<string, Material*> materials;
+   map<string, shared_ptr<Material> > materials;
 };
 
 #endif
