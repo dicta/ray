@@ -15,8 +15,10 @@ public:
 
 private:
    void createStars(int a, int b, int c);
-   
+
    int count;
+   double distance;
+   double baseSize;
 };
 
 #endif
