@@ -12,16 +12,18 @@ class Environment : public Light {
 public:
    Environment();
    ~Environment();
-   
+
    virtual void setHash(Hash* hash);
    virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
 
    virtual Color L(const ShadeRecord& sr);
-   
+   virtual int getNumLightSamples() const { return numLightSamples; }
+
 private:
    Material* material;
    Sampler* sampler;
+   int numLightSamples;
 };
 
 #endif

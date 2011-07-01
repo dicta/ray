@@ -9,7 +9,7 @@
 const Vector3D up(0, 1, 0);
 const Vector3D up2(0.0034, 1.0, 0.0071);
 
-Environment::Environment() : Light(), material(new Emissive()) {
+Environment::Environment() : Light(), material(new Emissive()), numLightSamples(1) {
 }
 
 Environment::~Environment() {
@@ -27,6 +27,10 @@ void Environment::setHash(Hash* hash) {
       sampler = new MultiJittered(numSamples);
    }
    sampler->mapSamplesToHemisphere(1);
+
+   if(hash->contains("numLightSamples")) {
+      numLightSamples = hash->getInteger("numLightSamples");
+   }
 }
 
 Vector3D Environment::getLightDirection(ShadeRecord& sr) {
@@ -37,7 +41,7 @@ Vector3D Environment::getLightDirection(ShadeRecord& sr) {
    else {
       v = up.cross(sr.normal);
    }
-   
+
    v.normalize();
    Vector3D u = v.cross(sr.normal);
    Point3D* sp = sampler->sampleHemisphere();

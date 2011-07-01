@@ -66,21 +66,31 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr);
-      float ndotwi = sr.normal.dot(wi);
+      Color power;
+      Vector3D wis;
+      for(int s = 0; s < (*it)->getNumLightSamples(); s++) {
+         Vector3D wi = (*it)->getLightDirection(sr);
+         wis += wi;
+         float ndotwi = sr.normal.dot(wi);
 
-      if(ndotwi > 0.0) {
-         Ray shadowRay(sr.hitPoint, wi);
-         bool inShadow = (*it)->inShadow(shadowRay, sr);
+         if(ndotwi > 0.0) {
+            Ray shadowRay(sr.hitPoint, wi);
+            bool inShadow = (*it)->inShadow(shadowRay, sr);
 
-         if(!inShadow) {
-            float spec = 1.0;
-            if(specularTexture != NULL) {
-               spec = specularTexture->getColor(sr).red;
+            if(!inShadow) {
+               float spec = 1.0;
+               if(specularTexture != NULL) {
+                  spec = specularTexture->getColor(sr).red;
+               }
+               power += (*it)->L(sr);
             }
-            L += (diffuseBRDF->f(sr, wo, wi) + specularBRDF->f(sr, wo, wi) * spec) * (*it)->L(sr) * ndotwi;
          }
       }
+
+      power = power / (*it)->getNumLightSamples();
+      wis.normalize();
+      float ndotwi = sr.normal.dot(wis);
+      L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis) * 1.0) * power * ndotwi;
    }
 
    return L;

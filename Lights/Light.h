@@ -9,18 +9,19 @@
 class Hash;
 
 class Light {
-   
+
 public:
    Light() {}
    virtual ~Light() {}
-   
+
    virtual Vector3D getLightDirection(ShadeRecord& sr) = 0;
    virtual void setHash(Hash* hash) = 0;
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr) { return false; }
-   
+
    virtual Color L(const ShadeRecord& sr) { return BLACK; }
    virtual float G(const ShadeRecord& sr) { return 1.0; }
    virtual float pdf(const ShadeRecord& sr) { return 1.0; }
+   virtual int getNumLightSamples() const { return 1; }
 };
 
 #endif
