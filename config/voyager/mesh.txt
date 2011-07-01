@@ -1,5 +1,5 @@
 m3ds {
    name     "voyager"
-   filename "config/voyager/voyager-full.3ds"
-   textureDir  "config/voyager/"
+   filename "resources/voyager/voyager.3ds"
+   textureDir  "resources/voyager/"
 }

@@ -1,15 +1,5 @@
-#ambientOccluder {
-ambient {
-   radiance       0.0
-   color          [ 1.0 1.0 1.0 ]
-   minColor       [ 0.0 0.0 0.0 ]
-   numSamples     10
-}
-
-
 position {
    location       [ 5.0 100.0 80.0 ]
    color          [ 1.0 1.0 1.0 ]
    radiance       1.0
 }
-

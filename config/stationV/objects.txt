@@ -5,4 +5,5 @@ mesh {
 stars {
    name     "stars"
    count    10000
+   distance 100.0
 }

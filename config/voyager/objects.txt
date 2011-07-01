@@ -1,3 +1,9 @@
 mesh {
    name  "voyager"
 }
+
+stars {
+   name     "stars"
+   count    10000
+   distance 1000.0
+}
