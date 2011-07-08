@@ -42,7 +42,8 @@ void Stars::createStars(int a, int b, int c) {
 
    Sphere* star = new Sphere(Point3D(v.x, v.y, v.z), radius);
    Emissive* em = new Emissive();
-   em->setColor(max(0.0, r - 0.2), max(0.0, r - 0.2), r);
+   r = max(0.0, r - 0.2);
+   em->setColor(r, r, r);
    em->setDiffuse(1.0);
    star->setMaterial(em);
 
