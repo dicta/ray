@@ -41,6 +41,7 @@ void* renderThread(void* arg) {
       c->renderScene(r);
    }
    pthread_exit(NULL);
+   return NULL;
 }
 
 void* timerThread(void* arg) {
@@ -65,6 +66,7 @@ void* timerThread(void* arg) {
    printf("Render time = %f seconds\n", (end - start) / 1000.0);
 
    pthread_exit(NULL);
+   return NULL;
 }
 
 Camera::Camera(int w, int h) : eye(), u(), v(), w(), tracer(NULL), sampler(NULL), surface(NULL), width(w), height(h), boxw(0), boxh(0) {

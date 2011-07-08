@@ -3,7 +3,7 @@
 #include "Math/Maths.h"
 #include "Parser/Hash.h"
 
-MarbleTexture::MarbleTexture() : Texture(), noise(NULL), mainColor(1.0, 1.0, 1.0), veinColor(0.1, 0.1, 0.1) {
+MarbleTexture::MarbleTexture() : Texture(), mainColor(1.0, 1.0, 1.0), veinColor(0.1, 0.1, 0.1), noise(NULL) {
 }
 
 MarbleTexture::~MarbleTexture() {

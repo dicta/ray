@@ -15,7 +15,7 @@ void TInstance::setHash(Hash* hash) {
 
    if(hash->contains("transforms")) {
       Array* transforms = hash->getValue("transforms")->getArray();
-      int idx = 0;
+      unsigned int idx = 0;
       while(idx < transforms->size()) {
          string type = transforms->at(idx)->getString();
          idx++;

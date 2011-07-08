@@ -439,7 +439,7 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
    }
    else {
       for(int i = 0; i < 3; i++) {
-         int idx = face->vertIdxs[i];
+         unsigned int idx = face->vertIdxs[i];
          assert(idx < textureCoords.size());
          uv[i][0] = textureCoords[idx]->x;
          uv[i][1] = textureCoords[idx]->y;
