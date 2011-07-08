@@ -40,6 +40,12 @@ void Matrix::set(const Matrix& matrix) {
    }
 }
 
+void Matrix::setPosition(const Point3D& position) {
+   m[0][3] = position.x;
+   m[1][3] = position.y;
+   m[2][3] = position.z;
+}
+
 void Matrix::translate(double x, double y, double z) {
    m[0][3] = m[0][0] * x + m[0][1] * y + m[0][2] * z + m[0][3];
    m[1][3] = m[1][0] * x + m[1][1] * y + m[1][2] * z + m[1][3];
@@ -70,7 +76,7 @@ void Matrix::invScale(double x, double y, double z) {
 void Matrix::rotateX(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
-   
+
    double m01 = m[0][1] * cosA + m[0][2] * sinA;
    double m02 = -m[0][1] * sinA + m[0][2] * cosA;
    double m11 = m[1][1] * cosA + m[1][2] * sinA;
@@ -89,7 +95,7 @@ void Matrix::rotateX(double angle) {
 void Matrix::invRotateX(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
-   
+
    double m01 = m[0][1] * cosA - m[0][2] * sinA;
    double m02 = m[0][1] * sinA + m[0][2] * cosA;
    double m11 = m[1][1] * cosA - m[1][2] * sinA;
@@ -108,7 +114,7 @@ void Matrix::invRotateX(double angle) {
 void Matrix::rotateY(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
-   
+
    double m00 = m[0][0] * cosA - m[0][2] * sinA;
    double m02 = m[0][0] * sinA + m[0][2] * cosA;
    double m10 = m[1][0] * cosA - m[1][2] * sinA;
@@ -127,7 +133,7 @@ void Matrix::rotateY(double angle) {
 void Matrix::invRotateY(double angle) {
    double cosA = cos(angle * DEG_TO_RAD);
    double sinA = sin(angle * DEG_TO_RAD);
-   
+
    double m00 = m[0][0] * cosA + m[0][2] * sinA;
    double m02 = -m[0][0] * sinA + m[0][2] * cosA;
    double m10 = m[1][0] * cosA + m[1][2] * sinA;
@@ -172,7 +178,7 @@ void Matrix::invRotateZ(double angle) {
    double m11 = m[1][0] * sinA + m[1][1] * cosA;
    double m20 = m[2][0] * cosA - m[2][1] * sinA;
    double m21 = m[2][0] * sinA + m[2][1] * cosA;
-   
+
    m[0][0] = m00;
    m[0][1] = m01;
    m[1][0] = m10;
@@ -208,7 +214,7 @@ void Matrix::invert() {
    if(det == 0.0) {
       return;
    }
-   
+
    double D = m[0][2] * m[2][1] - m[0][1] * m[2][2];
    double E = m[0][0] * m[2][2] - m[0][2] * m[2][0];
    double F = m[2][0] * m[0][1] - m[0][0] * m[2][1];
@@ -228,7 +234,7 @@ void Matrix::transpose() {
    double m12 = m[1][2];
    double m20 = m[2][0];
    double m21 = m[2][1];
-   
+
    m[0][1] = m10;
    m[0][2] = m20;
    m[1][0] = m01;

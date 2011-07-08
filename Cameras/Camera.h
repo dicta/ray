@@ -31,7 +31,7 @@ public:
    void render();
    virtual void renderScene(SDL_Rect& rect) = 0;
 
-   void setPosition(double x, double y, double z);
+   void setPosition(const Point3D& loc) { eye = loc; }
    void setSurface(SDL_Surface* s) { surface = s; }
    void setThreadParameters(int tc, int w, int h);
    void rotate(double x, double y, double z);

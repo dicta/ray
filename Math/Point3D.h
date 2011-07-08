@@ -13,9 +13,11 @@ public:
 
    void set(double xx, double yy, double zz);
    void set(Array* a);
-   
+
    double distance(const Point3D& p) const;
    double distanceSquared(const Point3D& p) const;
+
+   Point3D operator-() const;
 
    Point3D operator+(const Vector3D& p) const;
    Point3D operator+(float f) const;
@@ -24,7 +26,7 @@ public:
    Point3D operator-(const Vector3D& p) const;
    Vector3D operator-(const Point3D& p) const;
    Point3D operator-(float f) const;
-   
+
    Point3D operator*(const double d) const;
    Point3D& operator*=(const double d);
    Point3D& operator=(const Point3D& p);
@@ -34,6 +36,10 @@ public:
    double y;
    double z;
 };
+
+inline Point3D Point3D::operator-() const {
+   return Point3D(-x, -y, -z);
+}
 
 inline double Point3D::distance(const Point3D& p) const {
    return (*this - p).length();

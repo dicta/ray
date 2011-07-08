@@ -16,12 +16,13 @@
  * </ul>
  */
 class Instance : public GeometryObject {
-   
+
 public:
    Instance();
    Instance(GeometryObject* obj);
    virtual ~Instance();
-   
+
+   void setPosition(const Point3D& position);
    void translate(double x, double y, double z);
    void scale(double x, double y, double z);
    void rotateX(double angle);
@@ -40,12 +41,17 @@ public:
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
-   
+
 private:
    GeometryObject* object;
    Matrix invMatrix;
    Matrix fwdMatrix;
 };
+
+inline void Instance::setPosition(const Point3D& position) {
+   fwdMatrix.setPosition(position);
+   invMatrix.setPosition(-position);
+}
 
 inline void Instance::translate(double x, double y, double z) {
    fwdMatrix.translate(x, y, z);

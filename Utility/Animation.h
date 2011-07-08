@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <SDL/SDL.h>
+#include "Math/Point3D.h"
 
 using namespace std;
 
@@ -20,7 +21,7 @@ public:
    Instance* instance;
    int frameNum;
    double rx, ry, rz;
-   double tx, ty, tz;
+   Point3D position;
 };
 
 struct Frame {
@@ -34,7 +35,7 @@ public:
 
    int frameNum;
    double rx, ry, rz;
-   double tx, ty, tz;
+   Point3D position;
 };
 
 class Animation {

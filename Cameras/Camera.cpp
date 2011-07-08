@@ -176,12 +176,6 @@ void Camera::computeUVW(Hash* h) {
    }
 }
 
-void Camera::setPosition(double x, double y, double z) {
-   eye.x = x;
-   eye.y = y;
-   eye.z = z;
-}
-
 void Camera::rotate(double x, double y, double z) {
    Matrix m;
 
