@@ -8,6 +8,7 @@
 
 const Vector3D up(0, 1, 0);
 const Vector3D up2(0.0034, 1.0, 0.0071);
+const float PDF = 1.0 / 2.0 * M_PI;
 
 Environment::Environment() : Light(), material(new Emissive()), numLightSamples(1) {
 }
@@ -66,4 +67,8 @@ bool Environment::inShadow(const Ray& ray, const ShadeRecord& sr) {
 
 Color Environment::L(const ShadeRecord& sr) {
    return material->getLe(sr);
+}
+
+float Environment::pdf(const ShadeRecord& sr) {
+   return PDF;
 }

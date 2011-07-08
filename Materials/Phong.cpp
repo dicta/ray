@@ -82,15 +82,14 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
                if(specularTexture != NULL) {
                   spec = specularTexture->getColor(sr).red;
                }
-               power += (*it)->L(sr);
+               power += (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
             }
          }
       }
 
       power = power / (*it)->getNumLightSamples();
       wis.normalize();
-      float ndotwi = sr.normal.dot(wis);
-      L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis) * 1.0) * power * ndotwi;
+      L += (diffuseBRDF->f(sr, wo, wis) + specularBRDF->f(sr, wo, wis)) * power;
    }
 
    return L;

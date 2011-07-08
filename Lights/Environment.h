@@ -19,6 +19,7 @@ public:
 
    virtual Color L(const ShadeRecord& sr);
    virtual int getNumLightSamples() const { return numLightSamples; }
+   float pdf(const ShadeRecord& sr);
 
 private:
    Material* material;

@@ -3,3 +3,10 @@ position {
    color          [ 1.0 1.0 1.0 ]
    radiance       1.0
 }
+
+environment {
+   color          [ 1.0 1.0 1.0 ]
+   radiance       0.5
+   numSamples     64
+   numLightSamples 13
+}
