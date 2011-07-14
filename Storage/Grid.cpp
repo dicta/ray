@@ -273,7 +273,7 @@ bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin, double
    bool hit = false;
 
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
-      if((*it)->shadowHit(ray, tmin) && tmin < next) {
+      if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && tmin < next) {
          hit = true;
       }
    }
