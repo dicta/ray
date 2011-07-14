@@ -17,19 +17,20 @@
 class LightObject;
 
 class AreaLight : public Light {
-   
+
 public:
    AreaLight();
    virtual ~AreaLight();
-   
+
    virtual Vector3D getLightDirection(ShadeRecord& sr);
    virtual void setHash(Hash* hash);
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
-   
+
    virtual Color L(const ShadeRecord& sr);
    virtual float G(const ShadeRecord& sr);
    virtual float pdf(const ShadeRecord& sr);
-   
+   virtual int getNumLightSamples() const { return 5; }
+
 private:
    LightObject* object;
    Material* material;

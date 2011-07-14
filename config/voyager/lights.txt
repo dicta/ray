@@ -1,12 +1,25 @@
-position {
-   location       [ 5.0 100.0 80.0 ]
-   color          [ 1.0 1.0 1.0 ]
-   radiance       1.0
-}
+#direction {
+#   direction      [ 5.0 100.0 80.0 ]
+#   location       [ 5.0 100.0 80.0 ]
+#   color          [ 1.0 1.0 1.0 ]
+#   radiance       1.0
+#}
 
-environment {
+areaLight {
    color          [ 1.0 1.0 1.0 ]
-   radiance       0.5
-   numSamples     64
-   numLightSamples 13
+   radiance       100.0
+
+   sphere {
+      center      [ 0.0 10.0 0.0 ]
+      radius      1.0
+
+#   disk {
+#      center      [ 0.0 10.0 0.0 ]
+#      radius      1.0
+#      normal      [ 0.0 -1.0 0.0 ]
+
+      material {
+         type     "matte"
+      }
+   }
 }

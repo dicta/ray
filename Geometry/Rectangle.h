@@ -17,20 +17,20 @@
 class Sampler;
 
 class Rectangle : public LightObject {
-   
+
 public:
    Rectangle();
    Rectangle(const Point3D& o, const Vector3D& _a, const Vector3D& _b);
    ~Rectangle();
-   
+
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
    virtual void setHash(Hash* hash);
-   
-   virtual Point3D sample() const;
+
+   virtual Point3D sample(const Point3D& hitPoint) const;
    virtual Vector3D getNormal(const Point3D& point) const;
    virtual double pdf(const ShadeRecord& sr) const;
-   
+
 private:
    void setup();
 
@@ -39,7 +39,7 @@ private:
    Vector3D b;
    Vector3D normal;
    Sampler* sampler;
-   
+
    double lengthASquared;
    double lengthBSquared;
    double inverseArea;

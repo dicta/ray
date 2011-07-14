@@ -53,26 +53,26 @@ bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    if(t <= epsilon) {
       return false;
    }
-   
+
    Point3D p = ray(t);
    Vector3D d = p - origin;
-   
+
    float ddota = d.dot(a);
    if(ddota < 0.0 || ddota > lengthASquared) {
       return false;
    }
-   
+
    float ddotb = d.dot(b);
    if(ddotb < 0.0 || ddotb > lengthBSquared) {
       return false;
    }
-   
+
    tmin = t;
    sr.normal = normal;
    sr.localHitPoint = p;
    sr.tu = ddota / lengthASquared;
    sr.tv = ddotb / lengthBSquared;
-   
+
    return true;
 }
 
@@ -85,26 +85,26 @@ bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
    if(t <= epsilon) {
       return false;
    }
-   
+
    Point3D p = ray.origin + ray.direction * t;
    Vector3D d = p - origin;
-   
+
    float ddota = d.dot(a);
    if(ddota < 0.0 || ddota > lengthASquared) {
       return false;
    }
-   
+
    float ddotb = d.dot(b);
    if(ddotb < 0.0 || ddotb > lengthBSquared) {
       return false;
    }
-   
+
    tmin = t;
-   
+
    return true;
 }
 
-Point3D Rectangle::sample() const {
+Point3D Rectangle::sample(const Point3D& hitPoint) const {
    Point2D* point = sampler->sampleUnitSquare();
    return (origin + a * point->x + b * point->y);
 }

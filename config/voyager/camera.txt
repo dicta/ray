@@ -1,9 +1,11 @@
 camera {
    type                 "pinhole"
-   numSamples           5
+   numSamples           1
    angle                49.0
-   eye                  [ 88.889 16.862 0.0 ]
-   rotate               [ -32.0 90.0 0.0 ]
-   tracer               "rayCast"
+   eye                  [ 76.874 8.884 0.0 ]
+   rotate               [ 0.0 90.0 29.0 ]
+#   eye                  [ 5.0 -34.0 00 ]
+#   rotate               [ 0.0 90.0 0.0 ]
+   tracer               "area"
    bgColor              [ 0.0 0.0 0.0 ]
 }

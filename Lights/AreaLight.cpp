@@ -23,9 +23,9 @@ AreaLight::~AreaLight() {
 }
 
 Vector3D AreaLight::getLightDirection(ShadeRecord& sr) {
-   sr.samplePoint = new Point3D(object->sample());
+   sr.samplePoint = new Point3D(object->sample(sr.hitPoint));
    sr.lightNormal = new Vector3D(object->getNormal(*sr.samplePoint));
-   
+
    Vector3D wi = *sr.samplePoint - sr.hitPoint;
    wi.normalize();
    sr.wi = new Vector3D(wi);
@@ -35,7 +35,7 @@ Vector3D AreaLight::getLightDirection(ShadeRecord& sr) {
 
 void AreaLight::setHash(Hash* hash) {
    material->setHash(hash);
-   
+
    if(hash->contains("rectangle")) {
       Hash* rect = hash->getValue("rectangle")->getHash();
       object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect);
@@ -44,6 +44,11 @@ void AreaLight::setHash(Hash* hash) {
    else if(hash->contains("disk")) {
       Hash* disk = hash->getValue("disk")->getHash();
       object = (LightObject*) GeometryManager::instance().createObject("disk", disk);
+      object->ignoreShadowRays = true;
+   }
+   else if(hash->contains("sphere")) {
+      Hash* sphere = hash->getValue("sphere")->getHash();
+      object = (LightObject*) GeometryManager::instance().createObject("sphere", sphere);
       object->ignoreShadowRays = true;
    }
 }
@@ -62,7 +67,7 @@ bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
       }
    }
 */
-   return false; 
+   return false;
 }
 
 Color AreaLight::L(const ShadeRecord& sr) {
@@ -70,7 +75,7 @@ Color AreaLight::L(const ShadeRecord& sr) {
    if(ndotd > 0.0) {
       return material->getLe(sr);
    }
-   return BLACK; 
+   return BLACK;
 }
 
 float AreaLight::G(const ShadeRecord& sr) {
@@ -79,6 +84,6 @@ float AreaLight::G(const ShadeRecord& sr) {
    return ndotd / d2;
 }
 
-float AreaLight::pdf(const ShadeRecord& sr) { 
+float AreaLight::pdf(const ShadeRecord& sr) {
    return object->pdf(sr);
 }

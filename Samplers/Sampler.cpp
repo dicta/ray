@@ -1,4 +1,5 @@
 #include "Sampler.h"
+#include "Math/Maths.h"
 #include <algorithm>
 #include <math.h>
 
@@ -144,4 +145,11 @@ void Sampler::mapSamplesToHemisphere(float exp) {
 		float pw = cos_theta;
 		hemisphereSamples.push_back(new Point3D(pu, pv, pw));
 	}
+}
+
+Vector3D Sampler::uniformSampleCone(double u, double v, float costhetamax, const Vector3D& x, const Vector3D& y, const Vector3D& z) {
+   double costheta = lerp<double>(u, costhetamax, 1.0);
+   double sintheta = sqrt(1.0 - costheta * costheta);
+   double phi = v * 2.0 * M_PI;
+   return x * cos(phi) * sintheta + y * sinf(phi) * sintheta + z * costheta;
 }
