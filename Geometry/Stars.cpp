@@ -41,11 +41,12 @@ void Stars::createStars(int a, int b, int c) {
    v *= distance;
 
    Sphere* star = new Sphere(Point3D(v.x, v.y, v.z), radius);
-   Emissive* em = new Emissive();
+   shared_ptr<Emissive> em(new Emissive());
    r = max(0.0, r - 0.2);
    em->setColor(r, r, r);
    em->setDiffuse(1.0);
    star->setMaterial(em);
+   star->ignoreShadow = true;
 
    GeometryManager::instance().getGrid().addObject(star);
 }

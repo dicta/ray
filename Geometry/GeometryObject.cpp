@@ -37,24 +37,24 @@ void GeometryObject::setupMaterial(Hash* hash) {
    }
 
    if(type == "phong") {
-      material.reset(new Phong());
+      material = shared_ptr<Material>(new Phong());
    }
    else if(type == "reflective") {
-      material.reset(new Reflective());
+      material = shared_ptr<Material>(new Reflective());
    }
    else if(type == "atmosphere") {
-      material.reset(new Atmosphere());
+      material = shared_ptr<Material>(new Atmosphere());
    }
    else {
       // Matte is the default type
-      material.reset(new Matte());
+      material = shared_ptr<Material>(new Matte());
    }
 
    material->setHash(hash);
 }
 
-void GeometryObject::setMaterial(Material *m) {
-   material.reset(m);
+void GeometryObject::setMaterial(shared_ptr<Material> m) {
+   material = m;
 }
 
 void GeometryObject::coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3) const {

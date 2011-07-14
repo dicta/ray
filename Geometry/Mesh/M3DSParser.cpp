@@ -234,7 +234,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       material->setSpecularHighlight(props.specHighlight);
       material->setSpecularPercent(props.highlightPercent);
       setMaterialTextures(material, props);
-      materials[props.name].reset(material);
+      materials[props.name] = shared_ptr<Material>(material);
    }
    else {
       Matte* material = new Matte();
@@ -244,7 +244,7 @@ void M3DSParser::processMaterialChunk(int nBytes) {
       if(props.texMap.length() > 0) {
          material->setTexture(props.texMap);
       }
-      materials[props.name].reset(material);
+      materials[props.name] = shared_ptr<Material>(material);
    }
 
    if(bytesRead != nBytes) {

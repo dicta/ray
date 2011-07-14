@@ -11,7 +11,7 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(int idx1, int idx2, int idx3) : normal(), bbox(), smoothGroup(0), material() {
+Face::Face(int idx1, int idx2, int idx3) : normal(), bbox(), smoothGroup(0), material(new Matte()) {
    vertIdxs[0] = idx1;
    vertIdxs[1] = idx2;
    vertIdxs[2] = idx3;
@@ -274,12 +274,14 @@ bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr)
    for(FaceIter it = cell->faces.begin(); it != cell->faces.end(); it++) {
       if(hitFace(*it, ray, t, sr) && t < tmin) {
          tmin = t;
+         assert((*it)->material.get() != NULL);
          mat = (*it)->material;
          hit = true;
       }
    }
 
    if(hit) {
+      assert(mat.get() != NULL);
       material = mat;
    }
    return hit;

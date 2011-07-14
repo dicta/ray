@@ -35,7 +35,7 @@ public:
 
    void setupMaterial(Hash* hash);
    shared_ptr<Material> getMaterial() const { return material; }
-   void setMaterial(Material *m);
+   void setMaterial(shared_ptr<Material> m);
 
    static const double epsilon;
    bool doDelete;
