@@ -11,7 +11,7 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(int idx1, int idx2, int idx3) : normal(), bbox(), smoothGroup(0), material(new Matte()) {
+Face::Face(int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), material(new Matte()) {
    vertIdxs[0] = idx1;
    vertIdxs[1] = idx2;
    vertIdxs[2] = idx3;
@@ -128,9 +128,9 @@ void Mesh::addFace(Face* f) {
 
    f->normal.normalize();
 
-   f->bbox.expand(*points[f->vertIdxs[0]]);
-   f->bbox.expand(*points[f->vertIdxs[1]]);
-   f->bbox.expand(*points[f->vertIdxs[2]]);
+//   f->bbox.expand(*points[f->vertIdxs[0]]);
+//   f->bbox.expand(*points[f->vertIdxs[1]]);
+//   f->bbox.expand(*points[f->vertIdxs[2]]);
 
    Vector3D e1 = *p2 - *p1;
    Vector3D e2 = *p3 - *p1;
@@ -140,7 +140,7 @@ void Mesh::addFace(Face* f) {
 
 void Mesh::calculateNormals() {
    if(!smoothingGroups.empty()) {
-      for(SmoothingGroupIter it = smoothingGroups.begin(); it != smoothingGroups.end(); it++) {
+      for(SmoothingGroupIter it = smoothingGroups.begin(), end = smoothingGroups.end(); it != end; ++it) {
          (*it).second->normalize();
       }
    }
@@ -150,13 +150,13 @@ void Mesh::calculateNormals() {
          normals.push_back(new Vector3D());
       }
 
-      for(FaceIter fi = faces.begin(); fi != faces.end(); fi++) {
+      for(FaceIter fi = faces.begin(), end = faces.end(); fi != end; ++fi) {
          *normals[(*fi)->vertIdxs[0]] += (*fi)->normal;
          *normals[(*fi)->vertIdxs[1]] += (*fi)->normal;
          *normals[(*fi)->vertIdxs[2]] += (*fi)->normal;
       }
 
-      for(VectorIter it = normals.begin(); it != normals.end(); it++) {
+      for(VectorIter it = normals.begin(), end = normals.end(); it != end; ++it) {
          if((*it)->x == 0.0 && (*it)->y == 0.0 && (*it)->z == 0.0) {
             (*it)->y  = 1.0;
          }
@@ -271,7 +271,7 @@ bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr)
    bool hit = false;
    shared_ptr<Material> mat;
 
-   for(FaceIter it = cell->faces.begin(); it != cell->faces.end(); it++) {
+   for(FaceIter it = cell->faces.begin(), end = cell->faces.end(); it != end; it++) {
       if(hitFace(*it, ray, t, sr) && t < tmin) {
          tmin = t;
          assert((*it)->material.get() != NULL);
@@ -388,7 +388,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.tu = normalize(sr.tu);
       sr.tv = 1.0 - normalize(sr.tv);
    }
-//   computePartialDerivitives(face, sr, e1, e2);
+
    return true;
 }
 
@@ -460,13 +460,18 @@ void Mesh::setupCells() {
    voxels = new Voxel*[numCells];
    memset(voxels, 0, sizeof(Voxel*) * numCells);
 
-   for(FaceIter it = faces.begin(); it != faces.end(); it++) {
-      int ixmin = (int) clamp(((*it)->bbox.x0 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
-      int iymin = (int) clamp(((*it)->bbox.y0 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
-      int izmin = (int) clamp(((*it)->bbox.z0 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
-      int ixmax = (int) clamp(((*it)->bbox.x1 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
-      int iymax = (int) clamp(((*it)->bbox.y1 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
-      int izmax = (int) clamp(((*it)->bbox.z1 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
+   for(FaceIter it = faces.begin(), end = faces.end(); it != end; ++it) {
+      BBox fbox;
+      fbox.expand(*points[(*it)->vertIdxs[0]]);
+      fbox.expand(*points[(*it)->vertIdxs[1]]);
+      fbox.expand(*points[(*it)->vertIdxs[2]]);
+
+      int ixmin = (int) clamp((fbox.x0 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
+      int iymin = (int) clamp((fbox.y0 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
+      int izmin = (int) clamp((fbox.z0 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
+      int ixmax = (int) clamp((fbox.x1 - bbox.x0) * nx / bbox.wx, 0, nx - 1);
+      int iymax = (int) clamp((fbox.y1 - bbox.y0) * ny / bbox.wy, 0, ny - 1);
+      int izmax = (int) clamp((fbox.z1 - bbox.z0) * nz / bbox.wz, 0, nz - 1);
 
       // add the object to the cells
       for(int iz = izmin; iz <= izmax; iz++) {

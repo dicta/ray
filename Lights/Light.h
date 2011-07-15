@@ -11,7 +11,7 @@ class Hash;
 class Light {
 
 public:
-   Light() {}
+   Light() { numLightSamples = 1; }
    virtual ~Light() {}
 
    virtual Vector3D getLightDirection(ShadeRecord& sr) = 0;
@@ -21,7 +21,11 @@ public:
    virtual Color L(const ShadeRecord& sr) { return BLACK; }
    virtual float G(const ShadeRecord& sr) { return 1.0; }
    virtual float pdf(const ShadeRecord& sr) { return 1.0; }
-   virtual int getNumLightSamples() const { return 1; }
+
+   int getNumLightSamples() const { return numLightSamples; }
+
+protected:
+   int numLightSamples;
 };
 
 #endif

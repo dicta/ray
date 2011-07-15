@@ -15,7 +15,7 @@ public:
 
    void set(double xx, double yy, double zz);
    void set(Array* a);
-   
+
    Vector3D operator-() const;
 
    Vector3D operator+(const Vector3D& p) const;
@@ -33,9 +33,10 @@ public:
    Vector3D cross(const Vector3D& v) const;
    Vector3D cross(const double _x, const double _y, const double _z) const;
    Vector3D& selfCross(const Vector3D& v);
-   double length();
+   double length() const { return l; }
 
    double x, y, z;
+   double l;
 };
 
 inline Vector3D Vector3D::operator-() const {
@@ -75,7 +76,7 @@ inline Vector3D Vector3D::cross(const double _x, const double _y, const double _
                    (y * _z) - (z * _y),  //x component
                    (z * _x) - (x * _z), //y component
                    (x * _y) - (y * _x)   //z component
-                   );                   
+                   );
 }
 
 inline Vector3D Vector3D::absValue() const {

@@ -17,9 +17,9 @@ ShadeRecord::ShadeRecord() :
    hit(false),
    t(0),
    depth(0),
-   samplePoint(NULL),
-   lightNormal(NULL),
-   wi(NULL),
+   samplePoint(),
+   lightNormal(),
+   wi(),
    tracer(NULL),
    tu(0),
    tv(0),
@@ -29,13 +29,5 @@ ShadeRecord::ShadeRecord() :
 }
 
 ShadeRecord::~ShadeRecord() {
-   if(samplePoint != NULL) {
-      delete samplePoint;
-   }
-   if(lightNormal != NULL) {
-      delete lightNormal;
-   }
-   if(wi != NULL) {
-      delete wi;
-   }
+   tracer = NULL;
 }

@@ -5,6 +5,7 @@
 static double ERROR = 0.0001;
 
 Vector3D::Vector3D(double xx, double yy, double zz) : x(xx), y(yy), z(zz) {
+   l = sqrt(x * x + y * y + z * z);
 }
 
 Vector3D::Vector3D(const Vector3D &v) {
@@ -19,12 +20,14 @@ void Vector3D::set(double xx, double yy, double zz) {
    x = xx;
    y = yy;
    z = zz;
+   l = sqrt(x * x + y * y + z * z);
 }
 
 void Vector3D::set(Array* a) {
    x = a->at(0)->getDouble();
    y = a->at(1)->getDouble();
    z = a->at(2)->getDouble();
+   l = sqrt(x * x + y * y + z * z);
 }
 
 Vector3D& Vector3D::operator+= (const Vector3D& p) {
@@ -38,7 +41,10 @@ Vector3D& Vector3D::operator*= (const double d) {
 }
 
 Vector3D& Vector3D::operator= (const Vector3D& p) {
-   this->set(p.x, p.y, p.z);
+   x = p.x;
+   y = p.y;
+   z = p.z;
+   l = p.l;
    return *this;
 }
 
@@ -55,12 +61,12 @@ bool Vector3D::operator== (const Vector3D& v) {
    return true;
 }
 
-double Vector3D::length() {
-   return sqrt(x * x + y * y + z * z);
-}
-
 Vector3D& Vector3D::normalize() {
-   *this = *this * (1.0 / this->length());
+   double invLength = 1.0 / l;
+   x *= invLength;
+   y *= invLength;
+   z *= invLength;
+   l = 1.0;
    return *this;
 }
 

@@ -34,9 +34,9 @@ public:
    int depth;
 
    // The following are used by area lights
-   Point3D* samplePoint;
-   Vector3D* lightNormal;
-   Vector3D* wi;
+   Point3D samplePoint;
+   Vector3D lightNormal;
+   Vector3D wi;
    Tracer* tracer;
 
    double tu, tv;

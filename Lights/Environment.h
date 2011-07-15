@@ -18,13 +18,11 @@ public:
    virtual bool inShadow(const Ray& ray, const ShadeRecord& sr);
 
    virtual Color L(const ShadeRecord& sr);
-   virtual int getNumLightSamples() const { return numLightSamples; }
    float pdf(const ShadeRecord& sr);
 
 private:
    Material* material;
    Sampler* sampler;
-   int numLightSamples;
 };
 
 #endif

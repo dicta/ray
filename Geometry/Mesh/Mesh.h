@@ -16,13 +16,12 @@ class Face {
 public:
    Face(int idx1, int idx2, int idx3);
 
-   Vector3D normal;
-   BBox bbox;
-   int smoothGroup;
-   shared_ptr<Material> material;
    int vertIdxs[3];
+   Vector3D normal;
    Vector3D dpdu;
    Vector3D dpdv;
+   int smoothGroup;
+   shared_ptr<Material> material;
 };
 
 struct Voxel {

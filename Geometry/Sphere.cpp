@@ -239,7 +239,7 @@ Point3D Sphere::sample(const Point3D& hitPoint) const {
    if(!shadowHit(ray, thit)) {
       thit = (center - hitPoint).dot(ray.direction.normalize());
    }
-printf("%f, %f, %f\n", ray.direction.x, ray.direction.y, ray.direction.z);
+
    return ray(thit);
 }
 
