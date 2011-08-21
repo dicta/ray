@@ -1,8 +1,8 @@
 #include "ImageTexture.h"
 #include "Parser/Hash.h"
 #include <string>
-#include <SDL/SDL_Image.h>
-#include "utility/SDL_Utility.h"
+#include "Utility/SDL_Utility.h"
+#include <SDL/SDL_image.h>
 
 using namespace std;
 

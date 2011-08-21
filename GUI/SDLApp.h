@@ -3,7 +3,7 @@
 
 #include <SDL/SDL.h>
 #include <string>
-#include "utility/Color.h"
+#include "Utility/Color.h"
 
 using namespace std;
 

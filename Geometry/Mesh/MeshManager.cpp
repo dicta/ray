@@ -1,7 +1,7 @@
 #include <fstream>
 #include "MeshManager.h"
 #include "Mesh.h"
-#include "parser/Parser.h"
+#include "Parser/Parser.h"
 #include "MeditParser.h"
 #include "LightWaveParser.h"
 #include "M3DSParser.h"

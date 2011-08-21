@@ -23,7 +23,7 @@
 #include "Compound/Wedge.h"
 #include "Compound/WedgeRing.h"
 #include "Instance.h"
-#include "parser/Parser.h"
+#include "Parser/Parser.h"
 #include "Materials/Matte.h"
 #include "Mesh/MeshManager.h"
 #include "Mesh/Mesh.h"

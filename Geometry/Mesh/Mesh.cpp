@@ -348,7 +348,7 @@ double Mesh::hitFace(Face* face, const Ray& ray, ShadeRecord& sr) const {
 
    if(textureCoords.size() != points.size()) {
       if(textureCoords.size() > 0) {
-         printf("%d %d\n", textureCoords.size(), points.size());
+         printf("%lu %lu\n", textureCoords.size(), points.size());
          exit(1);
       }
       sr.tu = sr.tv = 0;

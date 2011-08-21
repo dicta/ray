@@ -10,7 +10,7 @@
 #include <cctype>
 #include <cmath>
 #include <iomanip>
-#include "tokenizer.h"
+#include "Tokenizer.h"
 
 static bool issep(char c) {
    return !isdigit(c) && !isalpha(c) && c != '.';
