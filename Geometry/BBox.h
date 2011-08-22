@@ -7,7 +7,7 @@ class BBox {
 
 public:
    BBox();
-   
+
    void reset();
    bool hit(const Ray& ray) const;
    bool hit(const Ray& ray, double& hitt0, double& hitt1) const;
@@ -15,13 +15,25 @@ public:
    void expand(const Point3D& b);
    bool contains(const Point3D& p) const;
    double maxExtent() const;
-   
+   int maxExtentAxis() const;
+   double surfaceArea() const;
+
+   double getMin(int axis) const;
+   double getMax(int axis) const;
+
+   void setMin(int axis, double val);
+   void setMax(int axis, double val);
+
    double x0, y0, z0;
    double x1, y1, z1;
 
    // Box widths
    double wx, wy, wz;
-   
+
+   BBox& operator=(const BBox& b);
+
+   bool intersects(const BBox& b) const;
+
 private:
    bool slabHit(double b0, double b1, double ro, double rd, double& t0, double& t1) const;
 };
