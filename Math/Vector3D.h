@@ -33,10 +33,9 @@ public:
    Vector3D cross(const Vector3D& v) const;
    Vector3D cross(const double _x, const double _y, const double _z) const;
    Vector3D& selfCross(const Vector3D& v);
-   double length() const { return l; }
+   double length() const { return sqrt(x*x + y*y + z*z); }
 
    double x, y, z;
-   double l;
 };
 
 inline Vector3D Vector3D::operator-() const {
