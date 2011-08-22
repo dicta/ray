@@ -26,7 +26,6 @@
 #include "Materials/Matte.h"
 #include "Mesh/MeshManager.h"
 #include "Mesh/Mesh.h"
-#include "Mesh/PlyParser.h"
 #include "Mesh/GeoSphere.h"
 
 auto_ptr<GeometryManager> GeometryManager::s_instance;
@@ -66,6 +65,7 @@ void GeometryManager::loadObjects(string fname) {
 
    fp.close();
    grid.setupCells();
+   tree.buildTree();
 }
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
@@ -130,6 +130,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    if(addToList) {
       objects[name] = obj;
       grid.addObject(obj);
+      tree.addObject(obj);
    }
 
    return obj;

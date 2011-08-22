@@ -3,7 +3,6 @@
 #include "Mesh.h"
 #include "parser/Parser.h"
 #include "MeditParser.h"
-#include "PlyParser.h"
 #include "LightWaveParser.h"
 #include "M3DSParser.h"
 
@@ -53,15 +52,9 @@ void MeshManager::loadMesh(string type, Hash* hash) {
       mp->readMesh(filename);
       obj = mp;
    }
-   else if(type == "ply") {
-      PlyParser* p = new PlyParser();
-      p->loadModel(filename);
-      obj = p;
-   }
    else if(type == "lwo") {
       LightWaveParser* p = new LightWaveParser();
       p->loadModel(filename);
-//      vec.push_back(p);
    }
    else if(type == "m3ds") {
       M3DSParser parser;
