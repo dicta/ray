@@ -1,6 +1,7 @@
 #include "Vector3D.h"
 #include "Point3D.h"
 #include <math.h>
+#include <assert.h>
 
 static double ERROR = 0.0001;
 
@@ -72,4 +73,11 @@ Vector3D& Vector3D::selfCross(const Vector3D& v) {
 
   this->set(nx, ny, nz);
   return *this;
+}
+
+double Vector3D::get(int axis) const {
+   assert(axis >= 0 && axis <= 2);
+   if(axis == 0) return x;
+   if(axis == 1) return y;
+   return z;
 }

@@ -35,6 +35,8 @@ public:
    Vector3D& selfCross(const Vector3D& v);
    double length() const { return sqrt(x*x + y*y + z*z); }
 
+   double get(int axis) const;
+
    double x, y, z;
 };
 

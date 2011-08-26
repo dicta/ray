@@ -36,6 +36,15 @@ inline T lerp(const float f, const T a, const T b) {
    return a + (b - a) * f;
 }
 
+inline float Log2(float v) {
+   static float invlog = 1.f / logf(2.f);
+   return logf(v) * invlog;
+}
+
+inline int Log2Int(float v) {
+   return (int) floor(Log2(v));
+}
+
 /**
  * Returns an interpolated value in range [0, 1] based on value of x relative to a and b.
  *

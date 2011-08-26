@@ -32,6 +32,8 @@ public:
    Point3D& operator=(const Point3D& p);
    bool operator==(const Point3D& p) const;
 
+   double get(int axis) const;
+
    double x;
    double y;
    double z;

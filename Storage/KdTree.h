@@ -7,11 +7,15 @@ typedef unsigned int uint32_t;
 
 struct KdNode {
    KdNode(vector<int> _idxs);
-   KdNode(KdNode* l, KdNode* r);
+   KdNode(KdNode* l, KdNode* r, int _axis, double _split);
+
+   bool isLeaf() const;
 
    KdNode* left;
    KdNode* right;
    vector<int> idxs;
+   int axis;
+   double split;
 };
 
 class KdTree : public GeometryObject {
@@ -29,6 +33,7 @@ public:
 
 private:
    KdNode* buildTree(int depth, vector<int> idxs, const BBox& bbox);
+   bool checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& sr) const;
 
    vector<GeometryObject*> primitives;
    KdNode *root;

@@ -1,6 +1,7 @@
 #include "Point3D.h"
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 
 static double ERROR = 0.0001;
 
@@ -28,7 +29,7 @@ void Point3D::set(Array* a) {
 }
 
 double Point3D::distanceSquared(const Point3D& p) const {
-	return (	(x - p.x) * (x - p.x) 
+	return (	(x - p.x) * (x - p.x)
            + 	(y - p.y) * (y - p.y)
            +	(z - p.z) * (z - p.z) );
 }
@@ -61,3 +62,9 @@ bool Point3D::operator== (const Point3D& p) const {
    return true;
 }
 
+double Point3D::get(int axis) const {
+   assert(axis >= 0 && axis <= 2);
+   if(axis == 0) return x;
+   if(axis == 1) return y;
+   return z;
+}
