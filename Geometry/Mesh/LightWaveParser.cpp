@@ -203,9 +203,10 @@ int LightWaveParser::skipChunk() {
 }
 
 bool LightWaveParser::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   bool ret = Mesh::hitFace(face, ray, tmin, sr);
-   if(ret == true) {
+   tmin = Mesh::hitFace(face, ray, sr);
+   if(tmin > 0.0) {
 //      currentMaterial = face->materialName;
+      return true;
    }
-   return ret;
+   return false;
 }

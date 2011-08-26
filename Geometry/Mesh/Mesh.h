@@ -17,6 +17,8 @@ public:
    Face(int idx1, int idx2, int idx3);
 
    int vertIdxs[3];
+   Vector3D p1p2;
+   Vector3D p1p3;
    Vector3D normal;
    Vector3D dpdu;
    Vector3D dpdv;
@@ -77,7 +79,7 @@ public:
    map<unsigned int, SmoothingGroup*> smoothingGroups;
 
 protected:
-   bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
+   double hitFace(Face* face, const Ray& ray, ShadeRecord& sr) const;
    Vector3D interpolateNormal(Face* face, const double beta, const double gamma) const;
    int getPointCount() const { return points.size(); }
    Point3D* getPointAt(int idx) const { return points[idx]; }
@@ -94,7 +96,7 @@ protected:
 private:
    double calculateNext(double rd, double min, double i, double dt, int n, int& step, int& stop) const;
    bool checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const;
-   void computePartialDerivitives(Face* face, const Vector3D& e1, const Vector3D& e2) const;
+   void computePartialDerivitives(Face* face) const;
    void getUVs(double uv[3][2], Face* face) const;
 };
 

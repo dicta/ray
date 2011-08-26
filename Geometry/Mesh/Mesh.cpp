@@ -113,14 +113,9 @@ void Mesh::addFace(Face* f) {
    Point3D* p2 = points[f->vertIdxs[1]];
    Point3D* p3 = points[f->vertIdxs[2]];
 
-//   double x = (p1->y - p2->y) * (p1->z + p2->z) + (p2->y - p3->y) * (p2->z + p3->z) + (p3->y - p1->y) * (p3->z + p1->z);
-//   double y = (p1->z - p2->z) * (p1->x + p2->x) + (p2->z - p3->z) * (p2->x + p3->x) + (p3->z - p1->z) * (p3->x + p1->x);
-//   double z = (p1->x - p2->x) * (p1->y + p2->y) + (p2->x - p3->x) * (p2->y + p3->y) + (p3->x - p1->x) * (p3->y + p1->y);
-//
-//   f->normal.set(x, y, z);
-   Vector3D v1 = *points[f->vertIdxs[1]] - *points[f->vertIdxs[0]];
-   Vector3D v2 = *points[f->vertIdxs[2]] - *points[f->vertIdxs[0]];
-   f->normal = v1.cross(v2);
+   f->p1p2 = *p2 - *p1;
+   f->p1p3 = *p3 - *p1;
+   f->normal = f->p1p2.cross(f->p1p3);
 
    if(f->normal.length() == 0.0) {
       f->normal.set(0, 1, 0);
@@ -128,13 +123,7 @@ void Mesh::addFace(Face* f) {
 
    f->normal.normalize();
 
-//   f->bbox.expand(*points[f->vertIdxs[0]]);
-//   f->bbox.expand(*points[f->vertIdxs[1]]);
-//   f->bbox.expand(*points[f->vertIdxs[2]]);
-
-   Vector3D e1 = *p2 - *p1;
-   Vector3D e2 = *p3 - *p1;
-   computePartialDerivitives(f, e1, e2);
+   computePartialDerivitives(f);
    faces.push_back(f);
 }
 
@@ -208,10 +197,7 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 
    if (t0 > t1) return(false);
 
-   Point3D p = ray.origin;
-   if(!bbox.contains(ray.origin)) {
-      p = ray(t0);
-   }
+   const Point3D& p = bbox.contains(ray.origin) ? ray.origin : ray(t0);
 
    int ix = (int) clamp((p.x - bbox.x0) * nx / (bbox.wx), 0, nx - 1);
    int iy = (int) clamp((p.y - bbox.y0) * ny / (bbox.wy), 0, ny - 1);
@@ -267,23 +253,19 @@ bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr) const {
    if(cell == NULL) return false;
 
-   double t = 0;
    bool hit = false;
-   shared_ptr<Material> mat;
 
+   double t;
    for(FaceIter it = cell->faces.begin(), end = cell->faces.end(); it != end; it++) {
-      if(hitFace(*it, ray, t, sr) && t < tmin) {
+      if((t = hitFace(*it, ray, sr)) && t < tmin) {
+//      if(hitFace(*it, ray, t, sr) && t < tmin) {
          tmin = t;
          assert((*it)->material.get() != NULL);
-         mat = (*it)->material;
+         material = (*it)->material;
          hit = true;
       }
    }
 
-   if(hit) {
-      assert(mat.get() != NULL);
-      material = mat;
-   }
    return hit;
 }
 
@@ -309,38 +291,28 @@ double Mesh::calculateNext(double rd, double min, double i, double dt, int n, in
    return next;
 }
 
-bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const {
-   Point3D* p1 = points[face->vertIdxs[0]];
-   Point3D* p2 = points[face->vertIdxs[1]];
-   Point3D* p3 = points[face->vertIdxs[2]];
-
-   Vector3D e1 = *p2 - *p1;
-   Vector3D e2 = *p3 - *p1;
-   Vector3D s1 = ray.direction.cross(e2);
-   double div = s1.dot(e1);
+double Mesh::hitFace(Face* face, const Ray& ray, ShadeRecord& sr) const {
+   const Vector3D& s1 = ray.direction.cross(face->p1p3);
+   double div = s1.dot(face->p1p2);
    if(div < epsilon) {
-      return false;
+      return 0;
    }
    float invDiv = 1.0 / div;
 
-   Vector3D s = ray.origin - *p1;
+   const Vector3D& s = ray.origin - *points[face->vertIdxs[0]];
+   const Vector3D& s2 = s.cross(face->p1p2);
    double b1 = s1.dot(s) * invDiv;
-   if(b1 < epsilon || b1 > 1.0) {
-      return false;
-   }
-
-   Vector3D s2 = s.cross(e1);
    double b2 = s2.dot(ray.direction) * invDiv;
-   if(b2 < epsilon || (b1 + b2) > 1.0) {
-      return false;
+
+   if(b1 < epsilon || b2 < epsilon || (b1 + b2) > 1.0) {
+      return 0;
    }
 
-   double t = s2.dot(e2) * invDiv;
+   double t = s2.dot(face->p1p3) * invDiv;
    if(t < epsilon) {
-      return false;
+      return 0;
    }
 
-   tmin = t;
    if(!smoothingGroups.empty()) {
       if(face->smoothGroup == 0) {
          sr.normal = face->normal;
@@ -389,7 +361,7 @@ bool Mesh::hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) co
       sr.tv = 1.0 - normalize(sr.tv);
    }
 
-   return true;
+   return t;
 }
 
 bool Mesh::shadowHit(const Ray& ray, double& tmin) const {
@@ -405,7 +377,7 @@ Vector3D Mesh::interpolateNormal(Face* face, const double beta, const double gam
    return normal;
 }
 
-void Mesh::computePartialDerivitives(Face* face, const Vector3D& e1, const Vector3D& e2) const {
+void Mesh::computePartialDerivitives(Face* face) const {
    double uvs[3][2];
    getUVs(uvs, face);
 
@@ -420,7 +392,7 @@ void Mesh::computePartialDerivitives(Face* face, const Vector3D& e1, const Vecto
 
    double determinant = du1 * dv2 - dv1 * du2;
    if(determinant == 0.0) {
-      coordinateSystem(e2.cross(e1).normalize(), &face->dpdu, &face->dpdv);
+      coordinateSystem(face->p1p3.cross(face->p1p2).normalize(), &face->dpdu, &face->dpdv);
    }
    else {
       face->dpdu = (dp1 * dv2 - dp2 * dv1) / determinant;
