@@ -58,6 +58,6 @@ void MeditParser::readTriangles(int count, ifstream& fp) {
       idx1--;
       idx2--;
       idx3--;
-      addFace(new Face(idx1, idx2, idx3));
+      addFace(idx1, idx2, idx3);
    }
 }

@@ -130,7 +130,7 @@ int LightWaveParser::parsePolygons() {
          int i3 = readVariableIntBE(in, vsize);
          count += vsize;
 
-         addFace(new Face(i1, i2, i3));
+         addFace(i1, i2, i3);
       }
       else {
          printf("count = %d\n", pointCnt);

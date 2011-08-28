@@ -59,7 +59,7 @@ public:
    int addPoint(Point3D* p);
 
    void facesReserve(int size) { faces.reserve(size); }
-   void addFace(Face* f);
+   void addFace(int v1, int v2, int v3);
 
    void textureCoordsReserve(int size) { textureCoords.reserve(size); }
    void addTextureCoord(float u, float v) { textureCoords.push_back(new Point2D(u, v)); }

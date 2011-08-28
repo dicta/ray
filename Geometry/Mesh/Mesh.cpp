@@ -108,10 +108,12 @@ int Mesh::addPoint(Point3D* p) {
    return points.size() - 1;
 }
 
-void Mesh::addFace(Face* f) {
-   Point3D* p1 = points[f->vertIdxs[0]];
-   Point3D* p2 = points[f->vertIdxs[1]];
-   Point3D* p3 = points[f->vertIdxs[2]];
+void Mesh::addFace(int idx1, int idx2, int idx3) {
+   Point3D* p1 = points[idx1];
+   Point3D* p2 = points[idx2];
+   Point3D* p3 = points[idx3];
+
+   Face* f = new Face(idx1, idx2, idx3);
 
    f->p1p2 = *p2 - *p1;
    f->p1p3 = *p3 - *p1;
@@ -171,7 +173,7 @@ void Mesh::setHash(Hash* hash) {
       Array* faces = hash->getValue("faces")->getArray();
       for(unsigned int i = 0; i < faces->size(); i++) {
          Array* f = faces->at(i)->getArray();
-         addFace(new Face(f->at(0)->getInteger(), f->at(1)->getInteger(), f->at(2)->getInteger()));
+         addFace(f->at(0)->getInteger(), f->at(1)->getInteger(), f->at(2)->getInteger());
       }
 
       calculateNormals();
