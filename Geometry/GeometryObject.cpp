@@ -12,6 +12,7 @@
 #include "Materials/Phong.h"
 #include "Materials/Reflective.h"
 #include "Materials/Atmosphere.h"
+#include "Materials/Emissive.h"
 #include "Parser/Hash.h"
 #include "Textures/Texture.h"
 #include <math.h>
@@ -44,6 +45,9 @@ void GeometryObject::setupMaterial(Hash* hash) {
    }
    else if(type == "atmosphere") {
       material = shared_ptr<Material>(new Atmosphere());
+   }
+   else if(type == "emissive") {
+      material = shared_ptr<Material>(new Emissive());
    }
    else {
       // Matte is the default type
