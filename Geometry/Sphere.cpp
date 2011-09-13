@@ -75,7 +75,7 @@ bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.normal = (temp + ray.direction * t) / radius;
 
       if((-ray.direction).dot(sr.normal) < 0.0) {
-         sr.normal *= -1;
+         sr.normal *= -1.0;
       }
 
       sr.localHitPoint = ray.origin + ray.direction * t;
