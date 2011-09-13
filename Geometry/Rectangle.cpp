@@ -46,6 +46,10 @@ void Rectangle::setup() {
    lengthBSquared = b.length() * b.length();
 
    inverseArea = 1.0 / (a.length() * b.length());
+   
+   bbox.expand(origin);
+   bbox.expand(origin + a);
+   bbox.expand(origin + b);   
 }
 
 bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
