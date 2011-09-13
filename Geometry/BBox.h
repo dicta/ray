@@ -20,6 +20,7 @@ public:
 
    double getMin(int axis) const;
    double getMax(int axis) const;
+   double width(int axis) const;
 
    void setMin(int axis, double val);
    void setMax(int axis, double val);

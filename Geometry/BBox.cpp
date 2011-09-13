@@ -102,39 +102,48 @@ double BBox::surfaceArea() const {
 }
 
 double BBox::getMin(int axis) const {
+   assert(axis >= 0 && axis < 3);
    switch(axis) {
       case 0: return x0;
       case 1: return y0;
-      case 2: return z0;
+      default: return z0;
    }
-   assert(axis >= 0 && axis < 3);
 }
 
 double BBox::getMax(int axis) const {
+   assert(axis >= 0 && axis < 3);
    switch(axis) {
       case 0: return x1;
       case 1: return y1;
-      case 2: return z1;
+      default: return z1;
    }
+}
+
+double BBox::width(int axis) const {
    assert(axis >= 0 && axis < 3);
+   switch(axis) {
+      case 0: return wx;
+      case 1: return wy;
+      default: return wz;
+   }
 }
 
 void BBox::setMin(int axis, double val) {
+   assert(axis >= 0 && axis < 3);
    switch(axis) {
       case 0: x0 = val; wx = x1 - x0; break;
       case 1: y0 = val; wy = y1 - y0; break;
       case 2: z0 = val; wz = z1 - z0; break;
    }
-   assert(axis >= 0 && axis < 3);
 }
 
 void BBox::setMax(int axis, double val) {
+   assert(axis >= 0 && axis < 3);
    switch(axis) {
       case 0: x1 = val; wx = x1 - x0; break;
       case 1: y1 = val; wy = y1 - y0; break;
       case 2: z1 = val; wz = z1 - z0; break;
    }
-   assert(axis >= 0 && axis < 3);
 }
 
 BBox& BBox::operator=(const BBox& b) {
