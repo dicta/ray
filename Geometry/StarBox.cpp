@@ -2,7 +2,7 @@
 #include "Geometry/GeometryManager.h"
 #include "Geometry/Rectangle.h"
 #include "Parser/Hash.h"
-#include "SDLApp.h"
+#include "Utility/SDL_Utility.h"
 #include "Textures/ImageTexture.h"
 
 StarBox::StarBox() : count(0), halfSize(1), size(2) {
@@ -27,21 +27,21 @@ void StarBox::createStars() {
 void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& a, const Vector3D& b) {
    SDL_Rect srect;
    srect.w = srect.h = size;
-   SDL_Surface* surface = SDLApp::createSurface(srect);
+   SDL_Surface* surface = createSurface(srect);
 
    for(int i = 0; i < count; i++) {
       float x = (float) rand() / (float) RAND_MAX * (size - 1);
       float y = (float) rand() / (float) RAND_MAX * (size - 1);
       float c = (float) rand() / (float) RAND_MAX;
-      SDLApp::setPixel(surface, x, y, Color(c, c, c));
+      setPixel(surface, x, y, Color(c, c, c));
    }
-   
+
    ImageTexture* texture = new ImageTexture();
    texture->setSurface(surface);
-   
+
    shared_ptr<Emissive> em(new Emissive());
    em->setTexture(texture);
-   
+
    Rectangle* rect = new Rectangle(origin, a, b);
    rect->setMaterial(em);
    rect->ignoreShadow = true;

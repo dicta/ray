@@ -10,8 +10,7 @@
 #include <math.h>
 #include <fstream>
 //#include <SDL/SDL_image.h>
-
-const int bpp = 0;
+#include "Utility/SDL_Utility.h"
 
 SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -50,7 +49,7 @@ void SDLApp::loadConfiguration() {
    int boxw = h->getInteger("boxWidth");
    int boxh = h->getInteger("boxHeight");
 
-   surface = SDL_SetVideoMode(width, height, bpp, SDL_HWSURFACE | SDL_DOUBLEBUF);
+   surface = SDL_SetVideoMode(width, height, 24, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());
 		SDL_Quit();
@@ -117,7 +116,7 @@ void SDLApp::run() {
                stopApp = true;
             }
             else if(event.key.keysym.sym == 's') {
-               SDL_SaveBMP(surface, "test.bmp");
+               saveImage(surface);
             }
             break;
 
@@ -126,39 +125,4 @@ void SDLApp::run() {
             break;
       }
    }
-}
-
-SDL_Surface* SDLApp::createSurface(const SDL_Rect& rect) {
-   SDL_Surface *surface;
-   Uint32 rmask, gmask, bmask, amask;
-   
-   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
-    on the endianness (byte order) of the machine */
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-   rmask = 0xff000000;
-   gmask = 0x00ff0000;
-   bmask = 0x0000ff00;
-   amask = 0x000000ff;
-#else
-   rmask = 0x000000ff;
-   gmask = 0x0000ff00;
-   bmask = 0x00ff0000;
-   amask = 0xff000000;
-#endif
-   
-   surface = SDL_CreateRGBSurface(SDL_HWSURFACE, rect.w, rect.h, 32, rmask, gmask, bmask, amask);
-   if(surface == NULL) {
-      fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
-      exit(1);
-   }
-   
-   return surface;
-}
-
-void SDLApp::setPixel(SDL_Surface* s, int x, int y, const Color& color) {
-   int bpp = s->format->BytesPerPixel;
-   /* Here p is the address to the pixel we want to set */
-   Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
-   Uint32 pixel = SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
-   *(Uint32 *)p = pixel;
 }

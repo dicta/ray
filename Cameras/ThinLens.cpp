@@ -13,7 +13,7 @@
 #include "Math/Point2D.h"
 #include "Tracer/Tracer.h"
 #include "Parser/Hash.h"
-#include "SDLApp.h"
+#include "Utility/SDL_Utility.h"
 
 ThinLens::ThinLens(int w, int h) : Camera(w, h) {
    lensRadius = 1.0;
@@ -34,46 +34,46 @@ void ThinLens::setHash(Hash* hash) {
 
 void ThinLens::renderScene(SDL_Rect& rect) {
    Color pixelColor;
-   Ray ray;   
+   Ray ray;
    Point2D lp;
-   
-   SDL_Surface* s = SDLApp::createSurface(rect);
+
+   SDL_Surface* s = createSurface(rect);
    SDL_LockSurface(s);
-   
+
    for(int r = rect.y, o = rect.y + rect.h - 1; r < rect.y + rect.h; r++, o--) {
       for(int c = rect.x; c < rect.x + rect.w; c++) {
          pixelColor = BLACK;
-         
+
          for(int n = 0; n < sampler->getNumSamples(); n++) {
             Point2D* sp = sampler->sampleUnitSquare();
             double x = c - width / 2.0 + sp->x;
             double y = r - height / 2.0 + sp->y;
-            
+
             Point2D* dp = lensSampler->sampleUnitDisk();
             lp = *dp * lensRadius;
-            
+
             ray.origin = eye + u * lp.x + v * lp.y;
-            
+
             double dirX = x * f / viewPlaneDistance;
             double dirY = y * f / viewPlaneDistance;
             ray.direction = u * (dirX - lp.x) + v * (dirY - lp.y) - w * f;
             ray.direction.normalize();
-            
+
             pixelColor += tracer->traceRay(ray, 1);
          }
-         
+
          pixelColor /= sampler->getNumSamples();
-         SDLApp::setPixel(s, c - rect.x, o - rect.y, pixelColor);
+         setPixel(s, c - rect.x, o - rect.y, pixelColor);
       }
    }
-   
+
    SDL_UnlockSurface(s);
    rect.y = height - rect.h - rect.y;
-   
+
    pthread_mutex_lock(&surfLock);
    SDL_BlitSurface(s, NULL, surface, &rect);
    SDL_UpdateRect(surface, 0, 0, width, height);
    pthread_mutex_unlock(&surfLock);
-   
+
    SDL_FreeSurface(s);
 }
