@@ -28,6 +28,7 @@ public:
    void setTextureFile(string fname);
    virtual void setHash(Hash* hash);
    virtual float getAlpha(const ShadeRecord& sr) const;
+   void setSurface(SDL_Surface* s) { surf = s; }
 
 private:
    Uint32 getPixel(const ShadeRecord& sr) const;
