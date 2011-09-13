@@ -2,8 +2,14 @@ mesh {
    name  "voyager"
 }
 
-stars {
+#stars {
+#   name     "stars"
+#   count    10000
+#   distance 1000.0
+#}
+
+starBox {
    name     "stars"
-   count    10000
-   distance 1000.0
+   count    50000
+   halfSize 1000
 }
