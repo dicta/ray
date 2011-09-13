@@ -60,6 +60,8 @@ bool M3DSParser::load(const string& filename) {
 
    int contentSize = chunkSize - 6;
    processTopLevelChunk(contentSize);
+   
+//   meshs->setup();
 
    in.close();
    return true;
