@@ -1,9 +1,9 @@
 #include "KdTree.h"
 #include "Math/Maths.h"
 #include <stack>
+#include <limits>
 
 typedef vector<GeometryObject*>::iterator GeomIter;
-typedef vector<int>::const_iterator IdxIter;
 
 int MAX_DEPTH = 10;
 const int MAX_OBJS = 10;
@@ -19,13 +19,20 @@ struct NodeS {
    }
 };
 
-KdNode::KdNode(vector<int> _idxs) : left(NULL), right(NULL), idxs(_idxs) {
+bool BoundEdge::operator< (const BoundEdge& e) const {
+   if(tsplit == e.tsplit) {
+      return type < e.type;
+   }
+   return tsplit < e.tsplit;
+}
+
+KdNode::KdNode(vector<GeometryObject*> _objs) : left(NULL), right(NULL), objs(_objs) {
 }
 
 KdNode::KdNode(KdNode* l, KdNode* r, int _axis, double _split) :
    left(l),
    right(r),
-   idxs(),
+   objs(),
    axis(_axis),
    split(_split)
 {
@@ -47,32 +54,101 @@ KdTree::~KdTree() {
 
 void KdTree::buildTree() {
    MAX_DEPTH = int(8 + 1.3f * Log2Int(float(primitives.size())));
-   vector<int> idxs;
-   for(unsigned int i = 0; i < primitives.size(); i++) {
-      idxs.push_back(i);
-   }
-   root = buildTree(0, idxs, bbox);
+   edges = new BoundEdge[primitives.size() * 2];
+   root = buildTree(0, primitives, bbox);
+   printf("done build\n");
 }
 
-KdNode* KdTree::buildTree(int depth, vector<int> idxs, const BBox& bbox) {
-   if(depth >= MAX_DEPTH || idxs.size() < MAX_OBJS) {
-      // stop recursion
-      return new KdNode(idxs);
-   }
-   int axis = depth % 3;
-   double split = (bbox.getMax(axis) - bbox.getMin(axis)) * 0.5;
+void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
+   double invTotalSA = 1.0 / bounds.surfaceArea();
+   double tsplit = numeric_limits<double>::infinity();
+   
+   int taxis = bounds.maxExtentAxis();
+   int tries = 0;
+   bool found = false;
+   
+   axis = -1;
+   
+   while(!found && tries < 3) {
+      int idx = 0;
+      for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
+         edges[2 * idx].set((*it)->bbox.getMin(taxis), true);
+         edges[2 * idx + 1].set((*it)->bbox.getMax(taxis), false);
+         idx++;
+      }
+      sort(&edges[0], &edges[2 * objs.size()]);
+   
+      int nBelow = 0, nAbove = primitives.size();
+      double bestCost = numeric_limits<double>::max();
+   
+      for(int i = 0; i < 2 * primitives.size(); i++) {
+         if(edges[i].type == BoundEdge::END) nAbove--;
+         double edget = edges[i].tsplit;
+         if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
+            int other0 = (taxis + 1) % 3;
+            int other1 = (taxis + 2) % 3;
+         
+            double belowSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
+                                 (edget - bounds.getMin(taxis)) *
+                                 (bounds.width(other0) + bounds.width(other1));
+         
+            double aboveSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
+                                 (bounds.getMax(taxis) - edget) *
+                                 (bounds.width(other0) + bounds.width(other1));
+         
+            double pBelow = belowSA * invTotalSA;
+            double pAbove = aboveSA * invTotalSA;
+            double eb = (nBelow == 0 || nAbove == 0) ? 0.2 : 1.0;
 
-   BBox left = bbox;
+            double cost = 1.0 + 80.0 * eb * (pBelow * nBelow + pAbove * nAbove);
+         
+            if(cost < bestCost) {
+               bestCost = cost;
+               tsplit = edget;
+               found = bestCost < (80.0 * primitives.size());
+            }
+         }
+         if(edges[i].type == BoundEdge::START) nBelow++;
+      }
+      
+      if(!found) {
+         tries++;
+         taxis = (taxis + 1) % 3;
+      }
+   }
+   if(found) {
+      axis = taxis;
+      split = tsplit;
+   }
+}
+
+KdNode* KdTree::buildTree(int depth, vector<GeometryObject*> objs, const BBox& bounds) {
+   if(depth >= MAX_DEPTH || objs.size() < MAX_OBJS) {
+      // stop recursion
+      return new KdNode(objs);
+   }
+   
+//   int axis = depth % 3;
+//   double split = (bounds.getMax(axis) - bounds.getMin(axis)) * 0.5;
+   int axis;
+   double split;
+   findSplit(objs, bounds, axis, split);
+   
+   if(axis == -1) {
+      return new KdNode(objs);
+   }
+
+   BBox left = bounds;
    left.setMax(axis, split);
-   BBox right = bbox;
+   BBox right = bounds;
    right.setMin(axis, split);
 
-   vector<int> lidxs, ridxs;
-   for(vector<int>::iterator it = idxs.begin(); it != idxs.end(); ++it) {
-      if(left.intersects(primitives[*it]->bbox)) {
+   vector<GeometryObject*> lidxs, ridxs;
+   for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
+      if(left.intersects((*it)->bbox)) {
          lidxs.push_back(*it);
       }
-      if(right.intersects(primitives[*it]->bbox)) {
+      if(right.intersects((*it)->bbox)) {
          ridxs.push_back(*it);
       }
    }
@@ -161,11 +237,10 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
    shared_ptr<Material> mat;
    double t;
 
-   for(IdxIter it = node->idxs.begin(); it != node->idxs.end(); it++) {
-      GeometryObject* obj = primitives[*it];
-      if(obj->hit(ray, t, sr) && (t < tmin)) {
+   for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
+      if((*it)->hit(ray, t, sr) && (t < tmin)) {
          tmin = t;
-         mat = obj->getMaterial();
+         mat = (*it)->getMaterial();
          localHitPoint = sr.localHitPoint;
          normal = sr.normal;
          hitPoint = ray(tmin);
