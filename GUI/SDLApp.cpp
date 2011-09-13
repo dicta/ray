@@ -9,8 +9,7 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-#include <SDL/SDL.h>
-#include <SDL/SDL_image.h>
+//#include <SDL/SDL_image.h>
 
 const int bpp = 0;
 
@@ -20,7 +19,7 @@ SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
       exit(1);
    }
 
-   IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+//   IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
    loadConfiguration();
 }
@@ -33,7 +32,7 @@ SDLApp::~SDLApp() {
       delete animation;
    }
 
-   IMG_Quit();
+//   IMG_Quit();
    SDL_Quit();
 }
 
@@ -127,4 +126,39 @@ void SDLApp::run() {
             break;
       }
    }
+}
+
+SDL_Surface* SDLApp::createSurface(const SDL_Rect& rect) {
+   SDL_Surface *surface;
+   Uint32 rmask, gmask, bmask, amask;
+   
+   /* SDL interprets each pixel as a 32-bit number, so our masks must depend
+    on the endianness (byte order) of the machine */
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+   rmask = 0xff000000;
+   gmask = 0x00ff0000;
+   bmask = 0x0000ff00;
+   amask = 0x000000ff;
+#else
+   rmask = 0x000000ff;
+   gmask = 0x0000ff00;
+   bmask = 0x00ff0000;
+   amask = 0xff000000;
+#endif
+   
+   surface = SDL_CreateRGBSurface(SDL_HWSURFACE, rect.w, rect.h, 32, rmask, gmask, bmask, amask);
+   if(surface == NULL) {
+      fprintf(stderr, "CreateRGBSurface failed: %s\n", SDL_GetError());
+      exit(1);
+   }
+   
+   return surface;
+}
+
+void SDLApp::setPixel(SDL_Surface* s, int x, int y, const Color& color) {
+   int bpp = s->format->BytesPerPixel;
+   /* Here p is the address to the pixel we want to set */
+   Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
+   Uint32 pixel = SDL_MapRGBA(s->format, color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha());
+   *(Uint32 *)p = pixel;
 }
