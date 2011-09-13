@@ -12,10 +12,13 @@
 
 #include "Material.h"
 
+class Texture;
+
 class Emissive : public Material {
    
 public:
    Emissive();
+   virtual ~Emissive();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
    virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
@@ -25,9 +28,12 @@ public:
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
    
+   void setTexture(Texture* tex);
+   
 private:
    float ls;
    Color color;
+   Texture* texture;
 };
 
 #endif
