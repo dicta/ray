@@ -19,6 +19,7 @@
 #include "Box.h"
 #include "Annulus.h"
 #include "Stars.h"
+#include "StarBox.h"
 #include "Compound/Wedge.h"
 #include "Compound/WedgeRing.h"
 #include "Instance.h"
@@ -38,6 +39,7 @@ GeometryManager& GeometryManager::instance() {
 }
 
 GeometryManager::GeometryManager() {
+   grid.setMaxSize(10);
 }
 
 GeometryManager::~GeometryManager() {
@@ -65,7 +67,6 @@ void GeometryManager::loadObjects(string fname) {
 
    fp.close();
    grid.setupCells();
-   tree.buildTree();
 }
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
@@ -117,6 +118,12 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
       s.createStars();
       return NULL;
    }
+   else if(type == "starBox") {
+      StarBox sb;
+      sb.setHash(hash);
+      sb.createStars();
+      return NULL;
+   }
    else if(type == "mesh") {
       name = hash->getString("name");
       obj = MeshManager::instance().getMesh(name);
@@ -130,7 +137,6 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
    if(addToList) {
       objects[name] = obj;
       grid.addObject(obj);
-      tree.addObject(obj);
    }
 
    return obj;
