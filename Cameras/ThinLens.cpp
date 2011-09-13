@@ -13,6 +13,7 @@
 #include "Math/Point2D.h"
 #include "Tracer/Tracer.h"
 #include "Parser/Hash.h"
+#include "SDLApp.h"
 
 ThinLens::ThinLens(int w, int h) : Camera(w, h) {
    lensRadius = 1.0;
@@ -36,7 +37,7 @@ void ThinLens::renderScene(SDL_Rect& rect) {
    Ray ray;   
    Point2D lp;
    
-   SDL_Surface* s = createSurface(rect);
+   SDL_Surface* s = SDLApp::createSurface(rect);
    SDL_LockSurface(s);
    
    for(int r = rect.y, o = rect.y + rect.h - 1; r < rect.y + rect.h; r++, o--) {
@@ -62,7 +63,7 @@ void ThinLens::renderScene(SDL_Rect& rect) {
          }
          
          pixelColor /= sampler->getNumSamples();
-         setPixel(s, c - rect.x, o - rect.y, pixelColor);
+         SDLApp::setPixel(s, c - rect.x, o - rect.y, pixelColor);
       }
    }
    

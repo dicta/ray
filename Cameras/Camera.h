@@ -13,7 +13,6 @@
 #include <SDL/SDL.h>
 #include "Math/Point3D.h"
 #include "Math/Vector3D.h"
-#include "Utility/Color.h"
 #include <pthread.h>
 
 class Tracer;
@@ -37,8 +36,6 @@ public:
    void rotate(double x, double y, double z);
 
 protected:
-   void setPixel(SDL_Surface* s, int x, int y, const Color& color);
-   SDL_Surface* createSurface(const SDL_Rect& rect);
    void computeUVW(Hash* h);
 
    Point3D eye;

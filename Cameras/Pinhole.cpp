@@ -16,6 +16,7 @@
 #include "Samplers/Sampler.h"
 #include "Math/Point2D.h"
 #include "Parser/Hash.h"
+#include "SDLApp.h"
 
 Pinhole::Pinhole(int w, int h) : Camera(w, h) {
 }
@@ -27,7 +28,7 @@ void Pinhole::renderScene(SDL_Rect& rect) {
 
    ray.origin = eye;
 
-   SDL_Surface* s = createSurface(rect);
+   SDL_Surface* s = SDLApp::createSurface(rect);
    SDL_LockSurface(s);
 
    for(int r = rect.y, o = rect.y + rect.h - 1; r < rect.y + rect.h; r++, o--) {
@@ -46,7 +47,7 @@ void Pinhole::renderScene(SDL_Rect& rect) {
 
          pixelColor /= sampler->getNumSamples();
          pixelColor.normalize();
-         setPixel(s, c - rect.x, o - rect.y, pixelColor);
+         SDLApp::setPixel(s, c - rect.x, o - rect.y, pixelColor);
       }
    }
 
