@@ -424,9 +424,10 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
 void Mesh::setupCells() {
    double root = 3.0 * pow(faces.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
-   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 64) + 1;
-   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 64) + 1;
-   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 64) + 1;
+
+   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, 32) + 1;
+   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, 32) + 1;
+   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, 32) + 1;
 
    numCells = nx * ny * nz;
    voxels = new Voxel*[numCells];
