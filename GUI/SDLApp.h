@@ -1,8 +1,8 @@
 #ifndef _SDLAPP_H_
 #define _SDLAPP_H_
 
-#include <string>
 #include <SDL/SDL.h>
+#include <string>
 #include "utility/Color.h"
 
 using namespace std;

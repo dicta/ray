@@ -9,7 +9,7 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-//#include <SDL/SDL_image.h>
+#include <SDL/SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
 SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
@@ -18,7 +18,7 @@ SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
       exit(1);
    }
 
-//   IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+   IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
    loadConfiguration();
 }
@@ -31,7 +31,7 @@ SDLApp::~SDLApp() {
       delete animation;
    }
 
-//   IMG_Quit();
+   IMG_Quit();
    SDL_Quit();
 }
 
