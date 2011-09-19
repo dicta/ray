@@ -13,7 +13,7 @@
 #include "Geometry/GeometryObject.h"
 
 ShadeRecord Tracer::hitObjects(const Ray& ray) {
-   double t;
+   double t = 0.0;
    ShadeRecord sr;
 
    if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {

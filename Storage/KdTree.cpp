@@ -62,13 +62,13 @@ void KdTree::buildTree() {
 void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
    double invTotalSA = 1.0 / bounds.surfaceArea();
    double tsplit = numeric_limits<double>::infinity();
-   
+
    int taxis = bounds.maxExtentAxis();
    int tries = 0;
    bool found = false;
-   
+
    axis = -1;
-   
+
    while(!found && tries < 3) {
       int idx = 0;
       for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
@@ -77,31 +77,31 @@ void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& a
          idx++;
       }
       sort(&edges[0], &edges[2 * objs.size()]);
-   
+
       int nBelow = 0, nAbove = primitives.size();
       double bestCost = numeric_limits<double>::max();
-   
-      for(int i = 0; i < 2 * primitives.size(); i++) {
+
+      for(unsigned i = 0; i < 2 * primitives.size(); i++) {
          if(edges[i].type == BoundEdge::END) nAbove--;
          double edget = edges[i].tsplit;
          if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
             int other0 = (taxis + 1) % 3;
             int other1 = (taxis + 2) % 3;
-         
+
             double belowSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
                                  (edget - bounds.getMin(taxis)) *
                                  (bounds.width(other0) + bounds.width(other1));
-         
+
             double aboveSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
                                  (bounds.getMax(taxis) - edget) *
                                  (bounds.width(other0) + bounds.width(other1));
-         
+
             double pBelow = belowSA * invTotalSA;
             double pAbove = aboveSA * invTotalSA;
             double eb = (nBelow == 0 || nAbove == 0) ? 0.2 : 1.0;
 
             double cost = 1.0 + 80.0 * eb * (pBelow * nBelow + pAbove * nAbove);
-         
+
             if(cost < bestCost) {
                bestCost = cost;
                tsplit = edget;
@@ -110,7 +110,7 @@ void KdTree::findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& a
          }
          if(edges[i].type == BoundEdge::START) nBelow++;
       }
-      
+
       if(!found) {
          tries++;
          taxis = (taxis + 1) % 3;
@@ -127,13 +127,13 @@ KdNode* KdTree::buildTree(int depth, vector<GeometryObject*> objs, const BBox& b
       // stop recursion
       return new KdNode(objs);
    }
-   
+
 //   int axis = depth % 3;
 //   double split = (bounds.getMax(axis) - bounds.getMin(axis)) * 0.5;
    int axis;
    double split;
    findSplit(objs, bounds, axis, split);
-   
+
    if(axis == -1) {
       return new KdNode(objs);
    }

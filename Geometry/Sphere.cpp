@@ -78,7 +78,7 @@ bool Sphere::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
          sr.normal *= -1.0;
       }
 
-      sr.localHitPoint = ray.origin + ray.direction * t;
+      sr.localHitPoint = ray(t);
       if(normalMap != NULL) getNormalFromMap(sr);
       return true;
    }
