@@ -11,6 +11,7 @@
 #include <fstream>
 #include <SDL/SDL_image.h>
 #include "Utility/SDL_Utility.h"
+#include "Utility/PerfCounter.h"
 
 SDLApp::SDLApp(int argc, char** argv) :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
@@ -112,6 +113,18 @@ void SDLApp::run() {
    else {
       camera->render();
    }
+
+   // Output performance counter data.
+   printf("Performance counters:\n");
+   printf("num_primary_rays = %lu\n", performance_counter.num_primary_rays);
+   printf("primary_nodes_traversed = %lu\n", performance_counter.primary_nodes_traversed);
+   printf("primary_hits   = %lu\n", performance_counter.primary_hits);
+   printf("primary_misses = %lu\n", performance_counter.primary_misses);
+
+   printf("num_shadow_rays = %lu\n", performance_counter.num_shadow_rays);
+   printf("shadow_nodes_traversed = %lu\n", performance_counter.shadow_nodes_traversed);
+   printf("shadow_hits   = %lu\n", performance_counter.shadow_hits);
+   printf("shadow_misses = %lu\n", performance_counter.shadow_misses);
 
    while(!stopApp) {
       SDL_WaitEvent(&event);

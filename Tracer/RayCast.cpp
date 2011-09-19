@@ -2,6 +2,7 @@
 #include "Materials/Material.h"
 #include "Geometry/GeometryManager.h"
 #include "Storage/Storage.h"
+#include "Utility/PerfCounter.h"
 
 RayCast::RayCast() : Tracer() {
 }
@@ -13,6 +14,8 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
 
    double t = 0.0;
    ShadeRecord sr;
+
+   performance_counter.increment_num_primary_rays();
 
    if(GeometryManager::instance().getStorage()->hit(ray, t, sr)) {
       sr.tracer = this;

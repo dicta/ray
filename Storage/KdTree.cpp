@@ -2,6 +2,7 @@
 #include "Math/Maths.h"
 #include <stack>
 #include <limits>
+#include "Utility/PerfCounter.h"
 
 typedef list<GeometryObject*>::iterator GeomIter;
 
@@ -231,6 +232,7 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
    shared_ptr<Material> mat;
    double tcheck = HUGE_VALUE;
 
+   performance_counter.increment_primary_nodes_traversed();
    for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && (tmin < tcheck)) {
          tcheck = tmin;
@@ -239,6 +241,9 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
          normal = sr.normal;
          hitPoint = ray(tmin);
          hit = true;
+         performance_counter.increment_primary_hits();
+      } else {
+         performance_counter.increment_primary_misses();
       }
    }
 
@@ -252,6 +257,8 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
 }
 
 bool KdTree::shadowHit(const Ray& ray, double& tmin) const {
+   performance_counter.increment_num_shadow_rays();
+
    stack<NodeS> nodeStack;
    nodeStack.push(NodeS(root, 0, HUGE_VALUE));
    
@@ -299,10 +306,14 @@ bool KdTree::checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const {
    bool hit = false;
    double tcheck = HUGE_VALUE;
    
+   performance_counter.increment_shadow_nodes_traversed();
    for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
       if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && (tmin < tcheck)) {
          tcheck = tmin;
          hit = true;
+         performance_counter.increment_shadow_hits();
+      } else {
+         performance_counter.increment_shadow_misses();
       }
    }
 

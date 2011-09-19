@@ -11,7 +11,7 @@ set(CMAKE_CXX_FLAGS "-Wall -pipe -O2 -g")
 
 set (SRC_FILES main.cpp GUI/SDLApp.cpp 
      Math/Point2D.cpp Math/Point3D.cpp Math/Ray.cpp Math/Vector3D.cpp Math/Roots3And4.cpp  Math/Maths.cpp Math/Matrix.cpp
-     Utility/Animation.cpp Utility/Color.cpp Utility/ChunkParser.cpp Utility/ShadeRecord.cpp Storage/Grid.cpp Storage/KdTree.cpp Utility/SDL_Utility.cpp Utility/MedianFilter.cpp Storage/Storage.cpp
+     Utility/Animation.cpp Utility/Color.cpp Utility/ChunkParser.cpp Utility/ShadeRecord.cpp Storage/Grid.cpp Storage/KdTree.cpp Utility/SDL_Utility.cpp Utility/MedianFilter.cpp Storage/Storage.cpp 
      Parser/Hash.cpp Parser/Parser.cpp Parser/Tokenizer.cpp Parser/Value.cpp 
      Tracer/RayCast.cpp
      Samplers/MultiJittered.cpp Samplers/Regular.cpp Samplers/Sampler.cpp 
@@ -25,7 +25,8 @@ set (SRC_FILES main.cpp GUI/SDLApp.cpp
      Geometry/GeometryManager.cpp Geometry/GeometryObject.cpp Geometry/Instance.cpp 
      Geometry/Plane.cpp Geometry/Rectangle.cpp Geometry/Sphere.cpp Geometry/Cylinder.cpp Geometry/Disk.cpp Geometry/Torus.cpp Geometry/BBox.cpp Geometry/Box.cpp Geometry/Annulus.cpp Geometry/Stars.cpp Geometry/StarBox.cpp
      Geometry/Compound/Compound.cpp Geometry/Compound/Wedge.cpp Geometry/Compound/WedgeRing.cpp 
-     Geometry/Mesh/Mesh.cpp Geometry/Mesh/Triangle.cpp Geometry/Mesh/MeditParser.cpp Geometry/Mesh/MeshManager.cpp Geometry/Mesh/LightWaveParser.cpp Geometry/Mesh/M3DSParser.cpp Geometry/Mesh/GeoSphere.cpp)
+     Geometry/Mesh/Mesh.cpp Geometry/Mesh/Triangle.cpp Geometry/Mesh/MeditParser.cpp Geometry/Mesh/MeshManager.cpp Geometry/Mesh/LightWaveParser.cpp Geometry/Mesh/M3DSParser.cpp Geometry/Mesh/GeoSphere.cpp
+     Utility/PerfCounter.cpp)
 
 add_executable(raytracer ${SRC_FILES})
 include_directories(.)

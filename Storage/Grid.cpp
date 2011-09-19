@@ -1,6 +1,8 @@
 #include "Grid.h"
 #include "Math/Maths.h"
 
+#include "Utility/PerfCounter.h"
+
 typedef vector<GeometryObject*>::const_iterator CellIter;
 
 GridVoxel::GridVoxel() : objs() {
@@ -144,6 +146,8 @@ bool Grid::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 }
 
 bool Grid::shadowHit(const Ray& ray, double& tmin) const {
+   performance_counter.increment_num_shadow_rays();
+
    double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
    double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
    if(ray.direction.x < 0) swap(tx_min, tx_max);
@@ -244,6 +248,7 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
    Point3D localHitPoint;
    shared_ptr<Material> mat;
 
+   performance_counter.increment_primary_nodes_traversed();
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && tmin < tcheck) {
          mat = (*it)->getMaterial();
@@ -252,6 +257,9 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
          hitPoint = ray(tmin);
          hit = true;
          tcheck = tmin;
+         performance_counter.increment_primary_hits();
+      } else {
+         performance_counter.increment_primary_misses();
       }
    }
 
@@ -270,10 +278,14 @@ bool Grid::checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin) const 
    bool hit = false;
    double tcheck = HUGE_VALUE;
 
+   performance_counter.increment_shadow_nodes_traversed();
    for(CellIter it = cell->objs.begin(); it != cell->objs.end(); it++) {
       if(!(*it)->ignoreShadow && (*it)->shadowHit(ray, tmin) && tmin < tcheck) {
          hit = true;
          tcheck = tmin;
+         performance_counter.increment_shadow_hits();
+      } else {
+         performance_counter.increment_shadow_misses();
       }
    }
    return hit;
