@@ -7,29 +7,34 @@
 #include "Geometry/Instance.h"
 #include "Math/Maths.h"
 #include "Cameras/Camera.h"
+#include "Utility/SDL_Utility.h"
 
 typedef vector<FrameObject*>::const_iterator FrameObjectIter;
 
-FrameObject::FrameObject(Instance* i, int num) : instance(i), frameNum(num), rx(0), ry(0), rz(0), position() {
+FrameObject::FrameObject(Instance* i) : instance(i), position(), rotation() {
 }
 
 void FrameObject::setup() {
    instance->reset();
-   instance->rotateX(rx);
-   instance->rotateY(ry);
-   instance->rotateZ(rz);
+
+   if(rotation.x) {
+      instance->rotateX(rotation.x);
+   }
+   if(rotation.y) {
+      instance->rotateY(rotation.y);
+   }
+   if(rotation.z) {
+      instance->rotateZ(rotation.z);
+   }
+
    instance->setPosition(position);
    instance->computeBBox();
 }
 
-CameraFrame::CameraFrame() : frameNum(0), rx(0), ry(0), rz(0), position() {
-}
-
-Animation::Animation(Camera* c, SDL_Surface* s) : camera(c), surface(s), frames(NULL), cameraFrames(NULL), frameCount(0), outputDir("") {
+Animation::Animation(Camera* c, SDL_Surface* s) : frameCount(0), camera(c), surface(s), objFrames(), cameraFrames(), outputDir("") {
 }
 
 Animation::~Animation() {
-   delete[] frames;
 }
 
 void Animation::setup(const string& fname) {
@@ -46,7 +51,7 @@ void Animation::setup(const string& fname) {
       Hash* hash = parser.readValue()->getHash();
 
       if(name == "config") {
-         loadConfiguration(hash);
+         outputDir = hash->getString("outputDir");
       }
       else if(name == "animation") {
          loadAnimation(hash);
@@ -54,135 +59,70 @@ void Animation::setup(const string& fname) {
    }
 }
 
-void Animation::loadConfiguration(Hash* hash) {
-   frameCount = hash->getInteger("frameCount");
-   outputDir = hash->getString("outputDir");
-
-   frames = new Frame[frameCount];
-   cameraFrames = new CameraFrame[frameCount];
-}
-
 void Animation::loadAnimation(Hash* hash) {
    string objName = hash->getString("name");
    if(objName == "camera") {
-      Array* frames = hash->getValue("frames")->getArray();
-      int startFrame = 0;
-
-      for(ValueIter it = frames->begin(); it != frames->end(); ++it) {
-         startFrame = loadCameraFrame((*it)->getHash(), cameraFrames[startFrame]);
-      }
+      loadCameraFrames(hash->getValue("frames")->getArray());
    }
    else {
       GeometryObject* obj = GeometryManager::instance().removeObject(objName);
       Instance* instance = new Instance(obj);
       GeometryManager::instance().getGrid().addObject(instance);
 
-      FrameObject* startFO = NULL;
-      Array* frames = hash->getValue("frames")->getArray();
-      for(ValueIter it = frames->begin(); it != frames->end(); ++it) {
-         startFO = loadAnimationFrame((*it)->getHash(), instance, startFO);
+      loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
+   }
+
+   frameCount = max(cameraFrames.size(), objFrames.size());
+}
+
+void Animation::loadAnimationFrames(Array* frames, Instance* instance) {
+   if(objFrames.empty()) {
+      objFrames.reserve(frames->size());
+      for(unsigned i = 0; i < frames->size(); i++) {
+         objFrames.push_back(new Frame());
       }
    }
+
+   int i = 0;
+   for(ValueIter it = frames->begin(); it != frames->end(); ++it) {
+      Hash* frame = (*it)->getHash();
+      FrameObject* obj = new FrameObject(instance);
+      obj->position.set(frame->getValue("position")->getArray());
+      obj->rotation.set(frame->getValue("rotation")->getArray());
+      objFrames[i++]->objects.push_back(obj);
+   }
 }
 
-FrameObject* Animation::loadAnimationFrame(Hash* hash, Instance* instance, FrameObject* startFO) {
-   int frameNum = hash->getInteger("number");
-   int startFrame = 0;
-   double srx = 0, sry = 0, srz = 0;
-   Point3D startPos;
-   int loopStart = 0;
-
-   if(startFO != NULL) {
-      startFrame = startFO->frameNum;
-      loopStart = startFrame + 1;
-      srx = startFO->rx;
-      sry = startFO->ry;
-      srz = startFO->rz;
-      startPos = startFO->position;
+void Animation::loadCameraFrames(Array* frames) {
+   for(ValueIter it = frames->begin(); it != frames->end(); ++it) {
+      Hash* frame = (*it)->getHash();
+      CameraFrame* cf = new CameraFrame();
+      cf->position.set(frame->getValue("position")->getArray());
+      cf->rotation.set(frame->getValue("rotation")->getArray());
+      cameraFrames.push_back(cf);
    }
-
-   double drx = srx, dry = sry, drz = srz;
-   Point3D destPos = startPos;
-
-   if(hash->contains("rx")) drx = hash->getDouble("rx");
-   if(hash->contains("ry")) dry = hash->getDouble("ry");
-   if(hash->contains("rz")) drz = hash->getDouble("rz");
-   if(hash->contains("position")) destPos = hash->getValue("position")->getArray();
-
-   FrameObject* fo;
-   int frameCount = frameNum - startFrame;
-
-   for(int i = loopStart; i <= frameNum; i++) {
-      fo = new FrameObject(instance, i);
-      double p = (double)(i-startFrame) / (double)frameCount;
-      if(frameCount == 0) p = 0;
-      fo->rx = lerp<double>(p, srx, drx);
-      fo->ry = lerp<double>(p, sry, dry);
-      fo->rz = lerp<double>(p, srz, drz);
-      fo->position = lerp<Point3D>(p, startPos, destPos);
-
-      frames[i].objects.push_back(fo);
-   }
-
-   return fo;
-}
-
-int Animation::loadCameraFrame(Hash* hash, const CameraFrame& startFO) {
-   int frameNum = hash->getInteger("number");
-
-   if(frameNum == 0) {
-      if(hash->contains("rx")) cameraFrames[0].rx = hash->getDouble("rx");
-      if(hash->contains("ry")) cameraFrames[0].ry = hash->getDouble("ry");
-      if(hash->contains("rz")) cameraFrames[0].rz = hash->getDouble("rz");
-      if(hash->contains("position")) cameraFrames[0].position.set(hash->getValue("position")->getArray());
-      return 0;
-   }
-
-   int loopStart = startFO.frameNum + 1;
-
-   double srx = startFO.rx;
-   double sry = startFO.ry;
-   double srz = startFO.rz;
-   double drx = srx, dry = sry, drz = srz;
-
-   Point3D startPos = startFO.position;
-   Point3D destPos = startPos;
-
-   if(hash->contains("rx")) drx = hash->getDouble("rx");
-   if(hash->contains("ry")) dry = hash->getDouble("ry");
-   if(hash->contains("rz")) drz = hash->getDouble("rz");
-   if(hash->contains("position")) destPos.set(hash->getValue("position")->getArray());
-
-   int frameCount = frameNum - startFO.frameNum;
-
-   for(int i = loopStart; i <= frameNum; i++) {
-      double p = (double)(i-startFO.frameNum) / (double)frameCount;
-      if(frameCount == 0) p = 0;
-      cameraFrames[i].frameNum = i;
-      cameraFrames[i].rx = lerp<double>(p, srx, drx);
-      cameraFrames[i].ry = lerp<double>(p, sry, dry);
-      cameraFrames[i].rz = lerp<double>(p, srz, drz);
-      cameraFrames[i].position = lerp<Point3D>(p, startPos, destPos);
-   }
-
-   return frameNum;
 }
 
 void Animation::play() {
    char fname[512];
-   for(int i = 0; i < frameCount; i++) {
-      camera->rotate(cameraFrames[i].rx, cameraFrames[i].ry, cameraFrames[i].rz);
-      camera->setPosition(cameraFrames[i].position);
 
-      for(FrameObjectIter it = frames[i].objects.begin(); it != frames[i].objects.end(); ++it) {
-         (*it)->setup();
+   for(unsigned i = 0; i < frameCount; i++) {
+      if(cameraFrames.size() > i) {
+         camera->rotate(cameraFrames[i]->rotation.x, cameraFrames[i]->rotation.y, cameraFrames[i]->rotation.z);
+         camera->setPosition(cameraFrames[i]->position);
+      }
+
+      if(objFrames.size() > i) {
+         for(FrameObjectIter it = objFrames[i]->objects.begin(); it != objFrames[i]->objects.end(); ++it) {
+            (*it)->setup();
+         }
       }
 
       GeometryManager::instance().getGrid().setupCells();
       printf("Frame %d\t", i);
       camera->render();
-      sprintf(fname, "%s/image%d.bmp", outputDir.c_str(), i);
-      SDL_SaveBMP(surface, fname);
+      sprintf(fname, "%s/image%d.png", outputDir.c_str(), i);
+      saveImage(surface, fname);
    }
 
    printf("Animation done\n");

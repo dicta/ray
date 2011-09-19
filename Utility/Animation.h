@@ -5,6 +5,7 @@
 #include <string>
 #include <SDL/SDL.h>
 #include "Math/Point3D.h"
+#include "Math/Vector3D.h"
 
 using namespace std;
 
@@ -15,27 +16,21 @@ class Camera;
 class FrameObject {
 
 public:
-   FrameObject(Instance* i, int num);
+   FrameObject(Instance* i);
    void setup();
 
    Instance* instance;
-   int frameNum;
-   double rx, ry, rz;
    Point3D position;
+   Vector3D rotation;
 };
 
 struct Frame {
    vector<FrameObject*> objects;
 };
 
-class CameraFrame {
-
-public:
-   CameraFrame();
-
-   int frameNum;
-   double rx, ry, rz;
+struct CameraFrame {
    Point3D position;
+   Vector3D rotation;
 };
 
 class Animation {
@@ -48,16 +43,15 @@ public:
    void play();
 
 private:
-   void loadConfiguration(Hash* hash);
    void loadAnimation(Hash* hash);
-   FrameObject* loadAnimationFrame(Hash* hash, Instance* instance, FrameObject* startFO);
-   int loadCameraFrame(Hash* hash, const CameraFrame& startFO);
+   void loadAnimationFrames(Array* frames, Instance* instance);
+   void loadCameraFrames(Array* frames);
 
+   unsigned frameCount;
    Camera* camera;
    SDL_Surface* surface;
-   Frame* frames;
-   CameraFrame* cameraFrames;
-   int frameCount;
+   vector<Frame*> objFrames;
+   vector<CameraFrame*> cameraFrames;
    string outputDir;
 };
 

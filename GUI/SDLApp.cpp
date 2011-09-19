@@ -116,7 +116,7 @@ void SDLApp::run() {
                stopApp = true;
             }
             else if(event.key.keysym.sym == 's') {
-               saveImage(surface);
+               saveImage(surface, "image.png");
             }
             break;
 

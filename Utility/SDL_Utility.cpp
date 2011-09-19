@@ -54,7 +54,7 @@ int png_colortype_from_surface(SDL_Surface *surface) {
 	return colortype;
 }
 
-void saveImage(SDL_Surface* surface) {
+void saveImage(SDL_Surface* surface, const char* fname) {
    png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, user_error_fn, user_warning_fn);
    if(png_ptr == NULL) {
       printf("Unable to create png_ptr\n");
@@ -76,7 +76,7 @@ void saveImage(SDL_Surface* surface) {
    }
 
    // Setup the output code
-   FILE* fp = fopen("test.png", "wb");
+   FILE* fp = fopen(fname, "wb");
    png_init_io(png_ptr, fp);
 
    int colortype = png_colortype_from_surface(surface);

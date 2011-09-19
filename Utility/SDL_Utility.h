@@ -12,6 +12,6 @@ void user_error_fn(png_structp ctx, png_const_charp str);
 void user_warning_fn(png_structp ctx, png_const_charp str);
 
 int png_colortype_from_surface(SDL_Surface *surface);
-void saveImage(SDL_Surface* surface);
+void saveImage(SDL_Surface* surface, const char* fname);
 
 #endif
