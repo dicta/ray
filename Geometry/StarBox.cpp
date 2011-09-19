@@ -29,11 +29,14 @@ void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& 
    srect.w = srect.h = size;
    SDL_Surface* surface = createSurface(srect);
 
+   Uint32 color = SDL_MapRGBA(surface->format, 0, 0, 0, 255);
+   SDL_FillRect(surface, &srect, color);
+
    for(int i = 0; i < count; i++) {
       float x = (float) rand() / (float) RAND_MAX * (size - 1);
       float y = (float) rand() / (float) RAND_MAX * (size - 1);
       float c = (float) rand() / (float) RAND_MAX;
-      setPixel(surface, x, y, Color(c, c, c));
+      setPixel(surface, x, y, Color(c, c, c, 1.0));
    }
 
    ImageTexture* texture = new ImageTexture();
