@@ -1,12 +1,16 @@
 #ifndef _MATERIAL_H_
 #define _MATERIAL_H_
 
+#include <string>
+
 #include "Utility/Color.h"
 #include "Utility/ShadeRecord.h"
 #include "Math/Ray.h"
 
 class Hash;
 class Texture;
+
+using namespace std;
 
 /**
  * Hash values:
@@ -31,6 +35,7 @@ public:
    virtual void setColor(float r, float g, float b) = 0;
    virtual void setDiffuse(float d) = 0;
    virtual void setTexture(string texture) {}
+   virtual void setTexture(Texture* tex) {}
 
    void setNormalMap(string texName);
    void applyNormalMap(ShadeRecord& sr);
