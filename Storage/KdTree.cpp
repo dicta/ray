@@ -253,7 +253,6 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
       sr.hitPoint = hitPoint;
       sr.normal = normal;
       sr.material = mat;
-      sr.t = tmin;
    }
    return hit;
 }

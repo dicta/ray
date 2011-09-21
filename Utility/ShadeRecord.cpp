@@ -14,8 +14,6 @@ ShadeRecord::ShadeRecord() :
    hitPoint(),
    localHitPoint(),
    material(),
-   hit(false),
-   t(0),
    depth(0),
    samplePoint(),
    lightNormal(),

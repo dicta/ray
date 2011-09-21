@@ -29,8 +29,6 @@ public:
    Point3D hitPoint;
    Point3D localHitPoint;
    shared_ptr<Material> material;
-   bool hit;
-   double t;
    int depth;
 
    // The following are used by area lights
