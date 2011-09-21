@@ -54,7 +54,6 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    }
 
    if(hit) {
-      sr.t = tmin;
       sr.normal = normal;
       sr.localHitPoint = localHitPoint;
       sr.tu = tu;
