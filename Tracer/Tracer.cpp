@@ -17,7 +17,7 @@ ShadeRecord Tracer::hitObjects(const Ray& ray) {
    ShadeRecord sr;
 
    if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {
-      sr.hit = true;
+//      sr.hit = true;
       sr.tracer = this;
    }
 

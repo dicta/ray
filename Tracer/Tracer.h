@@ -16,7 +16,7 @@
 #include "Textures/Texture.h"
 
 class Tracer {
-   
+
 public:
    Tracer() : bgColor(), texture(NULL), maxDepth(10) {}
    virtual ~Tracer() {
@@ -26,12 +26,11 @@ public:
    }
 
    virtual Color traceRay(const Ray& ray, const int depth) = 0;
-   ShadeRecord hitObjects(const Ray& ray);
-   
+
    void setBackgroundColor(const Color& c) { bgColor = c; }
    void setBackgroundTexture(Texture* t) { texture = t; }
    void setMaxDepth(int d) { maxDepth = d; }
-   
+
 protected:
    Color bgColor;
    Texture* texture;

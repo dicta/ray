@@ -9,6 +9,7 @@
 
 #include "RayCast.h"
 #include "Materials/Material.h"
+#include "Geometry/GeometryManager.h"
 
 RayCast::RayCast() : Tracer() {
 }
@@ -18,12 +19,14 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
       return BLACK;
    }
 
-   ShadeRecord sr = hitObjects(ray);
-   
-   if(sr.hit) {
+   double t = 0.0;
+   ShadeRecord sr;
+
+   if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {
+      sr.tracer = this;
       sr.depth = depth;
       Color c = sr.material->shade(sr, ray);
-      
+
       if(c.getAlphaF() < 1.0) {
          Ray newRay(sr.localHitPoint, ray.direction);
          Color newColor = traceRay(newRay, depth);

@@ -9,6 +9,7 @@
 
 #include "AreaLighting.h"
 #include "Materials/Material.h"
+#include "Geometry/GeometryManager.h"
 
 AreaLighting::AreaLighting() : Tracer() {
 }
@@ -18,9 +19,11 @@ Color AreaLighting::traceRay(const Ray& ray, const int depth) {
       return BLACK;
    }
 
-   ShadeRecord sr = hitObjects(ray);
-   
-   if(sr.hit) {
+   double t = 0.0;
+   ShadeRecord sr;
+
+   if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {
+      sr.tracer = this;
       sr.depth = depth;
       return sr.material->areaLightShade(sr, ray);
    }
