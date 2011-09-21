@@ -39,7 +39,6 @@ GeometryManager& GeometryManager::instance() {
 }
 
 GeometryManager::GeometryManager() {
-   grid.setMaxSize(10);
 }
 
 GeometryManager::~GeometryManager() {

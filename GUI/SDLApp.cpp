@@ -49,6 +49,11 @@ void SDLApp::loadConfiguration() {
    int boxw = h->getInteger("boxWidth");
    int boxh = h->getInteger("boxHeight");
 
+   if(h->contains("maxGridCells")) {
+      int maxCells = h->getInteger("maxGridCells");
+      GeometryManager::instance().setMaxGridCells(maxCells);
+   }
+
    surface = SDL_SetVideoMode(width, height, 24, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
 		fprintf(stderr, "Couldn't set video mode: %s\n", SDL_GetError());

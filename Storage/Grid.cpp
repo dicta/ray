@@ -14,7 +14,7 @@ void GridVoxel::add(GeometryObject* o) {
    objs.push_back(o);
 }
 
-Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0), maxSize(64) {
+Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0), maxCells(64) {
 }
 
 Grid::~Grid() {
@@ -44,10 +44,10 @@ void Grid::setupCells() {
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();
 //   int maxCells = int(8 + 1.3f * Log2Int(float(objs.size())));
-
-   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, maxSize) + 1;
-   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, maxSize) + 1;
-   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, maxSize) + 1;
+   printf("grid.maxCells = %d\n", maxCells);
+   nx = (int) clamp(round(bbox.wx * voxelsPerUnit), 0, maxCells) + 1;
+   ny = (int) clamp(round(bbox.wy * voxelsPerUnit), 0, maxCells) + 1;
+   nz = (int) clamp(round(bbox.wz * voxelsPerUnit), 0, maxCells) + 1;
 
    numCells = nx * ny * nz;
    voxels = new GridVoxel*[numCells];
@@ -266,7 +266,6 @@ bool Grid::checkCell(const Ray& ray, GridVoxel* cell, double& tmin, ShadeRecord&
       sr.hitPoint = hitPoint;
       sr.normal = normal;
       sr.material = mat;
-      sr.t = tmin;
    }
    return hit;
 }

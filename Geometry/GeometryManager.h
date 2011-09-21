@@ -36,6 +36,8 @@ public:
    GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
    GeometryObject* removeObject(string name);
 
+   void setMaxGridCells(int maxCells) { grid.setMaxCells(maxCells); }
+
    Grid& getGrid() { return grid; }
 
 private:

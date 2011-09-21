@@ -32,7 +32,7 @@ public:
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
-   void setMaxSize(int size) { maxSize = size; }
+   void setMaxCells(int cells) { maxCells = cells; }
 
 private:
    void cleanup();
@@ -44,7 +44,7 @@ private:
    list<GeometryObject*> objs;
    GridVoxel** voxels;
    int nx, ny, nz;
-   int maxSize;
+   int maxCells;
 };
 
 #endif
