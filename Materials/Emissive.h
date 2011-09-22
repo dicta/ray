@@ -15,21 +15,20 @@
 class Texture;
 
 class Emissive : public Material {
-   
+
 public:
    Emissive();
    virtual ~Emissive();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
-   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual Color getLe(const ShadeRecord& sr) const;
-   
+
    virtual void setColor(float r, float g, float b);
    virtual void setDiffuse(float d);
-   
+
    void setTexture(Texture* tex);
-   
+
 private:
    float ls;
    Color color;

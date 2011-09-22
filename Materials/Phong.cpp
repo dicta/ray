@@ -95,33 +95,6 @@ Color Phong::shade(ShadeRecord& sr, const Ray& ray) {
    return L;
 }
 
-Color Phong::areaLightShade(ShadeRecord& sr, const Ray& ray) {
-   applyNormalMap(sr);
-   Vector3D wo = ray.direction * -1;
-   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
-
-   for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr);
-      float ndotwi = sr.normal.dot(wi);
-
-      if(ndotwi > 0.0) {
-         Ray shadowRay(sr.hitPoint, wi);
-         bool inShadow = (*it)->inShadow(shadowRay, sr);
-
-         if(!inShadow) {
-            float spec = 1.0;
-            if(specularTexture != NULL) {
-               spec = specularTexture->getColor(sr).red;
-            }
-
-            L += (diffuseBRDF->f(sr, wo, wi) + specularBRDF->f(sr, wo, wi)) * (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
-         }
-      }
-   }
-
-   return L;
-}
-
 void Phong::setColor(float r, float g, float b) {
    ambientBRDF->setColor(new Color(r, g, b));
    diffuseBRDF->setColor(new Color(r, g, b));

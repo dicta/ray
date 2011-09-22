@@ -23,7 +23,6 @@ public:
    virtual ~Phong();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
-   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const;
 

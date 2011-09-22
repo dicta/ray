@@ -27,10 +27,6 @@ void Emissive::setHash(Hash* hash) {
 }
 
 Color Emissive::shade(ShadeRecord& sr, const Ray& ray) {
-   return areaLightShade(sr, ray);
-}
-
-Color Emissive::areaLightShade(ShadeRecord& sr, const Ray& ray)  {
    if((sr.normal * -1.0).dot(ray.direction) > 0.0) {
       return getLe(sr);
    }

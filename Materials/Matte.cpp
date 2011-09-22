@@ -46,38 +46,27 @@ Color Matte::shade(ShadeRecord& sr, const Ray& ray) {
    Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
 
    for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr);
-      float ndotwi = sr.normal.dot(wi);
+      Color power;
+      Vector3D wis;
 
-      if(ndotwi > 0.0) {
-         Ray shadowRay(sr.hitPoint, wi);
-         bool inShadow = (*it)->inShadow(shadowRay, sr);
+      for(int s = 0; s < (*it)->getNumLightSamples(); s++) {
+         Vector3D wi = (*it)->getLightDirection(sr);
+         wis += wi;
+         float ndotwi = sr.normal.dot(wi);
 
-         if(!inShadow) {
-            L += diffuseBRDF->f(sr, wo, wi) * (*it)->L(sr) * ndotwi;
+         if(ndotwi > 0.0) {
+            Ray shadowRay(sr.hitPoint, wi);
+            bool inShadow = (*it)->inShadow(shadowRay, sr);
+
+            if(!inShadow) {
+               power += (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
+            }
          }
       }
-   }
 
-   return L;
-}
-
-Color Matte::areaLightShade(ShadeRecord& sr, const Ray& ray) {
-   Vector3D wo = ray.direction * -1;
-   Color L = ambientBRDF->rho(sr, wo) * LightManager::instance().getAmbientLight(sr);
-
-   for(LightIter it = LightManager::instance().begin(); it != LightManager::instance().end(); it++) {
-      Vector3D wi = (*it)->getLightDirection(sr);
-      float ndotwi = sr.normal.dot(wi);
-
-      if(ndotwi > 0.0) {
-         Ray shadowRay(sr.hitPoint, wi);
-         bool inShadow = (*it)->inShadow(shadowRay, sr);
-
-         if(!inShadow) {
-            L += diffuseBRDF->f(sr, wo, wi) * (*it)->L(sr) * (*it)->G(sr) * ndotwi / (*it)->pdf(sr);
-         }
-      }
+      power = power / (*it)->getNumLightSamples();
+      wis.normalize();
+      L += diffuseBRDF->f(sr, wo, wis) * power;
    }
 
    return L;

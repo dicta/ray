@@ -17,17 +17,15 @@ class Hash;
  *    - color [ r g b ] - Optional material color
  */
 class Reflective : public Phong {
-   
+
 public:
    Reflective();
    virtual ~Reflective();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray);
-   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray);
    virtual void setHash(Hash* hash);
-   
    virtual void setColor(float r, float g, float b);
-   
+
 private:
    PerfectSpecular* psBRDF;
 };

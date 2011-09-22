@@ -24,7 +24,6 @@ public:
    virtual ~Material();
 
    virtual Color shade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
-   virtual Color areaLightShade(ShadeRecord& sr, const Ray& ray) { return BLACK; }
    virtual void setHash(Hash* hash) = 0;
    virtual Color getLe(const ShadeRecord& sr) const { return BLACK; }
    virtual float getAlpha(const ShadeRecord& sr, const Ray& ray) const { return 1.0; }

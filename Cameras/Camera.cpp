@@ -11,7 +11,6 @@
 #include "Samplers/MultiJittered.h"
 #include "Samplers/Regular.h"
 #include "Tracer/RayCast.h"
-#include "Tracer/AreaLighting.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
 #include <math.h>
@@ -103,12 +102,7 @@ void Camera::setHash(Hash* h) {
    }
 
    string t = h->getString("tracer");
-   if(t == "area") {
-      tracer = new AreaLighting();
-   }
-   else if(t == "rayCast") {
-      tracer = new RayCast();
-   }
+   tracer = new RayCast();
 
    if(h->contains("bgTexture")) {
       Texture* tex = Texture::createTexture(h->getValue("bgTexture")->getHash());
