@@ -32,7 +32,6 @@ public:
 
 private:
    Uint32 getPixel(const ShadeRecord& sr) const;
-   Uint32 getpixel(SDL_Surface *surface, int x, int y) const;
 
    SDL_Surface* surf;
    MappingEnum mapping;

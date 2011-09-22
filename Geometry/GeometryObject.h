@@ -43,8 +43,6 @@ public:
    BBox bbox;
 
 protected:
-   void coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3) const;
-
    mutable shared_ptr<Material> material;
    Texture* normalMap;
 };

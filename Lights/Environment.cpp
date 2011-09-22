@@ -6,8 +6,6 @@
 #include "Geometry/GeometryObject.h"
 #include "Materials/Emissive.h"
 
-const Vector3D up(0, 1, 0);
-const Vector3D up2(0.0034, 1.0, 0.0071);
 const float PDF = 1.0 / 2.0 * M_PI;
 
 Environment::Environment() : Light(), material(new Emissive()) {
@@ -35,16 +33,16 @@ void Environment::setHash(Hash* hash) {
 }
 
 Vector3D Environment::getLightDirection(ShadeRecord& sr) {
-   Vector3D v;
-   if(sr.normal == up) {
-      v = up2.cross(sr.normal);
+   Vector3D u;
+
+   if(fabs(sr.normal.x) > fabs(sr.normal.y)) {
+      u.set(-sr.normal.z, 0.0, sr.normal.x);
    }
    else {
-      v = up.cross(sr.normal);
+      u.set(0.0, sr.normal.z, -sr.normal.y);
    }
+   Vector3D v = sr.normal.cross(u);
 
-   v.normalize();
-   Vector3D u = v.cross(sr.normal);
    Point3D* sp = sampler->sampleHemisphere();
    return u * sp->x + v * sp->y + sr.normal * sp->z;
 }

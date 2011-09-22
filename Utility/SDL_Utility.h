@@ -6,6 +6,8 @@
 #include "Color.h"
 
 void setPixel(SDL_Surface* s, int x, int y, const Color& color);
+Uint32 get_pixel(SDL_Surface *surface, int x, int y);
+
 SDL_Surface* createSurface(const SDL_Rect& rect);
 
 void user_error_fn(png_structp ctx, png_const_charp str);

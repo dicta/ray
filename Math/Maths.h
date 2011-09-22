@@ -3,6 +3,7 @@
 
 #include <math.h>
 #include <cstdlib>
+#include "Vector3D.h"
 
 const float invRAND_MAX = 1.0 / (float) RAND_MAX;
 const double INV_PI = 1.0 / M_PI;
@@ -71,5 +72,7 @@ T mix(const T& a, const T& b, const double f) {
 }
 
 int SolveQuartic(double c[5], double s[4]);
+
+void coordinateSystem(const Vector3D& v1, Vector3D* v2, Vector3D* v3);
 
 #endif

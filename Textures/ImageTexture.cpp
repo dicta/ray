@@ -2,6 +2,7 @@
 #include "Parser/Hash.h"
 #include <string>
 #include <SDL/SDL_Image.h>
+#include "utility/SDL_Utility.h"
 
 using namespace std;
 
@@ -58,7 +59,7 @@ Uint32 ImageTexture::getPixel(const ShadeRecord& sr) const {
    int x = (int)(u * (surf->w - 1));
    int y = (int)(v * (surf->h - 1));
 
-   return getpixel(surf, x, y);
+   return get_pixel(surf, x, y);
 }
 
 Color ImageTexture::getColor(const ShadeRecord& sr) const {
@@ -79,26 +80,4 @@ float ImageTexture::getAlpha(const ShadeRecord& sr) const {
       a = r;
    }
    return a / 255.0;
-}
-
-Uint32 ImageTexture::getpixel(SDL_Surface *surface, int x, int y) const {
-   int bpp = surface->format->BytesPerPixel;
-   /* Here p is the address to the pixel we want to retrieve */
-   Uint8 *p = (Uint8 *)surface->pixels + y * surface->pitch + x * bpp;
-
-   switch(bpp) {
-   case 1: return *p;
-
-   case 2: return *(Uint16 *)p;
-
-   case 3:
-      if(SDL_BYTEORDER == SDL_BIG_ENDIAN) {
-         return p[0] << 16 | p[1] << 8 | p[2];
-      }
-      return p[0] | p[1] << 8 | p[2] << 16;
-
-   case 4: return *(Uint32 *)p;
-
-   default: return 0;       /* shouldn't happen, but avoids warnings */
-   }
 }
