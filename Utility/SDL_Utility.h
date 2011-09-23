@@ -6,6 +6,8 @@
 #include "Color.h"
 
 void setPixel(SDL_Surface* s, int x, int y, const Color& color);
+void setPixel(SDL_Surface* s, int x, int y, Uint8 r, Uint8 g, Uint8 b);
+
 Uint32 get_pixel(SDL_Surface *surface, int x, int y);
 
 SDL_Surface* createSurface(const SDL_Rect& rect);

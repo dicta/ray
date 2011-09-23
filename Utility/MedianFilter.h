@@ -4,7 +4,7 @@
 #include <SDL/SDL.h>
 
 struct Slice {
-   Slice(Uint32 a, Uint32 b, Uint32 c);
+   void set(SDL_Surface* surface, int w, int h);
    Uint32 pixels[3];
 };
 
@@ -14,7 +14,7 @@ public:
    MedianFilter();
    virtual ~MedianFilter();
 
-   void filter(SDL_Surface* surface);
+   SDL_Surface* filter(SDL_Surface* surface);
 
 private:
 };

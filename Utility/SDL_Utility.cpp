@@ -8,6 +8,14 @@ void setPixel(SDL_Surface* s, int x, int y, const Color& color) {
    *(Uint32 *)p = pixel;
 }
 
+void setPixel(SDL_Surface* s, int x, int y, Uint8 r, Uint8 g, Uint8 b) {
+   int bpp = s->format->BytesPerPixel;
+   /* Here p is the address to the pixel we want to set */
+   Uint8 *p = (Uint8 *)s->pixels + y * s->pitch + x * bpp;
+   Uint32 pixel = SDL_MapRGBA(s->format, r, g, b, 255);
+   *(Uint32 *)p = pixel;
+}
+
 Uint32 get_pixel(SDL_Surface *surface, int x, int y) {
    int bpp = surface->format->BytesPerPixel;
    /* Here p is the address to the pixel we want to retrieve */
