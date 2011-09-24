@@ -4,6 +4,7 @@
 #include "Parser/Hash.h"
 #include "Utility/SDL_Utility.h"
 #include "Textures/ImageTexture.h"
+#include "Storage/Storage.h"
 
 StarBox::StarBox() : count(0), halfSize(1), size(2) {
 }
@@ -48,5 +49,5 @@ void StarBox::createBoxSide(string name, const Point3D& origin, const Vector3D& 
    Rectangle* rect = new Rectangle(origin, a, b);
    rect->setMaterial(em);
    rect->ignoreShadow = true;
-   GeometryManager::instance().getGrid().addObject(rect);
+   GeometryManager::instance().getStorage()->addObject(rect);
 }

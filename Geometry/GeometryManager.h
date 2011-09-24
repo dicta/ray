@@ -1,16 +1,6 @@
-/*
- *  GeometryManager.h
- *  RayTracer
- *
- *  Created by Eric Saari on 12/11/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #ifndef _GEOMETRY_MANAGER_H_
 #define _GEOMETRY_MANAGER_H_
 
-#include "Storage/Grid.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -19,6 +9,7 @@ using namespace std;
 
 class GeometryObject;
 class Hash;
+class Storage;
 
 typedef map<string, GeometryObject*>::const_iterator GeometryIter;
 
@@ -36,16 +27,14 @@ public:
    GeometryObject* createObject(string type, Hash* hash, bool addToList = true);
    GeometryObject* removeObject(string name);
 
-   void setMaxGridCells(int maxCells) { grid.setMaxCells(maxCells); }
-
-   Grid& getGrid() { return grid; }
+   Storage* getStorage() { return storage; }
 
 private:
    GeometryManager();
 
    static auto_ptr<GeometryManager> s_instance;
    map<string, GeometryObject*> objects;
-   Grid grid;
+   Storage* storage;
 };
 
 #endif

@@ -2,9 +2,7 @@
 #define _GRID_H_
 
 #include "Math/Ray.h"
-#include "Geometry/GeometryObject.h"
-#include <list>
-#include <vector>
+#include "Storage.h"
 
 typedef list<GeometryObject*>::const_iterator GeomIter;
 
@@ -18,15 +16,13 @@ public:
    vector<GeometryObject*> objs;
 };
 
-class Grid : public GeometryObject {
+class Grid : public Storage {
 
 public:
    Grid();
-   ~Grid();
+   virtual ~Grid();
 
-   void addObject(GeometryObject* obj);
-   void removeObject(GeometryObject* obj) { objs.remove(obj); }
-   void setupCells();
+   virtual void setup();
 
    virtual void setHash(Hash* hash) {}
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
@@ -41,7 +37,6 @@ private:
    bool checkCellShadow(const Ray& ray, GridVoxel* cell, double& tmin) const;
 
    int numCells;
-   list<GeometryObject*> objs;
    GridVoxel** voxels;
    int nx, ny, nz;
    int maxCells;

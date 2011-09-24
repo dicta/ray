@@ -14,12 +14,11 @@ void GridVoxel::add(GeometryObject* o) {
    objs.push_back(o);
 }
 
-Grid::Grid() : GeometryObject(), numCells(0), objs(), voxels(NULL), nx(0), ny(0), nz(0), maxCells(64) {
+Grid::Grid() : Storage(), numCells(0), voxels(NULL), nx(0), ny(0), nz(0), maxCells(64) {
 }
 
 Grid::~Grid() {
 //   cleanup();
-//   objs.clear();
 }
 
 void Grid::cleanup() {
@@ -34,12 +33,7 @@ void Grid::cleanup() {
    }
 }
 
-void Grid::addObject(GeometryObject* obj) {
-   objs.push_back(obj);
-   bbox.expand(obj->bbox);
-}
-
-void Grid::setupCells() {
+void Grid::setup() {
 //   cleanup();
    double root = 3.0 * pow(objs.size(), 1.0 / 3.0);
    double voxelsPerUnit = root / bbox.maxExtent();

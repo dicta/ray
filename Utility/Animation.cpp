@@ -8,6 +8,7 @@
 #include "Math/Maths.h"
 #include "Cameras/Camera.h"
 #include "Utility/SDL_Utility.h"
+#include "Storage/Storage.h"
 
 typedef vector<FrameObject*>::const_iterator FrameObjectIter;
 
@@ -67,7 +68,7 @@ void Animation::loadAnimation(Hash* hash) {
    else {
       GeometryObject* obj = GeometryManager::instance().removeObject(objName);
       Instance* instance = new Instance(obj);
-      GeometryManager::instance().getGrid().addObject(instance);
+      GeometryManager::instance().getStorage()->addObject(instance);
 
       loadAnimationFrames(hash->getValue("frames")->getArray(), instance);
    }
@@ -118,7 +119,7 @@ void Animation::play() {
          }
       }
 
-      GeometryManager::instance().getGrid().setupCells();
+      GeometryManager::instance().getStorage()->setup();
       printf("Frame %d\t", i);
       camera->render();
       sprintf(fname, "%s/image%d.png", outputDir.c_str(), i);

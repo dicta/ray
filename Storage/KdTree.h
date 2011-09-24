@@ -1,19 +1,19 @@
 #ifndef KDTREE_H
 #define KDTREE_H
 
-#include "Geometry/GeometryObject.h"
+#include "Storage.h"
 
 typedef unsigned int uint32_t;
 
 struct KdNode {
-   KdNode(vector<GeometryObject*> _objs);
+   KdNode(list<GeometryObject*> _objs);
    KdNode(KdNode* l, KdNode* r, int _axis, double _split);
 
    bool isLeaf() const;
 
    KdNode* left;
    KdNode* right;
-   vector<GeometryObject*> objs;
+   list<GeometryObject*> objs;
    int axis;
    double split;
 };
@@ -26,25 +26,24 @@ struct BoundEdge {
    enum { START, END } type;
 };
 
-class KdTree : public GeometryObject {
+class KdTree : public Storage {
 
 public:
    KdTree();
    virtual ~KdTree();
 
-   void addObject(GeometryObject* obj);
-   void buildTree();
+   virtual void setup();
 
    virtual void setHash(Hash* hash);
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
 
 private:
-   KdNode* buildTree(int depth, vector<GeometryObject*> objs, const BBox& bounds);
+   KdNode* buildTree(int depth, list<GeometryObject*> objs, const BBox& bounds);
    bool checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& sr) const;
-   void findSplit(vector<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split);
+   bool checkNodeShadow(const Ray& ray, KdNode* node, double& tmin) const;
+   void findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split);
 
-   vector<GeometryObject*> primitives;
    KdNode *root;
    BoundEdge* edges;
 };

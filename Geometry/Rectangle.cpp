@@ -81,7 +81,7 @@ bool Rectangle::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
 }
 
 bool Rectangle::shadowHit(const Ray& ray, double& tmin) const {
-   if(ignoreShadowRays) {
+   if(ignoreShadow) {
       return false;
    }
 

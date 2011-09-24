@@ -5,6 +5,7 @@
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
 #include "Materials/Emissive.h"
+#include "Storage/Storage.h"
 
 const float PDF = 1.0 / 2.0 * M_PI;
 
@@ -50,7 +51,7 @@ Vector3D Environment::getLightDirection(ShadeRecord& sr) {
 bool Environment::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
 
-   if(GeometryManager::instance().getGrid().shadowHit(ray, t)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray, t)) {
       return true;
    }
 /*

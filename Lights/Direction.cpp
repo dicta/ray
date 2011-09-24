@@ -2,6 +2,7 @@
 #include "Parser/Hash.h"
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
+#include "Storage/Storage.h"
 
 Direction::Direction() : Light(), ls(1.0), color(), direction() {
 }
@@ -23,7 +24,7 @@ Vector3D Direction::getLightDirection(ShadeRecord& sr) {
 bool Direction::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
 
-   if(GeometryManager::instance().getGrid().shadowHit(ray, t)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray, t)) {
       return true;
    }
 /*

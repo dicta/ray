@@ -1,18 +1,10 @@
-/*
- *  AreaLight.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/20/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "AreaLight.h"
 #include "Geometry/LightObject.h"
 #include "Geometry/GeometryManager.h"
 #include "Materials/Material.h"
 #include "Materials/Emissive.h"
 #include "Parser/Hash.h"
+#include "Storage/Storage.h"
 
 AreaLight::AreaLight() : Light() {
    material = new Emissive();
@@ -38,17 +30,17 @@ void AreaLight::setHash(Hash* hash) {
    if(hash->contains("rectangle")) {
       Hash* rect = hash->getValue("rectangle")->getHash();
       object = (LightObject*) GeometryManager::instance().createObject("rectangle", rect);
-      object->ignoreShadowRays = true;
+      object->ignoreShadow = true;
    }
    else if(hash->contains("disk")) {
       Hash* disk = hash->getValue("disk")->getHash();
       object = (LightObject*) GeometryManager::instance().createObject("disk", disk, false);
-      object->ignoreShadowRays = true;
+      object->ignoreShadow = true;
    }
    else if(hash->contains("sphere")) {
       Hash* sphere = hash->getValue("sphere")->getHash();
       object = (LightObject*) GeometryManager::instance().createObject("sphere", sphere);
-      object->ignoreShadowRays = true;
+      object->ignoreShadow = true;
    }
 
    if(hash->contains("numLightSamples")) {
@@ -60,7 +52,7 @@ bool AreaLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
    double ts = (sr.samplePoint - ray.origin).dot(ray.direction);
 
-   if(GeometryManager::instance().getGrid().shadowHit(ray, t) && (t < ts)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray, t) && (t < ts)) {
       return true;
    }
 /*

@@ -12,6 +12,7 @@
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
 #include "Parser/Hash.h"
+#include "Storage/Storage.h"
 
 AmbientOccluder::AmbientOccluder() : Ambient(), minColor(), sampler(NULL) {
 }
@@ -38,7 +39,7 @@ void AmbientOccluder::setHash(Hash* hash) {
 bool AmbientOccluder::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
    
-   if(GeometryManager::instance().getGrid().shadowHit(ray, t)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray, t)) {
       return true;
    }
 /*

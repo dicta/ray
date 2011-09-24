@@ -1,15 +1,7 @@
-/*
- *  RayCast.cpp
- *  RayTracer
- *
- *  Created by Eric Saari on 12/17/10.
- *  Copyright 2010 __MyCompanyName__. All rights reserved.
- *
- */
-
 #include "RayCast.h"
 #include "Materials/Material.h"
 #include "Geometry/GeometryManager.h"
+#include "Storage/Storage.h"
 
 RayCast::RayCast() : Tracer() {
 }
@@ -22,7 +14,7 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
    double t = 0.0;
    ShadeRecord sr;
 
-   if(GeometryManager::instance().getGrid().hit(ray, t, sr)) {
+   if(GeometryManager::instance().getStorage()->hit(ray, t, sr)) {
       sr.tracer = this;
       sr.depth = depth;
       Color c = sr.material->shade(sr, ray);

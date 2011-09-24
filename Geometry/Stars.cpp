@@ -4,6 +4,7 @@
 #include "Geometry/GeometryManager.h"
 #include "Parser/Hash.h"
 #include "Math/Maths.h"
+#include "Storage/Storage.h"
 #include <fstream>
 
 Stars::Stars() : count(0), distance(0), baseSize(0) {
@@ -89,5 +90,5 @@ void Stars::createStars(int a, int b, int c) {
    star->setMaterial(em);
    star->ignoreShadow = true;
 
-   GeometryManager::instance().getGrid().addObject(star);
+   GeometryManager::instance().getStorage()->addObject(star);
 }

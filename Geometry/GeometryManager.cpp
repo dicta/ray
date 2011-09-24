@@ -28,6 +28,8 @@
 #include "Mesh/MeshManager.h"
 #include "Mesh/Mesh.h"
 #include "Mesh/GeoSphere.h"
+#include "Storage/Grid.h"
+#include "Storage/KdTree.h"
 
 auto_ptr<GeometryManager> GeometryManager::s_instance;
 
@@ -38,7 +40,7 @@ GeometryManager& GeometryManager::instance() {
    return *s_instance;
 }
 
-GeometryManager::GeometryManager() {
+GeometryManager::GeometryManager() : storage(new KdTree()) {
 }
 
 GeometryManager::~GeometryManager() {
@@ -48,6 +50,7 @@ GeometryManager::~GeometryManager() {
       }
    }
    objects.clear();
+   delete storage;
 }
 
 void GeometryManager::loadObjects(string fname) {
@@ -65,7 +68,7 @@ void GeometryManager::loadObjects(string fname) {
    }
 
    fp.close();
-   grid.setupCells();
+   storage->setup();
 }
 
 GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addToList) {
@@ -135,7 +138,7 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
 
    if(addToList) {
       objects[name] = obj;
-      grid.addObject(obj);
+      storage->addObject(obj);
    }
 
    return obj;
@@ -144,6 +147,6 @@ GeometryObject* GeometryManager::createObject(string type, Hash* hash, bool addT
 GeometryObject* GeometryManager::removeObject(string name) {
    GeometryObject* obj = objects[name];
    objects.erase(name);
-   grid.removeObject(obj);
+   storage->removeObject(obj);
    return obj;
 }

@@ -3,6 +3,7 @@
 #include "Geometry/GeometryManager.h"
 #include "Geometry/GeometryObject.h"
 #include "Math/Maths.h"
+#include "Storage/Storage.h"
 
 SpotLight::SpotLight() : Light(), ls(1.0), color(1, 1, 1), cosWidth(0), cosFalloff(0), location(), direction() {
 }
@@ -15,7 +16,7 @@ bool SpotLight::inShadow(const Ray& ray, const ShadeRecord& sr) {
    double t;
    double d = location.distance(ray.origin);
 
-   if(GeometryManager::instance().getGrid().shadowHit(ray, t) && (t < d)) {
+   if(GeometryManager::instance().getStorage()->shadowHit(ray, t) && (t < d)) {
       return true;
    }
 /*

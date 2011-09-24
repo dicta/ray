@@ -9,7 +9,7 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-#include <SDL/SDL_image.h>
+#include <SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
 SDLApp::SDLApp(int argc, char** argv) :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
@@ -53,11 +53,6 @@ void SDLApp::loadConfiguration(int argc, char** argv) {
    int threadCount = h->getInteger("threads");
    int boxw = h->getInteger("boxWidth");
    int boxh = h->getInteger("boxHeight");
-
-   if(h->contains("maxGridCells")) {
-      int maxCells = h->getInteger("maxGridCells");
-      GeometryManager::instance().setMaxGridCells(maxCells);
-   }
 
    surface = SDL_SetVideoMode(width, height, 24, SDL_HWSURFACE | SDL_DOUBLEBUF);
    if (surface == NULL) {
