@@ -12,7 +12,7 @@
 #include <SDL/SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
-SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
+SDLApp::SDLApp(int argc, char** argv) :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
    if ( SDL_Init(SDL_INIT_VIDEO) < 0 ) {
       fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
       exit(1);
@@ -20,7 +20,7 @@ SDLApp::SDLApp() :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
 
    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
-   loadConfiguration();
+   loadConfiguration(argc, argv);
 }
 
 SDLApp::~SDLApp() {
@@ -35,8 +35,13 @@ SDLApp::~SDLApp() {
    SDL_Quit();
 }
 
-void SDLApp::loadConfiguration() {
-   std::ifstream fin("config/config.txt", std::ios::in);
+void SDLApp::loadConfiguration(int argc, char** argv) {
+   const char* config_file = "config/config.txt";
+   if (argc > 1) {
+      config_file = argv[1];
+   }
+   std::ifstream fin(config_file, std::ios::in);
+   
    Tokenizer tok(&fin);
    Parser parser(&tok);
 

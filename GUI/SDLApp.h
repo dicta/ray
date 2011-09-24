@@ -13,14 +13,14 @@ class Animation;
 class SDLApp {
 
 public:
-   SDLApp();
+   SDLApp(int argc, char** argv);
    ~SDLApp();
    void run();
 
    Camera* getCamera() { return camera; }
 
 private:
-   void loadConfiguration();
+   void loadConfiguration(int argc, char** argv);
    void setupCamera(string fname, int width, int height);
 
    bool stopApp;
