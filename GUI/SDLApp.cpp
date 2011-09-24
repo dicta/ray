@@ -9,7 +9,7 @@
 #include "Utility/Animation.h"
 #include <math.h>
 #include <fstream>
-#include <SDL_image.h>
+#include <SDL/SDL_image.h>
 #include "Utility/SDL_Utility.h"
 
 SDLApp::SDLApp(int argc, char** argv) :stopApp(false), surface(NULL), camera(NULL), animation(NULL) {
