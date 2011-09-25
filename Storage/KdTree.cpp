@@ -3,11 +3,15 @@
 #include <stack>
 #include <limits>
 #include "Utility/PerfCounter.h"
+#include "Materials/Matte.h"
+#include "Geometry/Box.h"
 
 typedef list<GeometryObject*>::iterator GeomIter;
 
+#define DEBUG_KDTREE 0
+
 int MAX_DEPTH = 10;
-const int MAX_OBJS = 10;
+const int MAX_OBJS = 8;
 
 struct NodeS {
    KdNode* node;
@@ -27,15 +31,18 @@ bool BoundEdge::operator< (const BoundEdge& e) const {
    return tsplit < e.tsplit;
 }
 
-KdNode::KdNode(list<GeometryObject*> _objs) : left(NULL), right(NULL), objs(_objs) {
+KdNode::KdNode(list<GeometryObject*> _objs, const BBox& bounds, int _depth) :
+  left(NULL), right(NULL), objs(_objs), bbox(bounds), depth(_depth) {
 }
 
-KdNode::KdNode(KdNode* l, KdNode* r, int _axis, double _split) :
+KdNode::KdNode(KdNode* l, KdNode* r, int _axis, double _split, const BBox& bounds, int _depth) :
    left(l),
    right(r),
    objs(),
    axis(_axis),
-   split(_split)
+   split(_split),
+   bbox(bounds),
+   depth(_depth)
 {
 }
 
@@ -128,7 +135,7 @@ KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bou
    printf("KdTree build: depth = %3d\t num_objects = %4lu\n", depth, objs.size());
    if(depth >= MAX_DEPTH || objs.size() < MAX_OBJS) {
       // stop recursion
-      return new KdNode(objs);
+      return new KdNode(objs, bounds, depth);
    }
 
    int axis;
@@ -136,7 +143,7 @@ KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bou
    findSplit(objs, bounds, axis, split);
 
    if(axis == -1) {
-      return new KdNode(objs);
+      return new KdNode(objs, bounds, depth);
    }
 
    BBox left = bounds;
@@ -158,10 +165,9 @@ KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bou
       if (inLeft && inRight) {
         num_copies++;
       }
-      
    }
 
-   return new KdNode(buildTree(depth+1, lidxs, left), buildTree(depth+1, ridxs, right), axis, split);
+   return new KdNode(buildTree(depth+1, lidxs, left), buildTree(depth+1, ridxs, right), axis, split, bounds, depth);
 }
 
 void KdTree::setHash(Hash* hash) {
@@ -243,6 +249,29 @@ bool KdTree::checkNode(const Ray& ray, KdNode* node, double& tmin, ShadeRecord& 
    double tcheck = HUGE_VALUE;
 
    performance_counter.increment_primary_nodes_traversed();
+
+#if DEBUG_KDTREE
+   Point3D p0 = Point3D(node->bbox.x0, node->bbox.y0, node->bbox.z0);
+   Point3D p1 = Point3D(node->bbox.x1, node->bbox.y1, node->bbox.z1);
+   float red   = clamp(node->depth / 12.0, 0.0, 0.66);
+   float green = clamp((node->depth - 12) / 12.0, 0.0, 1.0);
+   float blue  = clamp((node->depth - 24) / 12.0, 0.0, 1.0);
+   float alpha = clamp(node->depth / 15.0, 0.15, 1.0);
+
+   Box b = Box(p0,p1);
+   if (b.hit(ray,tmin,sr) && (tmin < tcheck)) {
+     tcheck = tmin;
+     Matte* matte = new Matte();
+     matte->setAmbientColor(new Color(red,green,blue,alpha));
+     matte->setDiffuseColor(new Color(red,green,blue,alpha));
+     mat = shared_ptr<Material>(matte);
+     localHitPoint = sr.localHitPoint;
+     normal = sr.normal;
+     hitPoint = ray(tmin);
+     hit = true;
+   }
+#endif
+
    for(GeomIter it = node->objs.begin(); it != node->objs.end(); it++) {
       if((*it)->hit(ray, tmin, sr) && (tmin < tcheck)) {
          tcheck = tmin;

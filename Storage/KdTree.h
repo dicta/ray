@@ -2,12 +2,13 @@
 #define KDTREE_H
 
 #include "Storage.h"
+#include "Geometry/BBox.h"
 
 typedef unsigned int uint32_t;
 
 struct KdNode {
-   KdNode(list<GeometryObject*> _objs);
-   KdNode(KdNode* l, KdNode* r, int _axis, double _split);
+   KdNode(list<GeometryObject*> _objs, const BBox& bounds, int _depth);
+   KdNode(KdNode* l, KdNode* r, int _axis, double _split, const BBox& bounds, int _depth);
 
    bool isLeaf() const;
 
@@ -16,6 +17,8 @@ struct KdNode {
    list<GeometryObject*> objs;
    int axis;
    double split;
+   const BBox& bbox;
+   int depth;
 };
 
 struct BoundEdge {

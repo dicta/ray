@@ -16,6 +16,7 @@ class Box : public GeometryObject {
 
 public:
    Box();
+   Box(Point3D& _p0, Point3D& _p1) : GeometryObject(), p0(_p0), p1(_p1) {}
    virtual ~Box() {}
    
    virtual void setHash(Hash* hash);
