@@ -11,10 +11,12 @@
 
 using namespace std;
 
-class Face {
+class Mesh;
+
+class Face  {
 
 public:
-   Face(int idx1, int idx2, int idx3);
+  Face(Mesh& mesh, int idx1, int idx2, int idx3);
 
    int vertIdxs[3];
    Vector3D p1p2;
@@ -24,6 +26,7 @@ public:
    Vector3D dpdv;
    int smoothGroup;
    shared_ptr<Material> material;
+   Mesh& parent;
 };
 
 struct Voxel {
@@ -67,6 +70,7 @@ public:
    FaceIter facesBegin() const { return faces.begin(); }
    FaceIter facesEnd() const { return faces.end(); }
    void setFaceMaterial(int idx, shared_ptr<Material> material);
+   Point3D* getPointAt(int idx) const { return points.at(idx); }
 
    void calculateNormals();
 
@@ -82,7 +86,7 @@ protected:
    double hitFace(Face* face, const Ray& ray, ShadeRecord& sr) const;
    Vector3D interpolateNormal(Face* face, const double beta, const double gamma) const;
    int getPointCount() const { return points.size(); }
-   Point3D* getPointAt(int idx) const { return points[idx]; }
+
 
    int numCells;
    vector<Point3D*> points;

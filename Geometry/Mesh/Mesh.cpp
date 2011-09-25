@@ -11,10 +11,23 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), material(new Matte()) {
+Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), material(new Matte()), parent(mesh) {
    vertIdxs[0] = idx1;
    vertIdxs[1] = idx2;
    vertIdxs[2] = idx3;
+
+   Point3D* p1 = parent.getPointAt(idx1);
+   Point3D* p2 = parent.getPointAt(idx2);
+   Point3D* p3 = parent.getPointAt(idx3);
+
+   p1p2 = *p2 - *p1;
+   p1p3 = *p3 - *p1;
+   normal = p1p2.cross(p1p3);
+   if(normal.length() == 0.0) {
+      normal.set(0, 1, 0);
+   }
+   normal.normalize();
+
 }
 
 SmoothingGroup::~SmoothingGroup() {
@@ -109,22 +122,7 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(int idx1, int idx2, int idx3) {
-   Point3D* p1 = points[idx1];
-   Point3D* p2 = points[idx2];
-   Point3D* p3 = points[idx3];
-
-   Face* f = new Face(idx1, idx2, idx3);
-
-   f->p1p2 = *p2 - *p1;
-   f->p1p3 = *p3 - *p1;
-   f->normal = f->p1p2.cross(f->p1p3);
-
-   if(f->normal.length() == 0.0) {
-      f->normal.set(0, 1, 0);
-   }
-
-   f->normal.normalize();
-
+   Face* f = new Face(*this, idx1, idx2, idx3);
    computePartialDerivitives(f);
    faces.push_back(f);
 }
