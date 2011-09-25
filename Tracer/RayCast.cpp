@@ -21,7 +21,7 @@ Color RayCast::traceRay(const Ray& ray, const int depth) {
 
       if(c.getAlphaF() < 1.0) {
          Ray newRay(sr.localHitPoint, ray.direction);
-         Color newColor = traceRay(newRay, depth);
+         Color newColor = traceRay(newRay, depth + 1);
          return c * c.alpha + newColor * (1.0 - c.alpha);
       }
       return c;
