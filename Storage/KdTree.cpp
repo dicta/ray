@@ -84,13 +84,12 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
       int nBelow = 0, nAbove = objs.size();
       double bestCost = numeric_limits<double>::max();
 
+      int other0 = (taxis + 1) % 3;
+      int other1 = (taxis + 2) % 3;
       for(unsigned i = 0; i < 2 * objs.size(); i++) {
          if(edges[i].type == BoundEdge::END) nAbove--;
          double edget = edges[i].tsplit;
          if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
-            int other0 = (taxis + 1) % 3;
-            int other1 = (taxis + 2) % 3;
-
             double belowSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
                                  (edget - bounds.getMin(taxis)) *
                                  (bounds.width(other0) + bounds.width(other1));
@@ -116,7 +115,7 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
 
       if(!found) {
          tries++;
-         taxis = (taxis + 1) % 3;
+         taxis = other0;
       }
    }
    if(found) {
