@@ -409,7 +409,7 @@ void M3DSParser::processFaceArrayChunk(int nBytes, Mesh* mesh) {
 
 //         mesh->setMaterial(materials[materialName]);
       }
-      else if(chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
+      else if(0 && chunkType == M3DCHUNK_MESH_SMOOTH_GROUP) {
          for(FaceIter it = mesh->facesBegin(), end = mesh->facesEnd(); it != end; it++) {
             unsigned int group = readUIntLE(in);
             for(int i = 0; i < 32; i++) {

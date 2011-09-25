@@ -202,9 +202,50 @@ int Mesh::addPoint(Point3D* p) {
 }
 
 void Mesh::addFace(int idx1, int idx2, int idx3) {
-   Face* f = new Face(*this, idx1, idx2, idx3);
-   computePartialDerivitives(f);
-   faces.push_back(f);
+
+   Point3D* p1 = getPointAt(idx1);
+   Point3D* p2 = getPointAt(idx2);
+   Point3D* p3 = getPointAt(idx3);
+
+   Vector3D e1 = *p2 - *p1;
+   Vector3D e2 = *p3 - *p2;
+   Vector3D e3 = *p1 - *p3;
+
+   double maxEdgeLength = max(max(e1.length(), e2.length()), e3.length());
+   double edgeVolume = max(max(fabs(e1.x * e1.y * e1.z), fabs(e2.x * e2.y * e2.z)), fabs(e3.x * e3.y * e3.z));
+   double threshold  = (bbox.width(0) * bbox.width(1) * bbox.width(2)) / pow(2,6);
+   
+   if (edgeVolume > threshold) {
+     int newIndex = points.size();
+     if (!textureCoords.empty()) {
+       addTextureCoord(0.0,0.0);
+     }
+     if (e1.length() == maxEdgeLength) {
+       e1 *= 0.5;
+       points.push_back(new Point3D(*p1 + e1));
+       //       addTextureCoord(0.5 * (textureCoords[idx1].x + textureCoords[idx2].x), 0.5 * (textureCoords[idx1].y + textureCoords[idx2].y));
+       addFace(idx3, idx1, newIndex);
+       addFace(idx2, idx3, newIndex);
+     } else if (e2.length() == maxEdgeLength) {
+       e2 *= 0.5;
+       points.push_back(new Point3D(*p2 + e2));
+       //       addTextureCoord(0.5 * (textureCoords[idx2].x + textureCoords[idx3].x), 0.5 * (textureCoords[idx2].y + textureCoords[idx3].y));
+       addFace(idx1, idx2, newIndex);
+       addFace(idx3, idx1, newIndex);
+     } else if (e3.length() == maxEdgeLength) {
+       e3 *= 0.5;
+       points.push_back(new Point3D(*p3 + e3));
+       // addTextureCoord(0.5 * (textureCoords[idx3].x + textureCoords[idx1].x), 0.5 * (textureCoords[idx3].y + textureCoords[idx1].y));
+       addFace(idx1, idx2, newIndex);
+       addFace(idx2, idx3, newIndex);
+     } else {
+       fprintf(stderr, "Rounding error when splitting triangle.\n");
+     }
+   } else {
+     Face* f = new Face(*this, idx1, idx2, idx3);
+     computePartialDerivitives(f);
+     faces.push_back(f);
+   }
 }
 
 void Mesh::calculateNormals() {
@@ -426,7 +467,10 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
    else {
       for(int i = 0; i < 3; i++) {
          unsigned int idx = face->vertIdxs[i];
-         assert(idx < textureCoords.size());
+         if (idx >= textureCoords.size()) {
+             fprintf(stderr, "idx %d (max %ld)\n", idx, textureCoords.size());
+             abort();
+         }           
          uv[i][0] = textureCoords[idx].x;
          uv[i][1] = textureCoords[idx].y;
       }
