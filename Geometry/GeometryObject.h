@@ -42,6 +42,8 @@ public:
    bool ignoreShadow;
    BBox bbox;
 
+   virtual bool isCompound() { return false; }
+
 protected:
    mutable shared_ptr<Material> material;
    Texture* normalMap;

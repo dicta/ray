@@ -1,8 +1,6 @@
 #include "Compound.h"
 #include <math.h>
 
-typedef vector<GeometryObject*>::const_iterator CompoundIter;
-
 Compound::Compound() : GeometryObject() {
 }
 

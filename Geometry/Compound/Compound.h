@@ -6,6 +6,8 @@
 
 using namespace std;
 
+typedef vector<GeometryObject*>::const_iterator CompoundIter;
+
 class Compound : public GeometryObject {
    
 public:
@@ -16,6 +18,9 @@ public:
    virtual bool hit(const Ray& ray, double& tmin, ShadeRecord& sr) const;
    virtual bool shadowHit(const Ray& ray, double& tmin) const;
    void addObject(GeometryObject* obj);
+
+   virtual bool isCompound() { return true; }
+   virtual vector<GeometryObject*> getObjects() const { return objects; }
    
 protected:
    vector<GeometryObject*> objects;
