@@ -46,7 +46,8 @@ bool KdNode::isLeaf() const {
 KdTree::KdTree() :
    Storage(),
    root(NULL),
-   edges(NULL)
+   edges(NULL),
+   num_copies(0)
 {
 }
 
@@ -57,6 +58,8 @@ void KdTree::setup() {
    MAX_DEPTH = int(8 + 1.3f * Log2Int(float(objs.size())));
    edges = new BoundEdge[objs.size() * 2];
    root = buildTree(0, objs, bbox);
+
+   printf("KdTree build complete. %lu objects in tree, %lu copies of objects into multiple nodes.\n", objs.size(), num_copies);
 }
 
 void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
@@ -123,6 +126,7 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
 }
 
 KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bounds) {
+   printf("KdTree build: depth = %3d\t num_objects = %4lu\n", depth, objs.size());
    if(depth >= MAX_DEPTH || objs.size() < MAX_OBJS) {
       // stop recursion
       return new KdNode(objs);
@@ -143,12 +147,19 @@ KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bou
 
    list<GeometryObject*> lidxs, ridxs;
    for(GeomIter it = objs.begin(); it != objs.end(); ++it) {
-      if(left.intersects((*it)->bbox)) {
+      bool inLeft  = left.intersects((*it)->bbox);
+      bool inRight = right.intersects((*it)->bbox);
+      if(inLeft) {
          lidxs.push_back(*it);
       }
-      if(right.intersects((*it)->bbox)) {
+      if(inRight) {
          ridxs.push_back(*it);
       }
+
+      if (inLeft && inRight) {
+        num_copies++;
+      }
+      
    }
 
    return new KdNode(buildTree(depth+1, lidxs, left), buildTree(depth+1, ridxs, right), axis, split);

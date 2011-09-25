@@ -46,6 +46,9 @@ private:
 
    KdNode *root;
    BoundEdge* edges;
+
+   size_t num_copies;
+
 };
 
 #endif // KDTREE_H
