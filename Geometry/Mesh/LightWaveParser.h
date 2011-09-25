@@ -18,9 +18,6 @@ public:
 
    void loadModel(string fname);
 
-protected:
-   virtual bool hitFace(Face* face, const Ray& ray, double& tmin, ShadeRecord& sr) const;
-
 private:
    ifstream in;
 

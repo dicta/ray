@@ -11,7 +11,7 @@ typedef vector<Vector3D*>::const_iterator VectorIter;
 typedef map<unsigned int, SmoothingGroup*>::const_iterator SmoothingGroupIter;
 typedef map<int, Vector3D*>::const_iterator SGNormalIter;
 
-Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), material(new Matte()), parent(mesh) {
+Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(), smoothGroup(0), parent(mesh) {
    vertIdxs[0] = idx1;
    vertIdxs[1] = idx2;
    vertIdxs[2] = idx3;
@@ -19,6 +19,10 @@ Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(),
    Point3D* p1 = parent.getPointAt(idx1);
    Point3D* p2 = parent.getPointAt(idx2);
    Point3D* p3 = parent.getPointAt(idx3);
+
+   bbox.expand(*p1);
+   bbox.expand(*p2);
+   bbox.expand(*p3);
 
    p1p2 = *p2 - *p1;
    p1p3 = *p3 - *p1;
@@ -28,6 +32,82 @@ Face::Face(Mesh& mesh, int idx1, int idx2, int idx3) : normal(), dpdu(), dpdv(),
    }
    normal.normalize();
 
+   setMaterial(shared_ptr<Material>(new Matte()));
+}
+
+bool Face::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
+   const Vector3D& s1 = ray.direction.cross(p1p3);
+   double div = s1.dot(p1p2);
+   if(div < epsilon) {
+      return false;
+   }
+   float invDiv = 1.0 / div;
+
+   const Vector3D& s = ray.origin - *parent.getPointAt(vertIdxs[0]);
+   const Vector3D& s2 = s.cross(p1p2);
+   double b1 = s1.dot(s) * invDiv;
+   double b2 = s2.dot(ray.direction) * invDiv;
+
+   if(b1 < epsilon || b2 < epsilon || (b1 + b2) > 1.0) {
+      return false;
+   }
+
+   double t = s2.dot(p1p3) * invDiv;
+   if(t < epsilon) {
+      return false;
+   }
+
+   if(parent.smoothingGroups.size() == 0) {
+      sr.normal = normal;
+   } else if(smoothGroup == 0) {
+      sr.normal = normal;
+      sr.dpdu = dpdu;
+      sr.dpdv = dpdv;
+   }
+   else {
+      Vector3D n;
+      Vector3D dpdu;
+      Vector3D dpdv;
+      for(int i = 0; i < 32; i++) {
+         int mask = (int) pow(2, i);
+         if(mask & smoothGroup) {
+            SmoothingGroup* g = parent.smoothingGroups.find(i)->second;
+            n += g->interpolateNormal(this, b1, b2);
+            dpdu += g->interpolateDPDU(this, b1, b2);
+            dpdv += g->interpolateDPDV(this, b1, b2);
+         }
+      }
+      n.normalize();
+      sr.normal = n;
+      
+      dpdu.normalize();
+      sr.dpdu = dpdu;
+      
+      dpdv.normalize();
+      sr.dpdv = dpdv;
+   }
+   
+
+   sr.localHitPoint = ray(t);
+   
+   if(parent.textureCoords.size() == 0) {
+      sr.tu = sr.tv = 0.0;
+   } else {
+      double b0 = 1.0 - b1 - b2;
+      sr.tu = b0 * parent.textureCoords[vertIdxs[0]].x + b1 * parent.textureCoords[vertIdxs[1]].x + b2 * parent.textureCoords[vertIdxs[2]].x;
+      sr.tv = b0 * parent.textureCoords[vertIdxs[0]].y + b1 * parent.textureCoords[vertIdxs[1]].y + b2 * parent.textureCoords[vertIdxs[2]].y;
+      sr.tu = normalize(sr.tu);
+      sr.tv = 1.0 - normalize(sr.tv);
+   }
+
+   tmin = t;
+   return true;
+}
+
+
+bool Face::shadowHit(const Ray& ray, double& tmin) const {
+   ShadeRecord sr;
+   return hit(ray, tmin, sr);
 }
 
 SmoothingGroup::~SmoothingGroup() {
@@ -68,7 +148,7 @@ void SmoothingGroup::normalize() {
    }
 }
 
-Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const double gamma) {
+Vector3D SmoothingGroup::interpolateNormal(const Face* face, const double beta, const double gamma) {
    Vector3D normal(*normals[face->vertIdxs[0]] * (1.0 - beta - gamma)
                  + *normals[face->vertIdxs[1]] * beta
                  + *normals[face->vertIdxs[2]] * gamma);
@@ -76,7 +156,7 @@ Vector3D SmoothingGroup::interpolateNormal(Face* face, const double beta, const 
 	return normal;
 }
 
-Vector3D SmoothingGroup::interpolateDPDU(Face* face, const double beta, const double gamma) {
+Vector3D SmoothingGroup::interpolateDPDU(const Face* face, const double beta, const double gamma) {
    Vector3D normal(*dpdu[face->vertIdxs[0]] * (1.0 - beta - gamma)
                  + *dpdu[face->vertIdxs[1]] * beta
                  + *dpdu[face->vertIdxs[2]] * gamma);
@@ -84,7 +164,7 @@ Vector3D SmoothingGroup::interpolateDPDU(Face* face, const double beta, const do
 	return normal;
 }
 
-Vector3D SmoothingGroup::interpolateDPDV(Face* face, const double beta, const double gamma) {
+Vector3D SmoothingGroup::interpolateDPDV(const Face* face, const double beta, const double gamma) {
    Vector3D normal(*dpdv[face->vertIdxs[0]] * (1.0 - beta - gamma)
                  + *dpdv[face->vertIdxs[1]] * beta
                  + *dpdv[face->vertIdxs[2]] * gamma);
@@ -93,7 +173,7 @@ Vector3D SmoothingGroup::interpolateDPDV(Face* face, const double beta, const do
 }
 
 
-Mesh::Mesh() : GeometryObject(), numCells(0) {
+Mesh::Mesh() : Compound(), numCells(0) {
    doDelete = false;
    name = "";
 }
@@ -179,7 +259,13 @@ void Mesh::setHash(Hash* hash) {
 }
 
 bool Mesh::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
-	// the following code includes modifications from Shirley and Morley (2003)
+   // Check the mesh.
+   if(textureCoords.size() && textureCoords.size() != points.size()) {
+      printf("%lu %lu\n", textureCoords.size(), points.size());
+      exit(1);
+   }
+
+   // the following code includes modifications from Shirley and Morley (2003)
    double tx_min = (bbox.x0 - ray.origin.x) / ray.direction.x;
    double tx_max = (bbox.x1 - ray.origin.x) / ray.direction.x;
    if(ray.direction.x < 0) swap(tx_min, tx_max);
@@ -257,11 +343,10 @@ bool Mesh::checkCell(const Ray& ray, Voxel* cell, double& tmin, ShadeRecord& sr)
 
    double t;
    for(FaceIter it = cell->faces.begin(), end = cell->faces.end(); it != end; it++) {
-      if((t = hitFace(*it, ray, sr)) && t < tmin) {
-//      if(hitFace(*it, ray, t, sr) && t < tmin) {
+      if((*it)->hit(ray,t,sr) && t < tmin) {
          tmin = t;
-         assert((*it)->material.get() != NULL);
-         material = (*it)->material;
+         assert((*it)->getMaterial().get() != NULL);
+         material = (*it)->getMaterial();
          hit = true;
       }
    }
@@ -289,79 +374,6 @@ double Mesh::calculateNext(double rd, double min, double i, double dt, int n, in
    }
 
    return next;
-}
-
-double Mesh::hitFace(Face* face, const Ray& ray, ShadeRecord& sr) const {
-   const Vector3D& s1 = ray.direction.cross(face->p1p3);
-   double div = s1.dot(face->p1p2);
-   if(div < epsilon) {
-      return 0;
-   }
-   float invDiv = 1.0 / div;
-
-   const Vector3D& s = ray.origin - *points[face->vertIdxs[0]];
-   const Vector3D& s2 = s.cross(face->p1p2);
-   double b1 = s1.dot(s) * invDiv;
-   double b2 = s2.dot(ray.direction) * invDiv;
-
-   if(b1 < epsilon || b2 < epsilon || (b1 + b2) > 1.0) {
-      return 0;
-   }
-
-   double t = s2.dot(face->p1p3) * invDiv;
-   if(t < epsilon) {
-      return 0;
-   }
-
-   if(!smoothingGroups.empty()) {
-      if(face->smoothGroup == 0) {
-         sr.normal = face->normal;
-         sr.dpdu = face->dpdu;
-         sr.dpdv = face->dpdv;
-      }
-      else {
-         Vector3D n;
-         Vector3D dpdu;
-         Vector3D dpdv;
-         for(int i = 0; i < 32; i++) {
-            int mask = (int) pow(2, i);
-            if(mask & face->smoothGroup) {
-               n += (*smoothingGroups.find(i)).second->interpolateNormal(face, b1, b2);
-               dpdu += (*smoothingGroups.find(i)).second->interpolateDPDU(face, b1, b2);
-               dpdv += (*smoothingGroups.find(i)).second->interpolateDPDV(face, b1, b2);
-            }
-         }
-         n.normalize();
-         sr.normal = n;
-
-         dpdu.normalize();
-         sr.dpdu = dpdu;
-
-         dpdv.normalize();
-         sr.dpdv = dpdv;
-      }
-   }
-   else {
-      sr.normal = face->normal; // interpolateNormal(face, beta, gamma);
-   }
-   sr.localHitPoint = ray(t);
-
-   if(textureCoords.size() != points.size()) {
-      if(textureCoords.size() > 0) {
-         printf("%lu %lu\n", textureCoords.size(), points.size());
-         exit(1);
-      }
-      sr.tu = sr.tv = 0;
-   }
-   else {
-      double b0 = 1.0 - b1 - b2;
-      sr.tu = b0 * textureCoords[face->vertIdxs[0]]->x + b1 * textureCoords[face->vertIdxs[1]]->x + b2 * textureCoords[face->vertIdxs[2]]->x;
-      sr.tv = b0 * textureCoords[face->vertIdxs[0]]->y + b1 * textureCoords[face->vertIdxs[1]]->y + b2 * textureCoords[face->vertIdxs[2]]->y;
-      sr.tu = normalize(sr.tu);
-      sr.tv = 1.0 - normalize(sr.tv);
-   }
-
-   return t;
 }
 
 bool Mesh::shadowHit(const Ray& ray, double& tmin) const {
@@ -415,8 +427,8 @@ void Mesh::getUVs(double uv[3][2], Face* face) const {
       for(int i = 0; i < 3; i++) {
          unsigned int idx = face->vertIdxs[i];
          assert(idx < textureCoords.size());
-         uv[i][0] = textureCoords[idx]->x;
-         uv[i][1] = textureCoords[idx]->y;
+         uv[i][0] = textureCoords[idx].x;
+         uv[i][1] = textureCoords[idx].y;
       }
    }
 }
@@ -462,6 +474,6 @@ void Mesh::setupCells() {
 }
 
 void Mesh::setFaceMaterial(int idx, shared_ptr<Material> material) {
-   faces[idx]->material = material;
+   faces[idx]->setMaterial(material);
 }
 
