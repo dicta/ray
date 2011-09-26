@@ -2,11 +2,12 @@
 #include "Geometry/GeometryObject.h"
 #include "Geometry/Compound/Compound.h"
 
-Storage::Storage() : objs() {}
+
+Storage::Storage() : Compound() {}
 
 void Storage::addObject(GeometryObject* obj) {
   if (obj->isCompound()) {
-     const vector<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
+     const list<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
      fprintf(stdout,"Adding compound object (%lu children).\n", objects.size());
      fflush(stdout);
      for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
@@ -19,9 +20,9 @@ void Storage::addObject(GeometryObject* obj) {
 }
 
 void Storage::removeObject(GeometryObject* obj) {
- if (obj->isCompound()) {
+  if (obj->isCompound()) {
      printf("Removing compound object.\n");
-     const vector<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
+     const list<GeometryObject*>& objects = ((Compound*)obj)->getObjects();
      for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
         removeObject(*it);
      }

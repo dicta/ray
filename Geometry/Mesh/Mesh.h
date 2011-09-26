@@ -63,7 +63,7 @@ public:
    virtual ~Mesh();
 
    virtual bool isCompound() { return true; } 
-   virtual vector<GeometryObject*> getObjects() const { return vector<GeometryObject*>(faces.begin(), faces.end()); }
+   virtual list<GeometryObject*> getObjects() const { return list<GeometryObject*>(faces.begin(), faces.end()); }
 
    void pointsReserve(int size) { points.reserve(size); }
    int addPoint(Point3D* p);

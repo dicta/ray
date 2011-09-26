@@ -82,7 +82,7 @@ void Wedge::build() {
    if(cover) {
       Annulus* base = new Annulus(Point3D(0, minY, 0), Vector3D(0, -1, 0), innerR + bevelR, outerR - bevelR);
       base->setAngleRange(angle1 + alpha, angle2 - alpha);
-      objects.push_back(base);
+      objs.push_back(base);
 
       // Side patches
       Annulus* side1 = new Annulus(Point3D(0, minY, 0), Vector3D(0, -1, 0), 0.0, s2 - s1);
@@ -90,66 +90,66 @@ void Wedge::build() {
       Instance* patch1 = new Instance(side1);
       patch1->rotateY(angle1);
       patch1->translate(xc1, 0.0, zc1);
-      objects.push_back(patch1);
+      objs.push_back(patch1);
 
       Annulus* side2 = new Annulus(Point3D(0, minY, 0), Vector3D(0, -1, 0), 0.0, s2 - s1);
       side2->setAngleRange(360.0 - alpha, 360.0);
       Instance* patch2 = new Instance(side2);
       patch2->rotateY(angle2);
       patch2->translate(xc3, 0.0, zc3);
-      objects.push_back(patch2);
+      objs.push_back(patch2);
    }
 
    // Base spheres
-   objects.push_back(new Sphere(Point3D(xc1, minY + bevelR, zc1), bevelR));
-   objects.push_back(new Sphere(Point3D(xc2, minY + bevelR, zc2), bevelR));
-   objects.push_back(new Sphere(Point3D(xc3, minY + bevelR, zc3), bevelR));
-   objects.push_back(new Sphere(Point3D(xc4, minY + bevelR, zc4), bevelR));
+   objs.push_back(new Sphere(Point3D(xc1, minY + bevelR, zc1), bevelR));
+   objs.push_back(new Sphere(Point3D(xc2, minY + bevelR, zc2), bevelR));
+   objs.push_back(new Sphere(Point3D(xc3, minY + bevelR, zc3), bevelR));
+   objs.push_back(new Sphere(Point3D(xc4, minY + bevelR, zc4), bevelR));
    
    // Base cylinders
    Instance* baseCylinder1 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
    baseCylinder1->rotateX(90.0);
    baseCylinder1->rotateY(angle1);
    baseCylinder1->translate(xc1, minY + bevelR, zc1);
-   objects.push_back(baseCylinder1);
+   objs.push_back(baseCylinder1);
 
    Instance* baseCylinder2 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
    baseCylinder2->rotateX(90.0);
    baseCylinder2->rotateY(angle2);
    baseCylinder2->translate(xc3, minY + bevelR, zc3);
-   objects.push_back(baseCylinder2);
+   objs.push_back(baseCylinder2);
    
    // Base tori
    Torus* baseTorus1 = new Torus(innerR + bevelR, bevelR);
    baseTorus1->setPhiRange(angle1 + alpha, angle2 - alpha);
    Instance* bti1 = new Instance(baseTorus1);
    bti1->translate(0.0, minY + bevelR, 0.0);
-   objects.push_back(bti1);
+   objs.push_back(bti1);
    
    Torus* baseTorus2 = new Torus(outerR - bevelR, bevelR);
    baseTorus2->setPhiRange(angle1 + beta, angle2 - beta);
    Instance* bti2 = new Instance(baseTorus2);
    bti2->translate(0.0, minY + bevelR, 0.0);
-   objects.push_back(bti2);
+   objs.push_back(bti2);
    
    // SIDES
 
    // Side Cylinders
    Instance* sideCyl1 = new Instance(new Cylinder(bevelR, minY + bevelR, maxY - bevelR));
    sideCyl1->translate(xc1, 0.0, zc1);
-   objects.push_back(sideCyl1);
+   objs.push_back(sideCyl1);
 
    Instance* sideCyl2 = new Instance(new Cylinder(bevelR, minY + bevelR, maxY - bevelR));
    sideCyl2->translate(xc2, 0.0, zc2);
-   objects.push_back(sideCyl2);
+   objs.push_back(sideCyl2);
 
    Instance* sideCyl3 = new Instance(new Cylinder(bevelR, minY + bevelR, maxY - bevelR));
    sideCyl3->translate(xc3, 0.0, zc3);
-   objects.push_back(sideCyl3);
+   objs.push_back(sideCyl3);
 
    Instance* sideCyl4 = new Instance(new Cylinder(bevelR, minY + bevelR, maxY - bevelR));
    sideCyl4->translate(xc4, 0.0, zc4);
-   objects.push_back(sideCyl4);
+   objs.push_back(sideCyl4);
    
    if(cover) {
       // Side Rectanlges
@@ -157,62 +157,62 @@ void Wedge::build() {
       Point3D p2(s2 * sinAngle1, minY + bevelR, s2 * cosAngle1);
       Vector3D a = p2 - p1;
       Vector3D b(0.0, maxY - minY - 2.0 * bevelR, 0.0);
-      objects.push_back(new Rectangle(p1, a, b));
+      objs.push_back(new Rectangle(p1, a, b));
    
       p1.set(s1 * sinAngle2, minY + bevelR, s1 * cosAngle2);
       p2.set(s2 * sinAngle2, minY + bevelR, s2 * cosAngle2);
       a = p1 - p2;
-      objects.push_back(new Rectangle(p2, a, b));
+      objs.push_back(new Rectangle(p2, a, b));
    
       // Cover Cylinders
       Cylinder* sideC1 = new Cylinder(innerR, minY + bevelR, maxY - bevelR);
       sideC1->setAngleRange(angle1 + alpha, angle2 - alpha);
-      objects.push_back(sideC1);
+      objs.push_back(sideC1);
 
       Cylinder* sideC2 = new Cylinder(outerR, minY + bevelR, maxY - bevelR);
       sideC2->setAngleRange(angle1 + beta, angle2 - beta);
-      objects.push_back(sideC2);
+      objs.push_back(sideC2);
    }
 
    // TOP
    
    // Top spheres
-   objects.push_back(new Sphere(Point3D(xc1, maxY - bevelR, zc1), bevelR));
-   objects.push_back(new Sphere(Point3D(xc2, maxY - bevelR, zc2), bevelR));
-   objects.push_back(new Sphere(Point3D(xc3, maxY - bevelR, zc3), bevelR));
-   objects.push_back(new Sphere(Point3D(xc4, maxY - bevelR, zc4), bevelR));
+   objs.push_back(new Sphere(Point3D(xc1, maxY - bevelR, zc1), bevelR));
+   objs.push_back(new Sphere(Point3D(xc2, maxY - bevelR, zc2), bevelR));
+   objs.push_back(new Sphere(Point3D(xc3, maxY - bevelR, zc3), bevelR));
+   objs.push_back(new Sphere(Point3D(xc4, maxY - bevelR, zc4), bevelR));
 
    // Top cylinders
    Instance* topCylinder1 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
    topCylinder1->rotateX(90.0);
    topCylinder1->rotateY(angle1);
    topCylinder1->translate(xc1, maxY - bevelR, zc1);
-   objects.push_back(topCylinder1);
+   objs.push_back(topCylinder1);
 
    Instance* topCylinder2 = new Instance(new Cylinder(bevelR, 0.0, s2 - s1));
    topCylinder2->rotateX(90.0);
    topCylinder2->rotateY(angle2);
    topCylinder2->translate(xc3, maxY - bevelR, zc3);
-   objects.push_back(topCylinder2);
+   objs.push_back(topCylinder2);
 
    // Top tori
    Torus* topTorus1 = new Torus(innerR + bevelR, bevelR);
    topTorus1->setPhiRange(angle1 + alpha, angle2 - alpha);
    Instance* tti1 = new Instance(topTorus1);
    tti1->translate(0.0, maxY - bevelR, 0.0);
-   objects.push_back(tti1);
+   objs.push_back(tti1);
 
    Torus* topTorus2 = new Torus(outerR - bevelR, bevelR);
    topTorus2->setPhiRange(angle1 + beta, angle2 - beta);
    Instance* tti2 = new Instance(topTorus2);
    tti2->translate(0.0, maxY - bevelR, 0.0);
-   objects.push_back(tti2);
+   objs.push_back(tti2);
 
    if(cover) {
       // Top surface
       Annulus* top = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), innerR + bevelR, outerR - bevelR);
       top->setAngleRange(angle1 + alpha, angle2 - alpha);
-      objects.push_back(top);
+      objs.push_back(top);
    
       // Top patches
       Annulus* tap1 = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), 0.0, s2-s1);
@@ -220,14 +220,14 @@ void Wedge::build() {
       Instance* patch3 = new Instance(tap1);
       patch3->rotateY(angle1);
       patch3->translate(xc1, 0.0, zc1);
-      objects.push_back(patch3);
+      objs.push_back(patch3);
    
       Annulus* tap2 = new Annulus(Point3D(0, maxY, 0), Vector3D(0, 1, 0), 0.0, s2-s1);
       tap2->setAngleRange(360.0 - alpha, 360.0);
       Instance* patch4 = new Instance(tap2);
       patch4->rotateY(angle2);
       patch4->translate(xc3, 0.0, zc3);
-      objects.push_back(patch4);
+      objs.push_back(patch4);
    }
 
    // Define the bounding box

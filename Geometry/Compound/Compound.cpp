@@ -1,24 +1,26 @@
 #include "Compound.h"
 #include <math.h>
 
+
 Compound::Compound() : GeometryObject() {
 }
 
 Compound::~Compound() {
-   for(unsigned int i = 0; i < objects.size(); i++) {
-      delete objects[i];
+   while (!objs.empty()) {
+     GeometryObject* o = *objs.begin();
+     objs.pop_front();
+     delete o;
    }
-   objects.clear();
 }
 
 void Compound::setHash(Hash* hash) {
-   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
+   for(CompoundIter it = objs.begin(); it != objs.end(); it++) {
       (*it)->setHash(hash);
    }
 }
 
 void Compound::addObject(GeometryObject* obj) {
-   objects.push_back(obj);
+   objs.push_back(obj);
    bbox.expand(obj->bbox);
 }
 
@@ -37,7 +39,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
    Vector3D dpdu;
    Vector3D dpdv;
 
-   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
+   for(CompoundIter it = objs.begin(); it != objs.end(); it++) {
       if((*it)->hit(ray, t, sr) && (t < tmin)) {
          hit = true;
          tmin = t;
@@ -58,7 +60,7 @@ bool Compound::hit(const Ray& ray, double& tmin, ShadeRecord& sr) const {
       sr.tv = tv;
       sr.dpdu = dpdu;
       sr.dpdv = dpdv;
-      material = mat;
+      sr.material = mat;
    }
 
    return hit;
@@ -71,7 +73,7 @@ bool Compound::shadowHit(const Ray& ray, double& tmin) const {
 
    tmin = 1.7 * pow(10.0, 308.0);
 
-   for(CompoundIter it = objects.begin(); it != objects.end(); it++) {
+   for(CompoundIter it = objs.begin(); it != objs.end(); it++) {
       if((*it)->shadowHit(ray, tmin)) {
          return true;
       }
