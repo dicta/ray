@@ -11,7 +11,7 @@ typedef list<GeometryObject*>::iterator GeomIter;
 #define DEBUG_KDTREE 0
 
 int MAX_DEPTH = 10;
-const int MAX_OBJS = 8;
+const int MAX_OBJS = 10;
 
 struct NodeS {
    KdNode* node;
@@ -64,20 +64,26 @@ KdTree::~KdTree() {
 void KdTree::setup() {
    MAX_DEPTH = int(8 + 1.3f * Log2Int(float(objs.size())));
    edges = new BoundEdge[objs.size() * 2];
+   
+   struct timespec start;
+   struct timespec finish;
+   
+   printf("KdTree build started (%lu objects).\n", objs.size());
+   clock_gettime(CLOCK_MONOTONIC, &start);
    root = buildTree(0, objs, bbox);
-
-   printf("KdTree build complete. %lu objects in tree, %lu copies of objects into multiple nodes.\n", objs.size(), num_copies);
+   clock_gettime(CLOCK_MONOTONIC, &finish);
+   double duration = (finish.tv_sec - start.tv_sec) + (finish.tv_nsec - start.tv_nsec) * 1e-9;
+   printf("KdTree build complete (%.4f sec). %lu copies of objects into multiple nodes.\n", duration, num_copies);
 }
 
 void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axis, double& split) {
-   double invTotalSA = 1.0 / bounds.surfaceArea();
-   double tsplit = numeric_limits<double>::infinity();
-
+  //   double tsplit = numeric_limits<double>::infinity();
    int taxis = bounds.maxExtentAxis();
    int tries = 0;
    bool found = false;
-
    axis = -1;
+
+   SurfaceAreaHeuristic heuristic(bounds);
 
    while(!found && tries < 3) {
       int idx = 0;
@@ -89,50 +95,43 @@ void KdTree::findSplit(list<GeometryObject*>& objs, const BBox& bounds, int& axi
       sort(&edges[0], &edges[2 * objs.size()]);
 
       int nBelow = 0, nAbove = objs.size();
-      double bestCost = numeric_limits<double>::max();
-
-      int other0 = (taxis + 1) % 3;
-      int other1 = (taxis + 2) % 3;
+      float bestCost = numeric_limits<double>::max();
+      
+      float minValue = bounds.getMin(taxis);
+      float maxValue = bounds.getMax(taxis);
       for(unsigned i = 0; i < 2 * objs.size(); i++) {
          if(edges[i].type == BoundEdge::END) nAbove--;
-         double edget = edges[i].tsplit;
-         if(edget > bounds.getMin(taxis) && edget < bounds.getMax(taxis)) {
-            double belowSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
-                                 (edget - bounds.getMin(taxis)) *
-                                 (bounds.width(other0) + bounds.width(other1));
-
-            double aboveSA = 2 * (bounds.width(other0) * bounds.width(other1)) +
-                                 (bounds.getMax(taxis) - edget) *
-                                 (bounds.width(other0) + bounds.width(other1));
-
-            double pBelow = belowSA * invTotalSA;
-            double pAbove = aboveSA * invTotalSA;
-            double eb = (nBelow == 0 || nAbove == 0) ? 0.2 : 1.0;
-
-            double cost = 1.0 + 80.0 * eb * (pBelow * nBelow + pAbove * nAbove);
+         float edget = edges[i].tsplit;
+         if(edget > minValue && edget < maxValue) {
+            float lowerWidth = edget - minValue;
+            float upperWidth = maxValue - edget;
+            const std::pair<float, float>& p = heuristic(taxis, lowerWidth, upperWidth);
+            float cost = costTraverse + costQuery * (p.first * nBelow + p.second * nAbove);
+            if (nBelow == 0 || nAbove == 0) 
+              cost *= emptySpace;
 
             if(cost < bestCost) {
                bestCost = cost;
-               tsplit = edget;
-               found = bestCost < (80.0 * objs.size());
+               split = edget;
+               axis = taxis;
+               found = bestCost < (costQuery * objs.size());
             }
          }
          if(edges[i].type == BoundEdge::START) nBelow++;
       }
-
+      
       if(!found) {
          tries++;
-         taxis = other0;
+         taxis = (taxis+1) % 3;
       }
    }
-   if(found) {
-      axis = taxis;
-      split = tsplit;
+   if(!found) {
+     axis = -1;
    }
 }
 
 KdNode* KdTree::buildTree(int depth, list<GeometryObject*> objs, const BBox& bounds) {
-   printf("KdTree build: depth = %3d\t num_objects = %4lu\n", depth, objs.size());
+  //printf("KdTree build: depth = %3d\t num_objects = %4lu\n", depth, objs.size());
    if(depth >= MAX_DEPTH || objs.size() < MAX_OBJS) {
       // stop recursion
       return new KdNode(objs, bounds, depth);
